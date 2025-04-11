@@ -96,7 +96,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       ),
                     ),
                     onChanged: (_) {
-                      setState(() {}); // Vuelve a construir la lista filtrada
+                      setState(() {});
                     },
                   ),
                 ),

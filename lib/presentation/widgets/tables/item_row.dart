@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutterinventory/data/models/product.dart';
 import 'package:flutterinventory/data/models/branch.dart';
+import 'package:flutterinventory/data/models/user.dart';
 
 class ProductRow extends StatelessWidget {
   final Product product;
@@ -152,6 +153,107 @@ class BranchRow extends StatelessWidget {
           leading: const Icon(Icons.store, color: Colors.cyan),
           title: Text(branch.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
           subtitle: Text(branch.location ?? 'Ubicación no disponible', style: const TextStyle(color: Colors.grey)),
+          trailing: IconButton(
+            icon: const Icon(Icons.edit, color: Colors.blue),
+            onPressed: onEdit,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class UserRow extends StatelessWidget {
+  final User user;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+
+  const UserRow({
+    Key? key,
+    required this.user,
+    required this.onEdit,
+    required this.onDelete,
+  }) : super(key: key);
+
+  Future<bool?> _confirmDelete(BuildContext context) async {
+    return showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("¿Eliminar usuario?"),
+        content: const Text("¿Estás seguro de que deseas eliminar este usuario?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text("Cancelar"),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text("Eliminar"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _roleLabel(String role) {
+    switch (role) {
+      case 'admin':
+        return 'Administrador';
+      case 'employee':
+        return 'Empleado';
+      case 'sales':
+        return 'Ventas';
+      default:
+        return 'Desconocido';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dismissible(
+      key: ValueKey(user.id),
+      direction: DismissDirection.endToStart,
+      confirmDismiss: (_) => _confirmDelete(context),
+      onDismissed: (_) => onDelete(),
+      background: Container(
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 20),
+        decoration: BoxDecoration(
+          color: Colors.red,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: Colors.transparent,
+            width: 2,
+          ),
+        ),
+        child: const Icon(Icons.delete, color: Colors.white),
+      ),
+      child: Card(
+        elevation: 5,
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+        child: ListTile(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          leading: ClipRRect(
+            borderRadius: BorderRadius.circular(5),
+            child: SizedBox(
+              width: 50,
+              height: 50,
+              child: Image.asset(
+                'assets/images/default_user.png', // Asegúrate de tener esta imagen
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          title: Text(
+            user.name,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+          subtitle: Text('Rol: ${_roleLabel(user.role)}', style: const TextStyle(color: Colors.grey)),
           trailing: IconButton(
             icon: const Icon(Icons.edit, color: Colors.blue),
             onPressed: onEdit,
