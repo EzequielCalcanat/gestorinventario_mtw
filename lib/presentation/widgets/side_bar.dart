@@ -19,18 +19,15 @@ class SideBar extends StatelessWidget {
         }
         final prefs = snapshot.data!;
         final role = prefs.getString('user_role') ?? 'employee';
-        print(role);
         return Drawer(
           child: Stack(
             children: [
-              // Fondo del Drawer (Color fijo para el fondo)
               Container(
                 height: MediaQuery.of(context).padding.top + 100,
                 decoration: BoxDecoration(
-                  color: Color(0xFF3491B3), // Color fijo para el fondo
+                  color: Color(0xFF3491B3),
                 ),
               ),
-              // Contenido del Drawer
               ListView(
                 children: [
                   // Header
@@ -42,13 +39,12 @@ class SideBar extends StatelessWidget {
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          'Menú Principal', // Título del Drawer
+                          'Menú Principal',
                           style: TextStyle(color: Colors.white, fontSize: 24),
                         ),
                       ),
                     ),
                   ),
-                  // Menú de opciones
                   _buildListTile(context, Icons.home, 'Inicio', 'home'),
                   if (role == 'admin')
                     _buildListTile(context, Icons.store, 'Sucursales', 'branch'),
@@ -83,20 +79,20 @@ class SideBar extends StatelessWidget {
         children: [
           Icon(
             icon,
-            color: isSelected ? Color(0xFF3491B3) : Colors.grey[700], // Cambia de color si está seleccionado
+            color: isSelected ? Color(0xFF3491B3) : Colors.grey[700],
           ),
           SizedBox(width: 8),
           Text(
             title,
             style: TextStyle(
-              color: isSelected ? Color(0xFF3491B3) : Colors.black, // Cambia de color si está seleccionado
+              color: isSelected ? Color(0xFF3491B3) : Colors.black,
             ),
           ),
         ],
       ),
       onTap: () {
         Navigator.pop(context); // Cierra el drawer
-        onNavigate(route); // Navega a la ruta correspondiente
+        onNavigate(route);
       },
       selected: isSelected,
     );
