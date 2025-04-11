@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TopBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -8,14 +9,14 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: Color(0xFF3491B3),
+      backgroundColor: const Color(0xFF3491B3),
       title: Text(title),
       actions: [
         GestureDetector(
           onTap: () {
             showMenuOptions(context);
           },
-          child: CircleAvatar(
+          child: const CircleAvatar(
             backgroundImage: AssetImage('assets/images/default_user.png'),
             radius: 20,
           ),
@@ -35,24 +36,29 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                leading: Icon(Icons.person),
-                title: Text('Ver Perfil'),
+                leading: const Icon(Icons.person),
+                title: const Text('Ver Perfil'),
                 onTap: () {
                   Navigator.pop(context);
                 },
               ),
               ListTile(
-                leading: Icon(Icons.settings),
-                title: Text('Configuraciones'),
+                leading: const Icon(Icons.settings),
+                title: const Text('Configuraciones'),
                 onTap: () {
                   Navigator.pop(context);
                 },
               ),
               ListTile(
-                leading: Icon(Icons.logout),
-                title: Text('Cerrar Sesión'),
-                onTap: () {
-                  Navigator.pop(context);
+                leading: const Icon(Icons.logout),
+                title: const Text('Cerrar Sesión'),
+                onTap: () async {
+                  // Cerrar sesión: eliminar datos de sesión
+                  final prefs = await SharedPreferences.getInstance();
+                  await prefs.remove('logged_user_id'); // Borra el ID de usuario
+
+                  // Redirigir a la pantalla de inicio de sesión
+                  Navigator.pushReplacementNamed(context, '/login');
                 },
               ),
             ],

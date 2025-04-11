@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SideBar extends StatelessWidget {
   final Function(String) onNavigate;
@@ -7,48 +8,69 @@ class SideBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Drawer(
-      child: Stack(
-        children: [
-          // Fondo del Drawer (Color fijo para el fondo)
-          Container(
-            height: MediaQuery.of(context).padding.top + 100,
-            decoration: BoxDecoration(
-              color: Color(0xFF3491B3), // Color fijo para el fondo
-            ),
-          ),
-          // Contenido del Drawer
-          ListView(
+    return FutureBuilder<SharedPreferences>(
+      future: SharedPreferences.getInstance(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return Center(child: Text("Error al cargar los datos"));
+        }
+        final prefs = snapshot.data!;
+        final role = prefs.getString('user_role') ?? 'employee';
+        print(role);
+        return Drawer(
+          child: Stack(
             children: [
-              // Header
-              SizedBox(
-                height: 100,
-                child: DrawerHeader(
-                  margin: EdgeInsets.zero,
-                  decoration: BoxDecoration(color: Colors.transparent),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Menú Principal', // Título del Drawer
-                      style: TextStyle(color: Colors.white, fontSize: 24),
-                    ),
-                  ),
+              // Fondo del Drawer (Color fijo para el fondo)
+              Container(
+                height: MediaQuery.of(context).padding.top + 100,
+                decoration: BoxDecoration(
+                  color: Color(0xFF3491B3), // Color fijo para el fondo
                 ),
               ),
-              // Menú de opciones
-              _buildListTile(context, Icons.home, 'Inicio', 'home'),
-              _buildListTile(context, Icons.store, 'Sucursal', 'branch'),
-              _buildListTile(context, Icons.shopping_bag, 'Productos', 'products'),
-              _buildListTile(context, Icons.people, 'Clientes', 'clients'),
-              _buildListTile(context, Icons.store, 'Ventas', 'sales'),
-              _buildListTile(context, Icons.bar_chart, 'Reportes', 'reports'),
-              _buildListTile(context, Icons.supervised_user_circle, 'Usuarios', 'users'),
-              _buildListTile(context, Icons.settings, 'Configuraciones', 'settings'),
+              // Contenido del Drawer
+              ListView(
+                children: [
+                  // Header
+                  SizedBox(
+                    height: 100,
+                    child: DrawerHeader(
+                      margin: EdgeInsets.zero,
+                      decoration: BoxDecoration(color: Colors.transparent),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Menú Principal', // Título del Drawer
+                          style: TextStyle(color: Colors.white, fontSize: 24),
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Menú de opciones
+                  _buildListTile(context, Icons.home, 'Inicio', 'home'),
+                  if (role == 'admin')
+                    _buildListTile(context, Icons.store, 'Sucursales', 'branch'),
+                  if (role != 'sales')
+                    _buildListTile(context, Icons.shopping_bag, 'Productos', 'products'),
+                  if (role != 'sales')
+                    _buildListTile(context, Icons.people, 'Clientes', 'clients'),
+                  _buildListTile(context, Icons.store, 'Ventas', 'sales'),
+                  if (role != 'sales')
+                    _buildListTile(context, Icons.bar_chart, 'Reportes', 'reports'),
+                  if (role != 'sales')
+                    _buildListTile(context, Icons.supervised_user_circle, 'Usuarios', 'users'),
+                  _buildListTile(context, Icons.settings, 'Configuraciones', 'settings'),
+
+                ],
+              ),
             ],
           ),
-        ],
-      ),
+        );
+      },
     );
+
   }
 
   // Método para crear cada ListTile con ícono y texto

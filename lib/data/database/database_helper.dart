@@ -2,7 +2,8 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:flutterinventory/data/models/branch.dart';
 import 'package:flutterinventory/data/models/product.dart';
-
+import 'package:flutterinventory/data/models/user.dart';
+import 'package:uuid/uuid.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._init();
@@ -34,6 +35,7 @@ class DatabaseHelper {
     if (oldVersion < 1) {
       await db.execute('DROP TABLE IF EXISTS products');
       await db.execute('DROP TABLE IF EXISTS branches');
+      await db.execute('DROP TABLE IF EXISTS users');
       await _createDB(db, newVersion);
     }
   }
@@ -55,12 +57,65 @@ class DatabaseHelper {
       description TEXT,
       price REAL NOT NULL,
       stock INTEGER NOT NULL,
-      branch_id TEST NOT NULL,
+      branch_id TEXT NOT NULL,
       FOREIGN KEY(branch_id) REFERENCES branches(id)
     );
   ''');
+
+    await db.execute('''
+    CREATE TABLE users (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      email TEXT,
+      password TEXT NOT NULL,
+      role TEXT NOT NULL,
+      branch_id TEXT,
+      FOREIGN KEY(branch_id) REFERENCES branches(id)
+    );
+  ''');
+
+    const uuid = Uuid();
+    String userId = uuid.v4();
+
+    await db.insert('users', {
+      'id': userId,
+      'name': 'Ezequiel Calcanat',
+      'email': 'antoniocalcanat@gmail.com',
+      'password': 'hola123',
+      'role': 'admin',
+    });
+    String branchId = await insertBranchExample(db);
+    String employeeId = uuid.v4();
+    await db.insert('users', {
+      'id': employeeId,
+      'name': 'Juan Pérez',
+      'email': 'empleado@gmail.com',
+      'password': 'empleado123',
+      'role': 'employee',
+      'branch_id': branchId,
+    });
+
+    String salesId = uuid.v4();
+    await db.insert('users', {
+      'id': salesId,
+      'name': 'María Hdz',
+      'email': 'ventas@gmail.com',
+      'password': 'ventas123',
+      'role': 'sales',
+      'branch_id': branchId,
+    });
   }
 
+  Future<String> insertBranchExample(Database db) async {
+    const uuid = Uuid();
+    String branchId = uuid.v4();
+    await db.insert('branches', {
+      'id': branchId,
+      'name': 'Sucursal Central',
+      'location': 'Blvd. Campestre #332',
+    });
+    return branchId;
+  }
 
   // Insertar datos en cualquier tabla
   Future<int> insert<T>(String table, Map<String, dynamic> data) async {
@@ -101,17 +156,19 @@ class DatabaseHelper {
     return result.map((json) => fromMap(json)).toList();
   }
 
-  // Convertir un objeto a un mapa (por ejemplo, un producto o una rama)
+  // Convertir un objeto a un mapa (por ejemplo, un producto o una sucursal)
   Map<String, dynamic> _entityToMap<T>(T entity) {
     if (entity is Branch) {
       return (entity as Branch).toMap();
     } else if (entity is Product) {
       return (entity as Product).toMap();
+    } else if (entity is User) {
+      return entity.toMap();
     }
     throw ArgumentError('Tipo no soportado');
   }
 
-  // Convertir un mapa a un objeto (por ejemplo, un producto o una rama)
+  // Convertir un mapa a un objeto (por ejemplo, un producto o una sucursal)
   T _mapToEntity<T>(Map<String, dynamic> map, T Function(Map<String, dynamic>) fromMap) {
     return fromMap(map);
   }

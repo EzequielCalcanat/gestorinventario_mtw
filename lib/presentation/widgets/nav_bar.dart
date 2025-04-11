@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class NavBar extends StatelessWidget {
   final int currentIndex;
@@ -7,14 +8,31 @@ class NavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      currentIndex: currentIndex,
-      onTap: onTap,
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: "Inicio"),
-        BottomNavigationBarItem(icon: Icon(Icons.store), label: "Ventas"),
-        BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: "Reportes"),
-      ],
+    return FutureBuilder<SharedPreferences>(
+      future: SharedPreferences.getInstance(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+
+        if (snapshot.hasError) {
+          return Center(child: Text("Error al cargar los datos"));
+        }
+
+        final prefs = snapshot.data!;
+        final role = prefs.getString('user_role') ?? 'employee';
+
+        return BottomNavigationBar(
+          currentIndex: currentIndex,
+          onTap: onTap,
+          items: [
+            const BottomNavigationBarItem(icon: Icon(Icons.home), label: "Inicio"),
+            const BottomNavigationBarItem(icon: Icon(Icons.store), label: "Ventas"),
+            if (role != 'sales')
+              const BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: "Reportes"),
+          ],
+        );
+      },
     );
   }
 }
