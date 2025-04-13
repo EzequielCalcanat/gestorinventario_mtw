@@ -215,23 +215,85 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildRecentActivityList() {
     final logs = [
-      _LogItem(user: "Carlos", action: "Añadió producto", module: "Productos"),
-      _LogItem(user: "Lucía", action: "Realizó una venta", module: "Ventas"),
-      _LogItem(user: "Admin", action: "Actualizó stock", module: "Inventario"),
-      _LogItem(user: "Sandra", action: "Editó cliente", module: "Clientes"),
-      _LogItem(user: "Pedro", action: "Registró nueva sucursal", module: "Sucursales"),
-      _LogItem(user: "Daniel", action: "Eliminó producto", module: "Productos"),
-      _LogItem(user: "María", action: "Revisó inventario", module: "Inventario"),
-      _LogItem(user: "Luis", action: "Editó venta", module: "Ventas"),
-      _LogItem(user: "Carmen", action: "Agregó cliente", module: "Clientes"),
-      _LogItem(user: "Roberto", action: "Visualizó historial", module: "Inventario"),
+      _LogItem(
+        user: "Carlos Méndez",
+        description: "Añadió nuevo producto: iPhone 15 Pro",
+        module: "Productos",
+        createdAt: "2023-11-15T09:30:00Z",
+      ),
+      _LogItem(
+        user: "Lucía Fernández",
+        description: "Realizó venta #1254 por \$1,250",
+        module: "Ventas",
+        createdAt: "2023-11-15T10:15:00Z",
+      ),
+      _LogItem(
+        user: "Admin Sistema",
+        description: "Actualizó stock de AirPods Pro",
+        module: "Inventario",
+        createdAt: "2023-11-14T16:45:00Z",
+      ),
+      _LogItem(
+        user: "Sandra Gómez",
+        description: "Editó información del cliente: TechSolutions SA",
+        module: "Clientes",
+        createdAt: "2023-11-14T14:20:00Z",
+      ),
+      _LogItem(
+        user: "Pedro Ramírez",
+        description: "Registró nueva sucursal en Guadalajara",
+        module: "Sucursales",
+        createdAt: "2023-11-13T11:10:00Z",
+      ),
+      _LogItem(
+        user: "Daniel Castro",
+        description: "Eliminó producto obsoleto: iPhone 11",
+        module: "Productos",
+        createdAt: "2023-11-13T10:05:00Z",
+      ),
+      _LogItem(
+        user: "María Jiménez",
+        description: "Revisión completa de inventario",
+        module: "Inventario",
+        createdAt: "2023-11-12T17:30:00Z",
+      ),
+      _LogItem(
+        user: "Luis Navarro",
+        description: "Editó detalles de venta #1248",
+        module: "Ventas",
+        createdAt: "2023-11-12T15:22:00Z",
+      ),
+      _LogItem(
+        user: "Carmen Ruiz",
+        description: "Agregó nuevo cliente: DiseñoWeb MX",
+        module: "Clientes",
+        createdAt: "2023-11-11T13:45:00Z",
+      ),
+      _LogItem(
+        user: "Roberto Díaz",
+        description: "Exportó reporte de inventario",
+        module: "Reportes",
+        createdAt: "2023-11-10T18:15:00Z",
+      ),
+      _LogItem(
+        user: "Ana Beltrán",
+        description: "Aplicó descuento especial a venta #1251",
+        module: "Ventas",
+        createdAt: "2023-11-10T12:30:00Z",
+      ),
+      _LogItem(
+        user: "Jorge Silva",
+        description: "Actualizó precios de categoría Accesorios",
+        module: "Productos",
+        createdAt: "2023-11-09T09:15:00Z",
+      ),
     ];
 
     return ListView.separated(
       physics: const BouncingScrollPhysics(),
       itemCount: logs.length,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      separatorBuilder: (_, __) => const Divider(height: 1),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      separatorBuilder: (_, __) => const Divider(height: 16),
       itemBuilder: (context, index) => logs[index],
     );
   }
@@ -239,13 +301,15 @@ class HomeScreen extends StatelessWidget {
 
 class _LogItem extends StatelessWidget {
   final String user;
-  final String action;
+  final String description;
   final String module;
+  final String? createdAt;
 
   const _LogItem({
     required this.user,
-    required this.action,
+    required this.description,
     required this.module,
+    this.createdAt,
   });
 
   @override
@@ -254,12 +318,63 @@ class _LogItem extends StatelessWidget {
       onTap: () {
         // Aquí puedes navegar a detalles u otra acción
       },
-      child: ListTile(
-        contentPadding: EdgeInsets.zero,
-        leading: const Icon(Icons.history),
-        title: Text("$user $action"),
-        subtitle: Text("Módulo: $module"),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 14), // Más espaciado vertical
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center, // Centrado vertical
+          children: [
+            Container(
+              height: 40, // Altura fija para centrar mejor
+              alignment: Alignment.center, // Centrado vertical
+              child: const Icon(Icons.history, size: 22),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center, // Centrado vertical
+                children: [
+                  Text(
+                    description,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 15, // Tamaño de fuente ligeramente mayor
+                    ),
+                  ),
+                  const SizedBox(height: 6), // Más espacio entre líneas
+                  Text(
+                    "$user • $module",
+                    style: TextStyle(
+                      fontSize: 13, // Tamaño un poco mayor
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (createdAt != null)
+              Padding(
+                padding: const EdgeInsets.only(left: 8),
+                child: Text(
+                  _formatDate(createdAt!),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
+  }
+
+  String _formatDate(String dateString) {
+    try {
+      final date = DateTime.parse(dateString);
+      return "${date.day}/${date.month}/${date.year}";
+    } catch (e) {
+      return dateString;
+    }
   }
 }
