@@ -8,8 +8,8 @@ class LoginRepository {
     toMap: (user) => user.toMap(),
   );
 
-  static Future<List<User>> getAllUsers() async {
-    return await _repository.getAll();
+  static Future<List<User>> getAllUsers({bool? isActive}) async {
+    return await _repository.getAll(isActive: isActive);
   }
 
   static Future<int> insertUser(User user) async {
@@ -17,7 +17,7 @@ class LoginRepository {
   }
 
   static Future<User?> login(String name, String password) async {
-    final users = await getAllUsers();
+    final users = await getAllUsers(isActive: true);
     try {
       return users.firstWhere((u) => u.name == name && u.password == password);
     } catch (e) {

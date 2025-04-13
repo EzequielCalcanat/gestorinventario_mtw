@@ -13,36 +13,59 @@ class Repository<T> {
 
   // Método para insertar un elemento
   Future<int> insert(T item) async {
-    print(toMap(item));
-    final db = await DatabaseHelper.instance.database;  // Asegúrate de que esto funcione
-    return await db.insert(table, toMap(item));
+    final map = toMap(item);
+    map.removeWhere((key, value) =>
+    (key == 'created_at' || key == 'updated_at') && value == null);
+    print(map);  // Para depurar
+    final db = await DatabaseHelper.instance.database;
+    return await db.insert(table, map);
   }
 
-  // Método para obtener todos los elementos
-  Future<List<T>> getAll() async {
+  // Método para obtener todos los elementos con o sin el filtro is_active
+  Future<List<T>> getAll({bool? isActive}) async {
     final db = await DatabaseHelper.instance.database;
-    final List<Map<String, dynamic>> maps = await db.query(table);
-    return List.generate(maps.length, (i) => fromMap(maps[i]));
+
+    // Si isActive es nulo, obtenemos todos los registros (sin filtro)
+    if (isActive == null) {
+      final List<Map<String, dynamic>> maps = await db.query(table);
+      return List.generate(maps.length, (i) => fromMap(maps[i]));
+    } else {
+      // Si isActive es proporcionado, filtramos por is_active
+      final List<Map<String, dynamic>> maps = await db.query(
+        table,
+        where: 'is_active = ?',
+        whereArgs: [isActive],
+      );
+      return List.generate(maps.length, (i) => fromMap(maps[i]));
+    }
   }
 
   // Método para actualizar un elemento
   Future<int> update(T item, String id) async {
+    final map = toMap(item);
+
+    // Eliminar 'isActive' y 'created_at' si son null
+    map.removeWhere((key, value) =>
+    (key == 'isActive' || key == 'created_at') && value == null);
+
     final db = await DatabaseHelper.instance.database;
     return await db.update(
       table,
-      toMap(item),
+      map,
       where: 'id = ?',
       whereArgs: [id],
     );
   }
 
-  // Método para eliminar un elemento
+  // Método para eliminar un elemento (lógicamente, cambiando is_active a false)
   Future<int> delete(String id) async {
     final db = await DatabaseHelper.instance.database;
-    return await db.delete(
+    return await db.update(
       table,
+      {'is_active': false},  // Marcamos como eliminado
       where: 'id = ?',
       whereArgs: [id],
     );
   }
 }
+

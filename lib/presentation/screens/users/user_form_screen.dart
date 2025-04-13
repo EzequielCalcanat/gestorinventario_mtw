@@ -42,7 +42,7 @@ class _UserFormScreenState extends State<UserFormScreen> {
       _passwordController.text = widget.user!.password;
       _selectedRole = widget.user!.role;
       _selectedBranch = branches.firstWhere(
-            (branch) => branch.id == widget.user!.branch_id,
+            (branch) => branch.id == widget.user!.branchId,
         orElse: () => branches.first,
       );
     }
@@ -59,7 +59,7 @@ class _UserFormScreenState extends State<UserFormScreen> {
           ? _passwordController.text
           : widget.user?.password ?? '',
       role: _selectedRole,
-      branch_id: _selectedBranch!.id,
+      branchId: _selectedBranch!.id,
     );
 
     if (isEditing) {

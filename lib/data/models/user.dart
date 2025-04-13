@@ -1,30 +1,25 @@
 class User {
   final String id;
   final String name;
-  final String? email;
+  final String email;
   final String password;
   final String role;
-  final String? branch_id;
+  final String? branchId;
+  final bool isActive;
+  final String? createdAt;
+  final String? updatedAt;
 
   User({
     required this.id,
     required this.name,
-    this.email,
+    required this.email,
     required this.password,
     required this.role,
-    this.branch_id
+    this.branchId,
+    this.isActive = true,
+    this.createdAt,
+    this.updatedAt,
   });
-
-  factory User.fromMap(Map<String, dynamic> map) {
-    return User(
-      id: map['id'],
-      name: map['name'],
-      email: map['email'],
-      password: map['password'],
-      role: map['role'],
-      branch_id : map['branch_id'],
-    );
-  }
 
   Map<String, dynamic> toMap() {
     return {
@@ -33,7 +28,29 @@ class User {
       'email': email,
       'password': password,
       'role': role,
-      'branch_id': branch_id
+      'branch_id': branchId,
+      'is_active': isActive ? 1 : 0,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
     };
   }
+
+  factory User.fromMap(Map<String, dynamic> map) {
+    if (map['id'] == null) {
+      throw Exception("User.fromMap error: 'id' is null. Map: $map");
+    }
+
+    return User(
+      id: map['id'],
+      name: map['name'],
+      email: map['email'],
+      password: map['password'],
+      role: map['role'],
+      branchId: map['branch_id'],
+      isActive: map['is_active'] == 1,
+      createdAt: map['created_at'],
+      updatedAt: map['updated_at'],
+    );
+  }
+
 }

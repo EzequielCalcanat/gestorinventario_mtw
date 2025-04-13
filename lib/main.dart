@@ -21,12 +21,12 @@ class MyApp extends StatelessWidget {
       title: 'Sistema de Ventas',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        useMaterial3: true, // Mantener Material 3
-        colorSchemeSeed: Color(0xFF3491B3), // Color principal (cambia esto)
-        brightness: Brightness.light, // O Brightness.dark para modo oscuro
+        useMaterial3: true,
+        colorSchemeSeed: Color(0xFF3491B3),
+        brightness: Brightness.light,
         appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF3491B3), // Color del AppBar
-          foregroundColor: Colors.white, // Color de íconos/texto
+          backgroundColor: Color(0xFF3491B3),
+          foregroundColor: Colors.white,
         ),
         drawerTheme: DrawerThemeData(
           backgroundColor: Colors.white,

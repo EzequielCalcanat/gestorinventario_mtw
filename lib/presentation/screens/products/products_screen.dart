@@ -34,14 +34,14 @@ class _ProductsScreenState extends State<ProductsScreen> {
     setState(() {
       _isLoading = true; // Iniciar carga
     });
-    _products = await ProductRepository.getAllProducts();
+    _products = await ProductRepository.getAllProducts(isActive:true);
     setState(() {
       _isLoading = false; // Fin de carga
     });
   }
 
   Future<void> _loadBranches() async {
-    _branches = await BranchRepository.getAllBranches();
+    _branches = await BranchRepository.getAllBranches(isActive: true);
   }
 
   void _navigateToProductForm({Product? product}) async {

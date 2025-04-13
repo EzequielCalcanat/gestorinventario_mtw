@@ -4,7 +4,10 @@ class Product {
   final String? description;
   final double price;
   final int stock;
-  final String branch_id;
+  final bool isActive;
+  final String? createdAt;
+  final String? updatedAt;
+  final String branchId;
 
   Product({
     required this.id,
@@ -12,7 +15,10 @@ class Product {
     this.description,
     required this.price,
     required this.stock,
-    required this.branch_id,
+    this.isActive = true,
+    this.createdAt,
+    this.updatedAt,
+    required this.branchId,
   });
 
   Map<String, dynamic> toMap() {
@@ -22,7 +28,10 @@ class Product {
       'description': description,
       'price': price,
       'stock': stock,
-      'branch_id': branch_id,
+      'is_active': isActive ? 1 : 0,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
+      'branch_id': branchId,
     };
   }
 
@@ -33,7 +42,10 @@ class Product {
       description: map['description'],
       price: map['price'],
       stock: map['stock'],
-      branch_id: map['branch_id'],
+      isActive: map['is_active'] == 1,
+      createdAt: map['created_at'],
+      updatedAt: map['updated_at'],
+      branchId: map['branch_id'],
     );
   }
 }

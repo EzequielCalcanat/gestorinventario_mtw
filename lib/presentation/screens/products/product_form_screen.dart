@@ -40,7 +40,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
       _priceController.text = widget.product!.price.toString();
       _stockController.text = widget.product!.stock.toString();
       _selectedBranch = branches.firstWhere((branch) =>
-      branch.id == widget.product!.branch_id,
+      branch.id == widget.product!.branchId,
           orElse: () => branches.first);
     }
   }
@@ -55,7 +55,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
       description: _descriptionController.text,
       price: double.parse(_priceController.text),
       stock: int.parse(_stockController.text),
-      branch_id: _selectedBranch!.id,
+      branchId: _selectedBranch!.id,
     );
     if (isEditing) {
       await ProductRepository.updateProduct(product);

@@ -1,7 +1,5 @@
 import 'package:flutterinventory/data/models/product.dart';
-import 'package:flutterinventory/data/database/database_helper.dart';
 import 'package:flutterinventory/data/repositories/repository.dart';
-import 'package:flutterinventory/data/models/product.dart';
 
 class ProductRepository {
   static final Repository<Product> _repository = Repository<Product>(
@@ -14,8 +12,9 @@ class ProductRepository {
     return await _repository.insert(product);
   }
 
-  static Future<List<Product>> getAllProducts() async {
-    return await _repository.getAll();
+  // Método para obtener todos los productos con filtro opcional por is_active
+  static Future<List<Product>> getAllProducts({bool? isActive}) async {
+    return await _repository.getAll(isActive: isActive); // Pasamos el filtro isActive
   }
 
   static Future<int> updateProduct(Product product) async {

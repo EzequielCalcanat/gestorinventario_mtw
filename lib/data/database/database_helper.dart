@@ -1,7 +1,11 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:flutterinventory/data/models/branch.dart';
+import 'package:flutterinventory/data/models/client.dart';
+import 'package:flutterinventory/data/models/log.dart';
 import 'package:flutterinventory/data/models/product.dart';
+import 'package:flutterinventory/data/models/sale.dart';
+import 'package:flutterinventory/data/models/sale_detail.dart';
 import 'package:flutterinventory/data/models/user.dart';
 import 'package:uuid/uuid.dart';
 
@@ -33,8 +37,11 @@ class DatabaseHelper {
 
   Future _onUpgradeDB(Database db, int oldVersion, int newVersion) async {
     if (oldVersion < 1) {
+      await db.execute('DROP TABLE IF EXISTS sale_details');
+      await db.execute('DROP TABLE IF EXISTS sales');
       await db.execute('DROP TABLE IF EXISTS products');
       await db.execute('DROP TABLE IF EXISTS branches');
+      await db.execute('DROP TABLE IF EXISTS logs');
       await db.execute('DROP TABLE IF EXISTS users');
       await _createDB(db, newVersion);
     }
@@ -46,64 +53,87 @@ class DatabaseHelper {
     CREATE TABLE branches (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
-      location TEXT
+      location TEXT,
+      is_active BOOLEAN NOT NULL DEFAULT TRUE,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
-  ''');
+    ''');
 
     await db.execute('''
     CREATE TABLE products (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
       description TEXT,
-      price REAL NOT NULL,
-      stock INTEGER NOT NULL,
+      price REAL NOT NULL CHECK (price >= 0),
+      stock INTEGER NOT NULL CHECK (stock >= 0),
       branch_id TEXT NOT NULL,
+      is_active BOOLEAN NOT NULL DEFAULT TRUE,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY(branch_id) REFERENCES branches(id)
     );
-  ''');
+    ''');
 
     await db.execute('''
     CREATE TABLE users (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
-      email TEXT,
+      email TEXT NOT NULL,
       password TEXT NOT NULL,
       role TEXT NOT NULL,
       branch_id TEXT,
+      is_active BOOLEAN NOT NULL DEFAULT TRUE,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY(branch_id) REFERENCES branches(id)
     );
-  ''');
+    ''');
 
-    const uuid = Uuid();
-    String userId = uuid.v4();
+    await db.execute('''
+    CREATE TABLE sales (
+      id TEXT PRIMARY KEY,
+      date DATETIME DEFAULT CURRENT_TIMESTAMP,
+      payment_method TEXT NOT NULL,
+      total REAL NOT NULL,
+      branch_id TEXT NOT NULL,
+      client_id TEXT NOT NULL,
+      user_id TEXT NOT NULL,
+      is_active BOOLEAN NOT NULL DEFAULT TRUE,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(branch_id) REFERENCES branches(id),
+      FOREIGN KEY(client_id) REFERENCES clients(id),
+      FOREIGN KEY(user_id) REFERENCES users(id)
+    );
+    ''');
 
-    await db.insert('users', {
-      'id': userId,
-      'name': 'Ezequiel Calcanat',
-      'email': 'antoniocalcanat@gmail.com',
-      'password': 'hola123',
-      'role': 'admin',
-    });
+    await db.execute('''
+    CREATE TABLE sale_details (
+      id TEXT PRIMARY KEY,
+      price REAL NOT NULL CHECK (price >= 0),
+      quantity INTEGER NOT NULL CHECK (quantity >= 0),
+      product_id TEXT NOT NULL,
+      sale_id TEXT NOT NULL,
+      FOREIGN KEY(product_id) REFERENCES products(id),
+      FOREIGN KEY(sale_id) REFERENCES sales(id)
+    );
+    ''');
+
+    await db.execute('''
+    CREATE TABLE logs (
+      id TEXT PRIMARY KEY,
+      action TEXT NOT NULL,
+      module TEXT NOT NULL,
+      description TEXT,
+      user_id TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(user_id) REFERENCES users(id)
+    );
+    ''');
+
+    // Registros de prueba
     String branchId = await insertBranchExample(db);
-    String employeeId = uuid.v4();
-    await db.insert('users', {
-      'id': employeeId,
-      'name': 'Juan Pérez',
-      'email': 'empleado@gmail.com',
-      'password': 'empleado123',
-      'role': 'employee',
-      'branch_id': branchId,
-    });
-
-    String salesId = uuid.v4();
-    await db.insert('users', {
-      'id': salesId,
-      'name': 'María Hdz',
-      'email': 'ventas@gmail.com',
-      'password': 'ventas123',
-      'role': 'sales',
-      'branch_id': branchId,
-    });
+    await insertUsers(db, branchId);
   }
 
   Future<String> insertBranchExample(Database db) async {
@@ -115,6 +145,42 @@ class DatabaseHelper {
       'location': 'Blvd. Campestre #332',
     });
     return branchId;
+  }
+
+  Future<void> insertUsers(Database db, String branchId) async {
+    const uuid = Uuid();
+    // Usuario administrador
+    String adminId = uuid.v4();
+    await db.insert('users', {
+      'id': adminId,
+      'name': 'Ezequiel Calcanat',
+      'email': 'antoniocalcanat@gmail.com',
+      'password': 'hola123',
+      'role': 'admin',
+      'branch_id': branchId,
+    });
+
+    // Usuario empleado
+    String employeeId = uuid.v4();
+    await db.insert('users', {
+      'id': employeeId,
+      'name': 'Juan Pérez',
+      'email': 'empleado@gmail.com',
+      'password': 'empleado123',
+      'role': 'employee',
+      'branch_id': branchId,
+    });
+
+    // Usuario de ventas
+    String salesId = uuid.v4();
+    await db.insert('users', {
+      'id': salesId,
+      'name': 'María Hdz',
+      'email': 'ventas@gmail.com',
+      'password': 'ventas123',
+      'role': 'sales',
+      'branch_id': branchId,
+    });
   }
 
   // Insertar datos en cualquier tabla
@@ -135,16 +201,15 @@ class DatabaseHelper {
     return await db.update(table, data, where: 'id = ?', whereArgs: [id]);
   }
 
-  // Eliminar datos de cualquier tabla
+  // Eliminar datos lógicamente (cambiar is_active a false)
   Future<int> delete<T>(String table, int id) async {
     final db = await database;
-    return await db.delete(table, where: 'id = ?', whereArgs: [id]);
+    return await db.update(table, {'is_active': false}, where: 'id = ?', whereArgs: [id]);
   }
 
-  // Insertar una entidad genérica (por ejemplo, una rama o producto)
+  // Insertar una entidad genérica
   Future<int> insertEntity<T>(String table, T entity) async {
     final db = await database;
-    // Usamos un método para convertir el objeto a un mapa
     final entityMap = _entityToMap(entity);
     return await db.insert(table, entityMap, conflictAlgorithm: ConflictAlgorithm.replace);
   }
@@ -152,23 +217,31 @@ class DatabaseHelper {
   // Consultar entidades genéricas
   Future<List<T>> getEntities<T>(String table, T Function(Map<String, dynamic>) fromMap) async {
     final db = await database;
-    final result = await db.query(table);
+    final result = await db.query(table, where: 'is_active = ?', whereArgs: [true]);
     return result.map((json) => fromMap(json)).toList();
   }
 
-  // Convertir un objeto a un mapa (por ejemplo, un producto o una sucursal)
+  // Convertir un objeto a un mapa
   Map<String, dynamic> _entityToMap<T>(T entity) {
     if (entity is Branch) {
       return (entity as Branch).toMap();
+    } else if (entity is Client) {
+      return (entity as Client).toMap();
     } else if (entity is Product) {
       return (entity as Product).toMap();
     } else if (entity is User) {
       return entity.toMap();
+    } else if (entity is Sale) {
+      return (entity as Sale).toMap();
+    } else if (entity is SaleDetail) {
+      return (entity as SaleDetail).toMap();
+    } else if (entity is Log) {
+      return (entity as Log).toMap();
     }
     throw ArgumentError('Tipo no soportado');
   }
 
-  // Convertir un mapa a un objeto (por ejemplo, un producto o una sucursal)
+  // Convertir un mapa a un objeto
   T _mapToEntity<T>(Map<String, dynamic> map, T Function(Map<String, dynamic>) fromMap) {
     return fromMap(map);
   }

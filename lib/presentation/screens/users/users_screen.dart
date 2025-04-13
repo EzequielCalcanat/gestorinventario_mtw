@@ -33,12 +33,12 @@ class _UsersScreenState extends State<UsersScreen> {
 
   Future<void> _loadUsers() async {
     setState(() => _isLoading = true);
-    _users = await LoginRepository.getAllUsers();
+    _users = await LoginRepository.getAllUsers(isActive: true);
     setState(() => _isLoading = false);
   }
 
   Future<void> _loadBranches() async {
-    _branches = await BranchRepository.getAllBranches();
+    _branches = await BranchRepository.getAllBranches(isActive: true);
   }
 
   void _navigateToUserForm({User? user}) async {

@@ -10,8 +10,8 @@ class BranchRepository {
     toMap: (branch) => branch.toMap(),
   );
 
-  static Future<List<Branch>> getAllBranches() async {
-    return await _repository.getAll();
+  static Future<List<Branch>> getAllBranches({bool? isActive}) async {
+    return await _repository.getAll(isActive: isActive);
   }
 
   static Future<int> insertBranch(Branch branch) async {
