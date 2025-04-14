@@ -49,7 +49,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
       // Guardar tanto el user_id como el role del usuario
       await prefs.setString('logged_user_id', matchingUser.id);
-      await prefs.setString('user_role', matchingUser.role ?? 'guest');  // Guarda el rol del usuario
+      await prefs.setString('user_name', matchingUser.name);
+      await prefs.setString('user_role', matchingUser.role ?? 'guest');
 
       // Redirigir según el rol del usuario
       if (matchingUser.role == 'admin') {

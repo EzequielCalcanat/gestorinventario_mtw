@@ -3,6 +3,7 @@ class Log {
   final String action;
   final String module;
   final String description;
+  final String userName;
   final String userId;
   final String? createdAt;
 
@@ -11,6 +12,7 @@ class Log {
     required this.action,
     required this.module,
     required this.description,
+    required this.userName,
     required this.userId,
     this.createdAt,
   });
@@ -21,6 +23,7 @@ class Log {
       'action': action,
       'module': module,
       'description': description,
+      'user_name': userName,
       'user_id': userId,
       'created_at': createdAt,
     };
@@ -36,6 +39,7 @@ class Log {
       action: map['action'],
       module: map['module'],
       description: map['description'],
+      userName: map['user_name'],
       userId: map['user_id'],
       createdAt: map['created_at'],
     );

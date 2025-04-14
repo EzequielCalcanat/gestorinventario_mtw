@@ -6,6 +6,7 @@ class BranchRepository {
     table: 'branches',
     fromMap: (map) => Branch.fromMap(map),
     toMap: (branch) => branch.toMap(),
+    moduleName: "Sucursal"
   );
 
   static Future<List<Branch>> getAllBranches({bool? isActive}) async {
@@ -17,10 +18,10 @@ class BranchRepository {
   }
 
   static Future<int> updateBranch(Branch branch) async {
-    return await _repository.update(branch, branch.id!);
+    return await _repository.update(branch, branch.id);
   }
 
-  static Future<int> deleteBranch(String id) async {
-    return await _repository.delete(id);
+  static Future<int> deleteBranch(Branch branch) async {
+    return await _repository.delete(branch, branch.id);
   }
 }

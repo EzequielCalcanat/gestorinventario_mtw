@@ -6,6 +6,7 @@ class LoginRepository {
     table: 'users',
     fromMap: (map) => User.fromMap(map),
     toMap: (user) => user.toMap(),
+    moduleName: "Login"
   );
 
   static Future<List<User>> getAllUsers({bool? isActive}) async {
@@ -29,7 +30,7 @@ class LoginRepository {
     return await _repository.update(user, user.id);
   }
 
-  static Future<int> deleteUser(String id) async {
-    return await _repository.delete(id);
+  static Future<int> deleteUser(User user) async {
+    return await _repository.delete(user, user.id);
   }
 }

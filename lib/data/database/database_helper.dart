@@ -105,6 +105,7 @@ class DatabaseHelper {
     await db.execute('''
     CREATE TABLE sales (
       id TEXT PRIMARY KEY,
+      sale_number INTEGER AUTO INCREMENT,
       date DATETIME DEFAULT CURRENT_TIMESTAMP,
       payment_method TEXT NOT NULL,
       total REAL NOT NULL,
@@ -137,6 +138,7 @@ class DatabaseHelper {
       action TEXT NOT NULL,
       module TEXT NOT NULL,
       description TEXT,
+      user_name TEXT NOT NULL,
       user_id TEXT NOT NULL,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY(user_id) REFERENCES users(id)

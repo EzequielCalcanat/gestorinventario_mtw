@@ -1,9 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutterinventory/data/repositories/log_repository.dart';
+import 'package:flutterinventory/data/models/log.dart';
 import 'package:flutterinventory/presentation/widgets/base_scaffold.dart';
 import 'package:fl_chart/fl_chart.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState  extends State<HomeScreen> {
+  List<Log> _logs = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLogs();
+  }
+
+  Future<void> _loadLogs() async {
+    setState(() {
+      _isLoading = true; // Iniciar carga
+    });
+    _logs = await LogRepository.getAllLogs();
+    setState(() {
+      _isLoading = false; // Fin de carga
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,8 +58,6 @@ class HomeScreen extends StatelessWidget {
               ],
             ),
           ),
-
-          // Sección de actividad reciente con scroll independiente
           Expanded(
             child: _buildRecentActivityList(),
           ),
@@ -214,87 +237,86 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildRecentActivityList() {
-    final logs = [
-      _LogItem(
-        user: "Carlos Méndez",
-        description: "Añadió nuevo producto: iPhone 15 Pro",
-        module: "Productos",
-        createdAt: "2023-11-15T09:30:00Z",
-      ),
-      _LogItem(
-        user: "Lucía Fernández",
-        description: "Realizó venta #1254 por \$1,250",
-        module: "Ventas",
-        createdAt: "2023-11-15T10:15:00Z",
-      ),
-      _LogItem(
-        user: "Admin Sistema",
-        description: "Actualizó stock de AirPods Pro",
-        module: "Inventario",
-        createdAt: "2023-11-14T16:45:00Z",
-      ),
-      _LogItem(
-        user: "Sandra Gómez",
-        description: "Editó información del cliente: TechSolutions SA",
-        module: "Clientes",
-        createdAt: "2023-11-14T14:20:00Z",
-      ),
-      _LogItem(
-        user: "Pedro Ramírez",
-        description: "Registró nueva sucursal en Guadalajara",
-        module: "Sucursales",
-        createdAt: "2023-11-13T11:10:00Z",
-      ),
-      _LogItem(
-        user: "Daniel Castro",
-        description: "Eliminó producto obsoleto: iPhone 11",
-        module: "Productos",
-        createdAt: "2023-11-13T10:05:00Z",
-      ),
-      _LogItem(
-        user: "María Jiménez",
-        description: "Revisión completa de inventario",
-        module: "Inventario",
-        createdAt: "2023-11-12T17:30:00Z",
-      ),
-      _LogItem(
-        user: "Luis Navarro",
-        description: "Editó detalles de venta #1248",
-        module: "Ventas",
-        createdAt: "2023-11-12T15:22:00Z",
-      ),
-      _LogItem(
-        user: "Carmen Ruiz",
-        description: "Agregó nuevo cliente: DiseñoWeb MX",
-        module: "Clientes",
-        createdAt: "2023-11-11T13:45:00Z",
-      ),
-      _LogItem(
-        user: "Roberto Díaz",
-        description: "Exportó reporte de inventario",
-        module: "Reportes",
-        createdAt: "2023-11-10T18:15:00Z",
-      ),
-      _LogItem(
-        user: "Ana Beltrán",
-        description: "Aplicó descuento especial a venta #1251",
-        module: "Ventas",
-        createdAt: "2023-11-10T12:30:00Z",
-      ),
-      _LogItem(
-        user: "Jorge Silva",
-        description: "Actualizó precios de categoría Accesorios",
-        module: "Productos",
-        createdAt: "2023-11-09T09:15:00Z",
-      ),
-    ];
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_logs.isEmpty) {
+      return const Center(child: Text("No hay actividad reciente."));
+    }
 
     return ListView.separated(
       physics: const BouncingScrollPhysics(),
-      itemCount: logs.length,
+      itemCount: _logs.length,
       padding: const EdgeInsets.symmetric(horizontal: 20),
       separatorBuilder: (_, __) => const Divider(height: 16),
-      itemBuilder: (context, index) => logs[index],
+      itemBuilder: (context, index) {
+        final log = _logs[index];
+
+        Color borderColor;
+        String textAction;
+        switch (log.action) {
+          case 'update':
+            textAction = "ACTUALIZAR";
+            borderColor = Colors.amber;
+            break;
+          case 'delete':
+            textAction = "ELIMINAR";
+            borderColor = Colors.red;
+            break;
+          case 'save':
+            textAction = "GUARDAR";
+            borderColor = Colors.green;
+            break;
+          default:
+            textAction = "DESCONOCIDO";
+            borderColor = Colors.grey;
+        }
+
+        return Container(
+          decoration: BoxDecoration(
+            border: Border(
+              left: BorderSide(
+                color: borderColor,
+                width: 4,
+              ),
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(left: 10.0),
+            child: Stack(
+              children: [
+                _LogItem(
+                  user: log.userName,
+                  description: log.description ?? "Descripción no disponible",
+                  module: log.module ?? "Módulo no disponible",
+                  createdAt: log.createdAt
+                ),
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  child: Container(
+                    margin: const EdgeInsets.only(top: 4, right: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: borderColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      textAction.toUpperCase(),
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: borderColor,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

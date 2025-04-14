@@ -6,6 +6,7 @@ class ClientRepository {
     table: 'clients',
     fromMap: (map) => Client.fromMap(map),
     toMap: (branch) => branch.toMap(),
+    moduleName: "Cliente"
   );
 
   static Future<List<Client>> getAllClients({bool? isActive}) async {
@@ -17,10 +18,10 @@ class ClientRepository {
   }
 
   static Future<int> updateClient(Client client) async {
-    return await _repository.update(client, client.id!);
+    return await _repository.update(client, client.id);
   }
 
-  static Future<int> deleteClient(String id) async {
-    return await _repository.delete(id);
+  static Future<int> deleteClient(Client client) async {
+    return await _repository.delete(client, client.id);
   }
 }

@@ -6,6 +6,7 @@ class ProductRepository {
     table: 'products',
     fromMap: (map) => Product.fromMap(map),
     toMap: (product) => product.toMap(),
+    moduleName: "Producto"
   );
 
   static Future<int> addProduct(Product product) async {
@@ -14,14 +15,14 @@ class ProductRepository {
 
   // Método para obtener todos los productos con filtro opcional por is_active
   static Future<List<Product>> getAllProducts({bool? isActive}) async {
-    return await _repository.getAll(isActive: isActive); // Pasamos el filtro isActive
+    return await _repository.getAll(isActive: isActive);
   }
 
   static Future<int> updateProduct(Product product) async {
-    return await _repository.update(product, product.id!);
+    return await _repository.update(product, product.id);
   }
 
-  static Future<int> deleteProduct(String productId) async {
-    return await _repository.delete(productId);
+  static Future<int> deleteProduct(Product product) async {
+    return await _repository.delete(product, product.id);
   }
 }

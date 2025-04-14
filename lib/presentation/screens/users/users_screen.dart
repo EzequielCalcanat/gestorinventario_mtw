@@ -56,8 +56,8 @@ class _UsersScreenState extends State<UsersScreen> {
     if (result == true) _loadUsers();
   }
 
-  Future<void> _deleteUser(String id) async {
-    await LoginRepository.deleteUser(id);
+  Future<void> _deleteUser(User user) async {
+    await LoginRepository.deleteUser(user);
     _loadUsers();
   }
 
@@ -139,7 +139,7 @@ class _UsersScreenState extends State<UsersScreen> {
                   return UserRow(
                     user: user,
                     onEdit: () => _navigateToUserForm(user: user),
-                    onDelete: () => _deleteUser(user.id),
+                    onDelete: () => _deleteUser(user),
                   );
                 },
               ),

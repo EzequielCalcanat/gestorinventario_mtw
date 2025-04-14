@@ -21,7 +21,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
   List<Product> _products = [];
   List<Branch> _branches = [];
-  bool _isLoading = true; // Agregar un flag de carga
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -32,11 +32,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
   Future<void> _loadProducts() async {
     setState(() {
-      _isLoading = true; // Iniciar carga
+      _isLoading = true;
     });
     _products = await ProductRepository.getAllProducts(isActive:true);
     setState(() {
-      _isLoading = false; // Fin de carga
+      _isLoading = false;
     });
   }
 
@@ -62,8 +62,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
     }
   }
 
-  Future<void> _deleteProduct(String id) async {
-    await ProductRepository.deleteProduct(id);
+  Future<void> _deleteProduct(Product product) async {
+    await ProductRepository.deleteProduct(product);
     _loadProducts();
   }
 
@@ -150,7 +150,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   return ProductRow(
                     product: product,
                     onEdit: () => _navigateToProductForm(product: product),
-                    onDelete: () => _deleteProduct(product.id),
+                    onDelete: () => _deleteProduct(product),
                   );
                 },
               ),

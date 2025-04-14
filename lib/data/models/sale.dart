@@ -1,6 +1,7 @@
 class Sale {
   final String id;
   final String date;
+  final int saleNumber;
   final String paymentMethod;
   final double total;
   final String branchId;
@@ -11,6 +12,7 @@ class Sale {
 
   Sale({
     required this.id,
+    required this.saleNumber,
     required this.date,
     required this.paymentMethod,
     required this.total,
@@ -24,6 +26,7 @@ class Sale {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
+      'sale_number': saleNumber,
       'date': date,
       'payment_method': paymentMethod,
       'total': total,
@@ -42,6 +45,7 @@ class Sale {
 
     return Sale(
       id: map['id'],
+      saleNumber: map['sale_number'],
       date: map['date'],
       paymentMethod: map['payment_method'],
       total: map['total'],
