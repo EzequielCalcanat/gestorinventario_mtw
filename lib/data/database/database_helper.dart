@@ -39,6 +39,7 @@ class DatabaseHelper {
     if (oldVersion < 1) {
       await db.execute('DROP TABLE IF EXISTS sale_details');
       await db.execute('DROP TABLE IF EXISTS sales');
+      await db.execute('DROP TABLE IF EXISTS client');
       await db.execute('DROP TABLE IF EXISTS products');
       await db.execute('DROP TABLE IF EXISTS branches');
       await db.execute('DROP TABLE IF EXISTS logs');
@@ -54,6 +55,17 @@ class DatabaseHelper {
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
       location TEXT,
+      is_active BOOLEAN NOT NULL DEFAULT TRUE,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+    ''');
+
+    await db.execute('''
+    CREATE TABLE clients (
+      id TEXT PRIMARY KEY,
+      email TEXT NOT NULL,
+      phone TEXT,
       is_active BOOLEAN NOT NULL DEFAULT TRUE,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
