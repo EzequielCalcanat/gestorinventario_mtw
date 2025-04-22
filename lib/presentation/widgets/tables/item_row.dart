@@ -22,21 +22,26 @@ class ProductRow extends StatelessWidget {
         title: const Text("¿Eliminar producto?"),
         content: const Text("¿Estás seguro de que deseas eliminar este producto?"),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text("Cancelar"),
-          ),
+          TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text("Cancelar")),
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-            ),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
             child: const Text("Eliminar"),
           ),
         ],
       ),
     );
+  }
+
+  Color _stockColor(int stock) {
+    if (stock <= 5) return const Color(0xFFFFCDD2); // rojo pastel claro
+    if (stock <= 15) return const Color(0xFFFFF9C4); // amarillo pastel claro
+    return const Color(0xFFC8E6C9); // verde pastel claro
+  }
+
+  String _stockText(int stock) {
+    if (stock == 1) return '1 disponible';
+    return '$stock disponibles';
   }
 
   @override
@@ -52,10 +57,6 @@ class ProductRow extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.red,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: Colors.transparent,
-            width: 2,
-          ),
         ),
         child: const Icon(Icons.delete, color: Colors.white),
       ),
@@ -65,23 +66,28 @@ class ProductRow extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
         child: ListTile(
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          leading: ClipRRect(
-            borderRadius: BorderRadius.circular(5),
-            child: SizedBox(
-              width: 50,
-              height: 50,
-              child: Image.asset(
-                'assets/images/default_user.png',
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
+          leading: const Icon(Icons.inventory_2, color: Colors.grey),
           title: Text(product.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-          subtitle: Text('Stock: ${product.stock} | \$${product.price}', style: const TextStyle(color: Colors.grey)),
-          trailing: IconButton(
-            icon: const Icon(Icons.edit, color: Colors.blue),
-            onPressed: onEdit,
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Precio por unidad: \$${product.price.toStringAsFixed(2)} MXN',
+                  style: const TextStyle(color: Colors.grey)),
+              const SizedBox(height: 4),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: _stockColor(product.stock),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  _stockText(product.stock),
+                  style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Colors.black87),
+                ),
+              ),
+            ],
           ),
+          trailing: IconButton(icon: const Icon(Icons.edit, color: Colors.blue), onPressed: onEdit),
         ),
       ),
     );
@@ -150,7 +156,7 @@ class BranchRow extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
         child: ListTile(
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          leading: const Icon(Icons.store, color: Colors.cyan),
+          leading: const Icon(Icons.store, color: Colors.grey),
           title: Text(branch.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
           subtitle: Text(branch.location ?? 'Ubicación no disponible', style: const TextStyle(color: Colors.grey)),
           trailing: IconButton(
@@ -175,28 +181,17 @@ class UserRow extends StatelessWidget {
     required this.onDelete,
   }) : super(key: key);
 
-  Future<bool?> _confirmDelete(BuildContext context) async {
-    return showDialog<bool>(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text("¿Eliminar usuario?"),
-        content: const Text("¿Estás seguro de que deseas eliminar este usuario?"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text("Cancelar"),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-            ),
-            child: const Text("Eliminar"),
-          ),
-        ],
-      ),
-    );
+  Color _badgeColor(String role) {
+    switch (role) {
+      case 'admin':
+        return const Color(0xFFE8D5F7); // Morado claro pastel
+      case 'employee':
+        return const Color(0xFFD6EAF8); // Azul claro pastel
+      case 'sales':
+        return const Color(0xFFFFF9C4); // Amarillo suave pastel
+      default:
+        return Colors.grey.shade200;
+    }
   }
 
   String _roleLabel(String role) {
@@ -225,10 +220,6 @@ class UserRow extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.red,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: Colors.transparent,
-            width: 2,
-          ),
         ),
         child: const Icon(Icons.delete, color: Colors.white),
       ),
@@ -238,27 +229,50 @@ class UserRow extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
         child: ListTile(
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          leading: ClipRRect(
-            borderRadius: BorderRadius.circular(5),
-            child: SizedBox(
-              width: 50,
-              height: 50,
-              child: Image.asset(
-                'assets/images/default_user.png', // Asegúrate de tener esta imagen
-                fit: BoxFit.cover,
+          leading: const Icon(Icons.person, color: Colors.grey),
+          title: Text(user.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(user.email, style: const TextStyle(color: Colors.grey)),
+              const SizedBox(height: 4),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: _badgeColor(user.role),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  _roleLabel(user.role),
+                  style: const TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
-          title: Text(
-            user.name,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-          ),
-          subtitle: Text('Rol: ${_roleLabel(user.role)}', style: const TextStyle(color: Colors.grey)),
-          trailing: IconButton(
-            icon: const Icon(Icons.edit, color: Colors.blue),
-            onPressed: onEdit,
-          ),
+          trailing: IconButton(icon: const Icon(Icons.edit, color: Colors.blue), onPressed: onEdit),
         ),
+      ),
+    );
+  }
+
+  Future<bool?> _confirmDelete(BuildContext context) async {
+    return showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("¿Eliminar usuario?"),
+        content: const Text("¿Estás seguro de que deseas eliminar este usuario?"),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text("Cancelar")),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+            child: const Text("Eliminar"),
+          ),
+        ],
       ),
     );
   }
