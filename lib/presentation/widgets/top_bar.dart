@@ -1,17 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutterinventory/presentation/widgets/right_cart_side_bar.dart';
+import 'package:flutterinventory/data/models/cart.dart';  // Asegúrate de importar el carrito
 
-class TopBar extends StatelessWidget implements PreferredSizeWidget {
+class TopBar extends StatefulWidget implements PreferredSizeWidget {
   final String title;
 
   const TopBar({super.key, required this.title});
 
   @override
+  State<TopBar> createState() => _TopBarState();
+
+  // Aquí implementamos el getter preferredSize
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
+
+class _TopBarState extends State<TopBar> {
+  int _cartItemCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _updateCartItemCount();
+  }
+
+  void _updateCartItemCount() {
+    setState(() {
+      _cartItemCount = Cart().items.values.fold(0, (sum, quantity) => sum + quantity);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AppBar(
       backgroundColor: const Color(0xFF3491B3),
-      title: Text(title),
+      title: Text(widget.title),
       actions: [
         Stack(
           children: [
@@ -27,17 +51,17 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
               child: Container(
                 padding: const EdgeInsets.all(2),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Colors.red,  // Rojo si el carrito tiene productos
                   borderRadius: BorderRadius.circular(10),
                 ),
                 constraints: const BoxConstraints(
                   minWidth: 16,
                   minHeight: 16,
                 ),
-                child: const Text(
-                  '0',
-                  style: TextStyle(
-                    color: Colors.black,
+                child: Text(
+                  '$_cartItemCount',
+                  style: const TextStyle(
+                    color: Colors.white,
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
                   ),
@@ -89,11 +113,9 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
                 leading: const Icon(Icons.logout),
                 title: const Text('Cerrar Sesión'),
                 onTap: () async {
-                  // Cerrar sesión: eliminar datos de sesión
                   final prefs = await SharedPreferences.getInstance();
                   await prefs.remove('logged_user_id'); // Borra el ID de usuario
 
-                  // Redirigir a la pantalla de inicio de sesión
                   Navigator.pushReplacementNamed(context, '/login');
                 },
               ),
@@ -125,7 +147,4 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
       },
     );
   }
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutterinventory/data/models/product.dart';
 import 'package:flutterinventory/data/models/branch.dart';
 import 'package:flutterinventory/data/models/user.dart';
+import 'package:flutterinventory/data/models/cart.dart';
+import 'package:flutterinventory/presentation/widgets/top_bar.dart';
 
 class ProductRow extends StatelessWidget {
   final Product product;
@@ -273,6 +275,107 @@ class UserRow extends StatelessWidget {
             child: const Text("Eliminar"),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class SalesRow extends StatefulWidget {
+  final Product product;
+
+  const SalesRow({
+    Key? key,
+    required this.product,
+  }) : super(key: key);
+
+  @override
+  State<SalesRow> createState() => _SalesRowState();
+}
+
+class _SalesRowState extends State<SalesRow> {
+  late Cart _cart;
+
+  @override
+  void initState() {
+    super.initState();
+    _cart = Cart();
+  }
+
+  int get quantity => _cart.items[widget.product] ?? 0;
+
+  void _add() {
+    setState(() {
+      _cart.addItem(widget.product);
+    });
+  }
+
+  void _remove() {
+    setState(() {
+      _cart.removeItem(widget.product);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final product = widget.product;
+
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        leading: const Icon(Icons.inventory_2_outlined, color: Colors.grey),
+        title: Text(product.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('\$${product.price.toStringAsFixed(2)} por unidad'),
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                _buildStockBadge(product.stock),
+              ],
+            )
+          ],
+        ),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.remove, color: Colors.black54),
+              onPressed: quantity > 0 ? _remove : null,
+            ),
+            Text('$quantity', style: const TextStyle(fontSize: 16)),
+            IconButton(
+              icon: const Icon(Icons.add, color: Colors.black54),
+              onPressed: quantity < product.stock ? _add : null,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStockBadge(int stock) {
+    Color bgColor;
+    String label = '$stock ${stock == 1 ? "disponible" : "disponibles"}';
+
+    if (stock <= 5) {
+      bgColor = Colors.redAccent.shade100;
+    } else if (stock <= 15) {
+      bgColor = Colors.amber.shade100;
+    } else {
+      bgColor = Colors.green.shade100;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
       ),
     );
   }

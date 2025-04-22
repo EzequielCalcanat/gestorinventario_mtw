@@ -7,6 +7,7 @@ import 'presentation/screens/clients/clients_screen.dart';
 import 'presentation/screens/reports/reports_screen.dart';
 import 'presentation/screens/users/users_screen.dart';
 import 'presentation/screens/branch/branch_screen.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MyApp());
