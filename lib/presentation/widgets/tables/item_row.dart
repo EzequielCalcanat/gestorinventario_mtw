@@ -3,7 +3,7 @@ import 'package:flutterinventory/data/models/product.dart';
 import 'package:flutterinventory/data/models/branch.dart';
 import 'package:flutterinventory/data/models/user.dart';
 import 'package:flutterinventory/data/models/cart.dart';
-import 'package:flutterinventory/presentation/widgets/top_bar.dart';
+import 'package:provider/provider.dart';
 
 class ProductRow extends StatelessWidget {
   final Product product;
@@ -301,18 +301,14 @@ class _SalesRowState extends State<SalesRow> {
     _cart = Cart();
   }
 
-  int get quantity => _cart.items[widget.product] ?? 0;
+  int get quantity => Provider.of<Cart>(context).items[widget.product] ?? 0;
 
   void _add() {
-    setState(() {
-      _cart.addItem(widget.product);
-    });
+    Provider.of<Cart>(context, listen: false).addItem(widget.product);
   }
 
   void _remove() {
-    setState(() {
-      _cart.removeItem(widget.product);
-    });
+    Provider.of<Cart>(context, listen: false).removeItem(widget.product);
   }
 
   @override

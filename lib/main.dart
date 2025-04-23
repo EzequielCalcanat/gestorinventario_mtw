@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
-import 'presentation/screens/login/login_screen.dart';
-import 'presentation/screens/home/home_screen.dart';
-import 'presentation/screens/products/products_screen.dart';
-import 'presentation/screens/sales/sales_screen.dart';
-import 'presentation/screens/clients/clients_screen.dart';
-import 'presentation/screens/reports/reports_screen.dart';
-import 'presentation/screens/users/users_screen.dart';
-import 'presentation/screens/branch/branch_screen.dart';
+import 'package:flutterinventory/presentation/screens/login/login_screen.dart';
+import 'package:flutterinventory/presentation/screens/home/home_screen.dart';
+import 'package:flutterinventory/presentation/screens/products/products_screen.dart';
+import 'package:flutterinventory/presentation/screens/sales/sales_screen.dart';
+import 'package:flutterinventory/presentation/screens/clients/clients_screen.dart';
+import 'package:flutterinventory/presentation/screens/reports/reports_screen.dart';
+import 'package:flutterinventory/presentation/screens/users/users_screen.dart';
+import 'package:flutterinventory/presentation/screens/branch/branch_screen.dart';
+import 'package:flutterinventory/presentation/screens/payment/payment_screen.dart';
+import 'package:flutterinventory/data/models/cart.dart';
 import 'package:provider/provider.dart';
-
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => Cart(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -40,6 +46,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const HomeScreen(),
         '/products': (context) => const ProductsScreen(),
         '/sales': (context) => const SalesScreen(),
+        '/payment': (context) => const PaymentScreen(),
         '/clients': (context) => const ClientsScreen(),
         '/branch': (context) => const BranchScreen(),
         '/reports': (context) => const ReportsScreen(),

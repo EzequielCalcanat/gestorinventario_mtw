@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutterinventory/presentation/widgets/right_cart_side_bar.dart';
 import 'package:flutterinventory/data/models/cart.dart';  // Asegúrate de importar el carrito
@@ -22,17 +23,12 @@ class _TopBarState extends State<TopBar> {
   @override
   void initState() {
     super.initState();
-    _updateCartItemCount();
-  }
-
-  void _updateCartItemCount() {
-    setState(() {
-      _cartItemCount = Cart().items.values.fold(0, (sum, quantity) => sum + quantity);
-    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final cart = Provider.of<Cart>(context);
+    final itemCount = cart.totalItems;
     return AppBar(
       backgroundColor: const Color(0xFF3491B3),
       title: Text(widget.title),
@@ -59,7 +55,7 @@ class _TopBarState extends State<TopBar> {
                   minHeight: 16,
                 ),
                 child: Text(
-                  '$_cartItemCount',
+                  '$itemCount',
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 10,
