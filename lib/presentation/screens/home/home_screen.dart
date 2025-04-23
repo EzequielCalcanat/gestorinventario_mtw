@@ -25,6 +25,7 @@ class _HomeScreenState  extends State<HomeScreen> {
       _isLoading = true; // Iniciar carga
     });
     _logs = await LogRepository.getAllLogs();
+    _logs.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
     setState(() {
       _isLoading = false; // Fin de carga
     });
@@ -257,15 +258,15 @@ class _HomeScreenState  extends State<HomeScreen> {
         String textAction;
         switch (log.action) {
           case 'update':
-            textAction = "ACTUALIZAR";
+            textAction = "ACTUALIZADO";
             borderColor = Colors.amber;
             break;
           case 'delete':
-            textAction = "ELIMINAR";
+            textAction = "ELIMINADO";
             borderColor = Colors.red;
             break;
           case 'save':
-            textAction = "GUARDAR";
+            textAction = "GUARDADO";
             borderColor = Colors.green;
             break;
           default:
@@ -341,62 +342,70 @@ class _LogItem extends StatelessWidget {
         // Aquí puedes navegar a detalles u otra acción
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14), // Más espaciado vertical
+        padding: const EdgeInsets.symmetric(vertical: 14),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center, // Centrado vertical
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
-              height: 40, // Altura fija para centrar mejor
-              alignment: Alignment.center, // Centrado vertical
+              height: 40,
+              alignment: Alignment.center,
               child: const Icon(Icons.history, size: 22),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center, // Centrado vertical
                 children: [
                   Text(
                     description,
                     style: const TextStyle(
                       fontWeight: FontWeight.w500,
-                      fontSize: 15, // Tamaño de fuente ligeramente mayor
+                      fontSize: 15,
                     ),
                   ),
-                  const SizedBox(height: 6), // Más espacio entre líneas
-                  Text(
-                    "$user • $module",
-                    style: TextStyle(
-                      fontSize: 13, // Tamaño un poco mayor
-                      color: Colors.grey[600],
-                    ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          "$user • $module",
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ),
+                      if (createdAt != null)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8), // Alineación con el badge
+                          child: Text(
+                            _formatDate(createdAt!),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ],
               ),
             ),
-            if (createdAt != null)
-              Padding(
-                padding: const EdgeInsets.only(left: 8),
-                child: Text(
-                  _formatDate(createdAt!),
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
-                ),
-              ),
           ],
         ),
       ),
     );
   }
 
+
   String _formatDate(String dateString) {
     try {
       final date = DateTime.parse(dateString);
-      return "${date.day}/${date.month}/${date.year}";
+      return "${_twoDigits(date.day)}/${_twoDigits(date.month)}/${date.year} ${_twoDigits(date.hour)}:${_twoDigits(date.minute)}";
     } catch (e) {
       return dateString;
     }
   }
+
+  String _twoDigits(int n) => n.toString().padLeft(2, '0');
 }

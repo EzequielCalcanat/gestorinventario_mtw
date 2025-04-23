@@ -29,8 +29,6 @@ class Product {
       'price': price,
       'stock': stock,
       'is_active': isActive ? 1 : 0,
-      'created_at': createdAt,
-      'updated_at': updatedAt,
       'branch_id': branchId,
     };
   }

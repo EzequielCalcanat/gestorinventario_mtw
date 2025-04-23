@@ -34,7 +34,6 @@ class Sale {
       'client_id': clientId,
       'user_id': userId,
       'is_active': isActive ? 1 : 0,
-      'created_at': createdAt,
     };
   }
 

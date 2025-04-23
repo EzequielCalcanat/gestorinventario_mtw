@@ -1,42 +1,39 @@
-class Branch {
+class PaymentMethod {
   final String id;
   final String name;
-  final String? location;
+  final String type;
   final bool isActive;
   final String? createdAt;
-  final String? updatedAt;
 
-  Branch({
+  PaymentMethod({
     required this.id,
     required this.name,
-    this.location,
+    required this.type,
     this.isActive = true,
     this.createdAt,
-    this.updatedAt,
   });
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'name': name,
-      'location': location,
+      'type': type,
       'is_active': isActive ? 1 : 0,
+      'created_at': createdAt,
     };
   }
 
-  factory Branch.fromMap(Map<String, dynamic> map) {
-    if (map['id'] == null) {
-      throw Exception("Branch.fromMap error: 'id' is null. Map: $map");
+  factory PaymentMethod.fromMap(Map<String, dynamic> map) {
+    if (map['id'] == null || map['name'] == null || map['type'] == null) {
+      throw Exception("PaymentMethod.fromMap error: 'id', 'name', or 'type' is null. Map: $map");
     }
 
-    return Branch(
+    return PaymentMethod(
       id: map['id'],
       name: map['name'],
-      location: map['location'],
+      type: map['type'],
       isActive: map['is_active'] == 1,
       createdAt: map['created_at'],
-      updatedAt: map['updated_at'],
     );
   }
-
 }

@@ -25,7 +25,6 @@ class Log {
       'description': description,
       'user_name': userName,
       'user_id': userId,
-      'created_at': createdAt,
     };
   }
 

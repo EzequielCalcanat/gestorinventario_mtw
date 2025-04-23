@@ -24,8 +24,6 @@ class Client {
       'email': email,
       'phone': phone,
       'is_active': isActive ? 1 : 0,
-      'created_at': createdAt,
-      'updated_at': updatedAt,
     };
   }
 

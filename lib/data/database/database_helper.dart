@@ -103,20 +103,31 @@ class DatabaseHelper {
     ''');
 
     await db.execute('''
+     CREATE TABLE payment_methods (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL UNIQUE,
+      type TEXT NOT NULL,
+      is_active BOOLEAN NOT NULL DEFAULT TRUE,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+    ''');
+
+    await db.execute('''
     CREATE TABLE sales (
       id TEXT PRIMARY KEY,
       sale_number INTEGER AUTO INCREMENT,
       date DATETIME DEFAULT CURRENT_TIMESTAMP,
-      payment_method TEXT NOT NULL,
       total REAL NOT NULL,
       branch_id TEXT NOT NULL,
       client_id TEXT NOT NULL,
       user_id TEXT NOT NULL,
       is_active BOOLEAN NOT NULL DEFAULT TRUE,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      payment_method_id TEXT NOT NULL,
       FOREIGN KEY(branch_id) REFERENCES branches(id),
       FOREIGN KEY(client_id) REFERENCES clients(id),
-      FOREIGN KEY(user_id) REFERENCES users(id)
+      FOREIGN KEY(user_id) REFERENCES users(id),
+      FOREIGN KEY(payment_method_id) REFERENCES payment_methods(id)
     );
     ''');
 

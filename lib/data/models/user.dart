@@ -30,8 +30,6 @@ class User {
       'role': role,
       'branch_id': branchId,
       'is_active': isActive ? 1 : 0,
-      'created_at': createdAt,
-      'updated_at': updatedAt,
     };
   }
 
