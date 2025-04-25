@@ -1,14 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:dropdown_search/dropdown_search.dart';
+import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 import 'package:flutterinventory/data/models/cart.dart';
+import 'package:flutterinventory/data/models/client.dart';
 import 'package:flutterinventory/data/models/product.dart';
+import 'package:flutterinventory/data/repositories/client_repository.dart';
 import 'package:flutterinventory/presentation/widgets/base_scaffold.dart';
+import 'payment_status.dart';
 
-class PaymentScreen extends StatelessWidget {
+class PaymentScreen extends StatefulWidget {
   const PaymentScreen({super.key});
 
   @override
+  State<PaymentScreen> createState() => _PaymentScreenState();
+}
+
+class _PaymentScreenState extends State<PaymentScreen> {
+  final Cart cart = Cart();
+  Client? _selectedClient;
+  List<Client> _clients = [];
+  bool _isProcessing = false;
+  String _paymentMethod = 'Efectivo';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadClients();
+  }
+
+  Future<void> _loadClients() async {
+    final clients = await ClientRepository.getAllClients(isActive: true);
+    setState(() {
+      _clients = clients;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final Cart cart = Cart();
     final items = cart.items.entries.toList();
 
     return BaseScaffold(
@@ -18,7 +47,29 @@ class PaymentScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text("Resumen de la Compra", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            const Text("Cliente", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 10),
+            DropdownSearch<Client>(
+              items: _clients,
+              itemAsString: (client) => client.name,
+              selectedItem: _selectedClient,
+              onChanged: (client) => setState(() => _selectedClient = client),
+              dropdownDecoratorProps: DropDownDecoratorProps(
+                dropdownSearchDecoration: InputDecoration(
+                  labelText: "Seleccionar Cliente",
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blue.shade600, width: 2),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+              filterFn: (client, filter) => client.name.toLowerCase().contains(filter.toLowerCase()),
+              popupProps: const PopupProps.menu(showSearchBox: true),
+            ),
+            const SizedBox(height: 30),
+
+            const Text("Resumen de la Compra", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
             ...items.map((entry) {
               final Product product = entry.key;
@@ -26,71 +77,82 @@ class PaymentScreen extends StatelessWidget {
               return ListTile(
                 dense: true,
                 contentPadding: EdgeInsets.zero,
-                title: Text(product.name),
+                title: Text(product.name, maxLines: 1, overflow: TextOverflow.fade),
                 subtitle: Text("$quantity x \$${product.price.toStringAsFixed(2)}"),
                 trailing: Text("\$${(product.price * quantity).toStringAsFixed(2)}"),
               );
             }).toList(),
             const Divider(height: 30),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text("Total", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                Text("\$${cart.total.toStringAsFixed(2)}", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                const Text("Total", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                Text("\$${cart.total.toStringAsFixed(2)}", style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               ],
             ),
             const SizedBox(height: 30),
-            const Text("Información de Pago", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 20),
-
-            _styledTextField(
-              label: "Nombre en la tarjeta",
-              icon: Icons.person_outline,
-            ),
-            const SizedBox(height: 12),
-
-            _styledTextField(
-              label: "Número de tarjeta",
-              icon: Icons.credit_card,
-              keyboardType: TextInputType.number,
-            ),
-            const SizedBox(height: 12),
 
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                const Text("Método de Pago", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
                 Expanded(
-                  child: _styledTextField(
-                    label: "Vencimiento (MM/AA)",
-                    icon: Icons.calendar_today_outlined,
-                    keyboardType: TextInputType.datetime,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _styledTextField(
-                    label: "CVV",
-                    icon: Icons.lock_outline,
-                    keyboardType: TextInputType.number,
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: SegmentedButton<String>(
+                      segments: const [
+                        ButtonSegment(value: 'Efectivo', label: Text('Efectivo')),
+                        ButtonSegment(value: 'Tarjeta', label: Text('Tarjeta')),
+                      ],
+                      selected: {_paymentMethod},
+                      onSelectionChanged: (selection) {
+                        setState(() {
+                          _paymentMethod = selection.first;
+                        });
+                      },
+                    ),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 30),
+
             Row(
               children: [
                 Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text("Cancelar"),
+                  child: OutlinedButton.icon(
+                    onPressed: () => Navigator.pushReplacementNamed(context, "/sales"),
+                    icon: const Icon(Icons.arrow_back),
+                    label: const Text("Regresar"),
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: Colors.grey[300],
+                      foregroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushReplacementNamed(context, "/payment");
-                    },
-                    child: const Text("Confirmar Pago"),
+                  child: ElevatedButton.icon(
+                    onPressed: _isProcessing ? null : _handleConfirmPressed,
+                    icon: _isProcessing
+                        ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                        : const Icon(Icons.check),
+                    label: Text(_isProcessing
+                        ? "Procesando..."
+                        : (_paymentMethod == 'Efectivo' ? "Confirmar Compra" : "Pago con Tarjeta")),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF3491B3),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    ),
                   ),
                 ),
               ],
@@ -101,20 +163,169 @@ class PaymentScreen extends StatelessWidget {
     );
   }
 
-  Widget _styledTextField({
-    required String label,
-    IconData? icon,
-    TextInputType keyboardType = TextInputType.text,
-  }) {
-    return TextFormField(
-      keyboardType: keyboardType,
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: icon != null ? Icon(icon) : null,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        filled: true,
-        fillColor: Colors.grey.shade100,
+  void _handleConfirmPressed() {
+    if (_selectedClient == null) {
+      _showError("⚠️ Debes seleccionar un cliente para continuar.");
+      return;
+    }
+
+    if (_paymentMethod == 'Efectivo') {
+      _confirmEfectivo();
+    } else {
+      _showCardPaymentSheet();
+    }
+  }
+
+  void _confirmEfectivo() async {
+    setState(() => _isProcessing = true);
+    await Future.delayed(const Duration(seconds: 2));
+    setState(() => _isProcessing = false);
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const PaymentStatusScreen(success: true)),
+    );
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.redAccent,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
+  }
+
+  void _showCardPaymentSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Wrap(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(
+                top: 20,
+                left: 20,
+                right: 20,
+                bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+              ),
+              child: _CardPaymentForm(
+                totalAmount: cart.total,
+                onPaymentSuccess: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (_) => const PaymentStatusScreen(success: true)),
+                  );
+                },
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _CardPaymentForm extends StatefulWidget {
+  final double totalAmount;
+  final VoidCallback onPaymentSuccess;
+
+  const _CardPaymentForm({required this.totalAmount, required this.onPaymentSuccess});
+
+  @override
+  State<_CardPaymentForm> createState() => _CardPaymentFormState();
+}
+
+class _CardPaymentFormState extends State<_CardPaymentForm> {
+  final _cardNumberController = TextEditingController();
+  final _expDateController = TextEditingController();
+  final _cvvController = TextEditingController();
+  bool _isPaying = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text("Pagar con Tarjeta", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 20),
+
+        TextFormField(
+          controller: _cardNumberController,
+          keyboardType: TextInputType.number,
+          inputFormatters: [CreditCardNumberInputFormatter()],
+          decoration: const InputDecoration(
+            labelText: "Número de Tarjeta",
+            prefixIcon: Icon(Icons.credit_card),
+            border: OutlineInputBorder(),
+          ),
+        ),
+        const SizedBox(height: 12),
+
+        Row(
+          children: [
+            Expanded(
+              child: TextFormField(
+                controller: _expDateController,
+                keyboardType: TextInputType.datetime,
+                decoration: const InputDecoration(
+                  labelText: "Vencimiento (MM/AA)",
+                  prefixIcon: Icon(Icons.calendar_today_outlined),
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: TextFormField(
+                controller: _cvvController,
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  LengthLimitingTextInputFormatter(4),
+                  FilteringTextInputFormatter.digitsOnly,
+                ],
+                decoration: const InputDecoration(
+                  labelText: "CVV",
+                  prefixIcon: Icon(Icons.lock_outline),
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: _isPaying ? null : _handlePayment,
+            child: Text(_isPaying ? "Procesando..." : "Pagar \$${widget.totalAmount.toStringAsFixed(2)} MXN"),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF3491B3),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _handlePayment() async {
+    setState(() => _isPaying = true);
+    await Future.delayed(const Duration(seconds: 2));
+    setState(() => _isPaying = false);
+
+    Navigator.pop(context);
+    widget.onPaymentSuccess();
   }
 }
