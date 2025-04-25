@@ -64,6 +64,7 @@ class DatabaseHelper {
     await db.execute('''
     CREATE TABLE clients (
       id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
       email TEXT NOT NULL,
       phone TEXT,
       is_active BOOLEAN NOT NULL DEFAULT TRUE,

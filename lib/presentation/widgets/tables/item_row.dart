@@ -3,6 +3,7 @@ import 'package:flutterinventory/data/models/product.dart';
 import 'package:flutterinventory/data/models/branch.dart';
 import 'package:flutterinventory/data/models/user.dart';
 import 'package:flutterinventory/data/models/cart.dart';
+import 'package:flutterinventory/data/models/client.dart';
 import 'package:provider/provider.dart';
 
 class ProductRow extends StatelessWidget {
@@ -69,12 +70,23 @@ class ProductRow extends StatelessWidget {
         child: ListTile(
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           leading: const Icon(Icons.inventory_2, color: Colors.grey),
-          title: Text(product.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          title: Text(
+            product.name,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            maxLines: 1,
+            overflow: TextOverflow.fade,
+            softWrap: false,
+          ),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Precio por unidad: \$${product.price.toStringAsFixed(2)} MXN',
-                  style: const TextStyle(color: Colors.grey)),
+              Text(
+                'Precio por unidad: \$${product.price.toStringAsFixed(2)} MXN',
+                style: const TextStyle(color: Colors.grey),
+                maxLines: 1,
+                overflow: TextOverflow.fade,
+                softWrap: false,
+              ),
               const SizedBox(height: 4),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -159,8 +171,20 @@ class BranchRow extends StatelessWidget {
         child: ListTile(
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           leading: const Icon(Icons.store, color: Colors.grey),
-          title: Text(branch.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-          subtitle: Text(branch.location ?? 'Ubicación no disponible', style: const TextStyle(color: Colors.grey)),
+          title: Text(
+            branch.name,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            maxLines: 1,
+            overflow: TextOverflow.fade,
+            softWrap: false,
+          ),
+          subtitle: Text(
+            branch.location ?? 'Ubicación no disponible',
+            style: const TextStyle(color: Colors.grey),
+            maxLines: 1,
+            overflow: TextOverflow.fade,
+            softWrap: false,
+          ),
           trailing: IconButton(
             icon: const Icon(Icons.edit, color: Colors.blue),
             onPressed: onEdit,
@@ -232,11 +256,23 @@ class UserRow extends StatelessWidget {
         child: ListTile(
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           leading: const Icon(Icons.person, color: Colors.grey),
-          title: Text(user.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          title: Text(
+            user.name,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            maxLines: 1,
+            overflow: TextOverflow.fade,
+            softWrap: false,
+          ),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(user.email, style: const TextStyle(color: Colors.grey)),
+              Text(
+                user.email,
+                style: const TextStyle(color: Colors.grey),
+                maxLines: 1,
+                overflow: TextOverflow.fade,
+                softWrap: false,
+              ),
               const SizedBox(height: 4),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -246,11 +282,7 @@ class UserRow extends StatelessWidget {
                 ),
                 child: Text(
                   _roleLabel(user.role),
-                  style: const TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
-                  ),
+                  style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Colors.black87),
                 ),
               ),
             ],
@@ -280,7 +312,7 @@ class UserRow extends StatelessWidget {
   }
 }
 
-class SalesRow extends StatefulWidget {
+class SalesRow extends StatelessWidget {
   final Product product;
 
   const SalesRow({
@@ -288,49 +320,58 @@ class SalesRow extends StatefulWidget {
     required this.product,
   }) : super(key: key);
 
-  @override
-  State<SalesRow> createState() => _SalesRowState();
-}
-
-class _SalesRowState extends State<SalesRow> {
-  late Cart _cart;
-
-  @override
-  void initState() {
-    super.initState();
-    _cart = Cart();
+  Color _stockColor(int stock) {
+    if (stock <= 5) {
+      return Colors.redAccent.shade100;
+    } else if (stock <= 15) {
+      return Colors.amber.shade100;
+    } else {
+      return Colors.green.shade100;
+    }
   }
 
-  int get quantity => Provider.of<Cart>(context).items[widget.product] ?? 0;
-
-  void _add() {
-    Provider.of<Cart>(context, listen: false).addItem(widget.product);
-  }
-
-  void _remove() {
-    Provider.of<Cart>(context, listen: false).removeItem(widget.product);
+  String _stockLabel(int stock) {
+    return '$stock ${stock == 1 ? "disponible" : "disponibles"}';
   }
 
   @override
   Widget build(BuildContext context) {
-    final product = widget.product;
+    final cart = Provider.of<Cart>(context);
+    final quantity = cart.items[product] ?? 0;
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         leading: const Icon(Icons.inventory_2_outlined, color: Colors.grey),
-        title: Text(product.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(
+          product.name,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+          maxLines: 1,
+          overflow: TextOverflow.fade,
+          softWrap: false,
+        ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('\$${product.price.toStringAsFixed(2)} por unidad'),
+            Text(
+              '\$${product.price.toStringAsFixed(2)} por unidad',
+              maxLines: 1,
+              overflow: TextOverflow.fade,
+              softWrap: false,
+            ),
             const SizedBox(height: 4),
-            Row(
-              children: [
-                _buildStockBadge(product.stock),
-              ],
-            )
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: _stockColor(product.stock),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                _stockLabel(product.stock),
+                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+              ),
+            ),
           ],
         ),
         trailing: Row(
@@ -338,40 +379,102 @@ class _SalesRowState extends State<SalesRow> {
           children: [
             IconButton(
               icon: const Icon(Icons.remove, color: Colors.black54),
-              onPressed: quantity > 0 ? _remove : null,
+              onPressed: quantity > 0 ? () => cart.removeItem(product) : null,
             ),
             Text('$quantity', style: const TextStyle(fontSize: 16)),
             IconButton(
               icon: const Icon(Icons.add, color: Colors.black54),
-              onPressed: quantity < product.stock ? _add : null,
+              onPressed: quantity < product.stock ? () => cart.addItem(product) : null,
             ),
           ],
         ),
       ),
     );
   }
+}
 
-  Widget _buildStockBadge(int stock) {
-    Color bgColor;
-    String label = '$stock ${stock == 1 ? "disponible" : "disponibles"}';
+class ClientRow extends StatelessWidget {
+  final Client client;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
 
-    if (stock <= 5) {
-      bgColor = Colors.redAccent.shade100;
-    } else if (stock <= 15) {
-      bgColor = Colors.amber.shade100;
-    } else {
-      bgColor = Colors.green.shade100;
-    }
+  const ClientRow({
+    Key? key,
+    required this.client,
+    required this.onEdit,
+    required this.onDelete,
+  }) : super(key: key);
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(12),
+  @override
+  Widget build(BuildContext context) {
+    return Dismissible(
+      key: ValueKey(client.id),
+      direction: DismissDirection.endToStart,
+      confirmDismiss: (_) => _confirmDelete(context),
+      onDismissed: (_) => onDelete(),
+      background: Container(
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 20),
+        decoration: BoxDecoration(
+          color: Colors.red,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: const Icon(Icons.delete, color: Colors.white),
       ),
-      child: Text(
-        label,
-        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+      child: Card(
+        elevation: 5,
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+        child: ListTile(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          leading: const Icon(Icons.person, color: Colors.grey),
+          title: Text(
+            client.name,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            maxLines: 1,
+            overflow: TextOverflow.fade,
+            softWrap: false,
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                client.email,
+                style: const TextStyle(color: Colors.grey),
+                maxLines: 1,
+                overflow: TextOverflow.fade,
+                softWrap: false,
+              ),
+              if (client.phone != null && client.phone!.isNotEmpty)
+                Text(
+                  client.phone!,
+                  style: const TextStyle(color: Colors.grey),
+                ),
+            ],
+          ),
+          trailing: IconButton(
+            icon: const Icon(Icons.edit, color: Colors.blue),
+            onPressed: onEdit,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<bool?> _confirmDelete(BuildContext context) async {
+    return showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("¿Eliminar cliente?"),
+        content: const Text("¿Estás seguro de que deseas eliminar este cliente?"),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text("Cancelar")),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+            child: const Text("Eliminar"),
+          ),
+        ],
       ),
     );
   }

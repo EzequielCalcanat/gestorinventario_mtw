@@ -44,7 +44,7 @@ class Repository<T> {
     if (item is Branch) {
       return (action == 'save' || action == 'update') ? (item as Branch).name : 'Sucursal: ${(item as Branch).id}';
     } else if (item is Client) {
-      return (action == 'save' || action == 'update') ? (item as Client).email : 'Cliente: ${(item as Client).id}';
+      return (action == 'save' || action == 'update') ? (item as Client).name : 'Cliente: ${(item as Client).id}';
     } else if (item is Product) {
       return (action == 'save' || action == 'update') ? (item as Product).name : 'Producto: ${(item as Product).id}';
     } else if (item is User) {

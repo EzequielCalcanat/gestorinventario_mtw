@@ -6,7 +6,7 @@ class LoginRepository {
     table: 'users',
     fromMap: (map) => User.fromMap(map),
     toMap: (user) => user.toMap(),
-    moduleName: "Login"
+    moduleName: "Usuario"
   );
 
   static Future<List<User>> getAllUsers({bool? isActive}) async {
