@@ -104,10 +104,9 @@ class DatabaseHelper {
     ''');
 
     await db.execute('''
-     CREATE TABLE payment_methods (
+    CREATE TABLE payment_methods (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL UNIQUE,
-      type TEXT NOT NULL,
       is_active BOOLEAN NOT NULL DEFAULT TRUE,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
@@ -160,6 +159,9 @@ class DatabaseHelper {
     // Registros de prueba
     String branchId = await insertBranchExample(db);
     await insertUsers(db, branchId);
+    await insertTestBranches(db);
+    await insertTestProducts(db, branchId);
+    await insertTestClients(db);
   }
 
   Future<String> insertBranchExample(Database db) async {
@@ -185,7 +187,6 @@ class DatabaseHelper {
       'role': 'admin',
       'branch_id': branchId,
     });
-
     // Usuario empleado
     String employeeId = uuid.v4();
     await db.insert('users', {
@@ -196,7 +197,6 @@ class DatabaseHelper {
       'role': 'employee',
       'branch_id': branchId,
     });
-
     // Usuario de ventas
     String salesId = uuid.v4();
     await db.insert('users', {
@@ -207,6 +207,82 @@ class DatabaseHelper {
       'role': 'sales',
       'branch_id': branchId,
     });
+  }
+
+  final _uuid = Uuid();
+  Future<List<String>> insertTestBranches(Database db) async {
+    List<String> branchIds = [];
+    final branches = [
+      {'name': 'Sucursal Centro', 'location': 'Av. Principal 123'},
+      {'name': 'Sucursal Norte', 'location': 'Calle Norte 456'},
+      {'name': 'Sucursal Sur', 'location': 'Boulevard Sur 789'},
+      {'name': 'Sucursal Este', 'location': 'Av. del Este 1011'},
+      {'name': 'Sucursal Oeste', 'location': 'Calle del Oeste 1213'},
+    ];
+    for (var branch in branches) {
+      final id = _uuid.v4();
+      await db.insert('branches', {
+        'id': id,
+        'name': branch['name'],
+        'location': branch['location'],
+        'is_active': 1,
+      });
+      branchIds.add(id);
+    }
+    return branchIds;
+  }
+
+  Future<void> insertTestProducts(Database db, String branchId) async {
+    final products = [
+      {'name': 'Papas Sabritas', 'description': 'Papas fritas clásicas', 'price': 18.0, 'stock': 50},
+      {'name': 'Doritos Nacho', 'description': 'Botana de maíz con queso', 'price': 20.0, 'stock': 45},
+      {'name': 'Churrumais', 'description': 'Botana de harina de maíz', 'price': 12.0, 'stock': 60},
+      {'name': 'Galletas Oreo', 'description': 'Galletas de chocolate', 'price': 16.0, 'stock': 40},
+      {'name': 'Coca-Cola 600ml', 'description': 'Refresco de cola', 'price': 22.0, 'stock': 70},
+      {'name': 'Chocolate Hershey\'s', 'description': 'Barra de chocolate con leche', 'price': 25.0, 'stock': 35},
+      {'name': 'Panditas Ricolino', 'description': 'Gomitas de sabores', 'price': 14.0, 'stock': 55},
+      {'name': 'Galletas Emperador', 'description': 'Galletas rellenas', 'price': 17.0, 'stock': 30},
+      {'name': 'Gatorade 500ml', 'description': 'Bebida hidratante', 'price': 28.0, 'stock': 25},
+      {'name': 'Takis Fuego', 'description': 'Botana de maíz muy picante', 'price': 21.0, 'stock': 38},
+    ];
+
+    for (var product in products) {
+      final id = _uuid.v4();
+      await db.insert('products', {
+        'id': id,
+        'name': product['name'],
+        'description': product['description'],
+        'price': product['price'],
+        'stock': product['stock'],
+        'branch_id': branchId,
+        'is_active': 1,
+      });
+    }
+  }
+
+  Future<void> insertTestClients(Database db) async {
+    final clients = [
+      {'name': 'Carlos Martínez', 'email': 'carlos@example.com', 'phone': '5551234567'},
+      {'name': 'Ana López', 'email': 'ana@example.com', 'phone': '5559876543'},
+      {'name': 'Luis Hernández', 'email': 'luis@example.com', 'phone': '5557890123'},
+      {'name': 'Laura García', 'email': 'laura@example.com', 'phone': '5554567890'},
+      {'name': 'Pedro Sánchez', 'email': 'pedro@example.com', 'phone': '5553210987'},
+      {'name': 'María Fernández', 'email': 'maria@example.com', 'phone': '5556543210'},
+      {'name': 'José Ramírez', 'email': 'jose@example.com', 'phone': '5555678901'},
+      {'name': 'Sofía Torres', 'email': 'sofia@example.com', 'phone': '5556789012'},
+      {'name': 'Miguel Díaz', 'email': 'miguel@example.com', 'phone': '5557891234'},
+      {'name': 'Paola Cruz', 'email': 'paola@example.com', 'phone': '5558901234'},
+    ];
+    for (var client in clients) {
+      final id = _uuid.v4();
+      await db.insert('clients', {
+        'id': id,
+        'name': client['name'],
+        'email': client['email'],
+        'phone': client['phone'],
+        'is_active': 1,
+      });
+    }
   }
 
   // Insertar datos en cualquier tabla

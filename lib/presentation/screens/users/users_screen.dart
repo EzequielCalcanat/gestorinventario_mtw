@@ -22,6 +22,7 @@ class _UsersScreenState extends State<UsersScreen> {
   List<User> _filteredUsers = [];
   List<Branch> _branches = [];
   bool _isFiltering = false;
+  bool _isLoading = true;
   String _selectedRole = 'Todos';
 
   final List<String> _roles = ['Todos', 'admin', 'employee', 'sales'];
@@ -33,12 +34,18 @@ class _UsersScreenState extends State<UsersScreen> {
   }
 
   Future<void> _loadData() async {
+    setState(() {
+      _isLoading = true;
+    });
+
     final users = await LoginRepository.getAllUsers(isActive: true);
     final branches = await BranchRepository.getAllBranches(isActive: true);
+
     setState(() {
       _users = users;
       _filteredUsers = users;
       _branches = branches;
+      _isLoading = false;
     });
   }
 
@@ -184,7 +191,7 @@ class _UsersScreenState extends State<UsersScreen> {
             ),
             const SizedBox(height: 10),
             Expanded(
-              child: _users.isEmpty
+              child: _isLoading
                   ? ListView.builder(
                 itemCount: 10,
                 itemBuilder: (_, index) {
@@ -202,7 +209,12 @@ class _UsersScreenState extends State<UsersScreen> {
                 },
               )
                   : (_filteredUsers.isEmpty
-                  ? const Center(child: Text("No hay usuarios"))
+                  ? const Center(
+                child: Text(
+                  "No hay usuarios",
+                  style: TextStyle(fontSize: 16),
+                ),
+              )
                   : ListView.builder(
                 itemCount: _filteredUsers.length,
                 itemBuilder: (_, index) {

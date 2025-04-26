@@ -7,6 +7,7 @@ import 'package:flutterinventory/data/models/client.dart';
 import 'package:flutterinventory/data/models/product.dart';
 import 'package:flutterinventory/data/repositories/client_repository.dart';
 import 'package:flutterinventory/presentation/widgets/base_scaffold.dart';
+import '../../../data/services/sale_service.dart';
 import 'payment_status.dart';
 
 class PaymentScreen extends StatefulWidget {
@@ -178,13 +179,26 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   void _confirmEfectivo() async {
     setState(() => _isProcessing = true);
-    await Future.delayed(const Duration(seconds: 2));
-    setState(() => _isProcessing = false);
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const PaymentStatusScreen(success: true)),
-    );
+    try {
+      await SaleService.createSaleTransaction(
+        cart: cart,
+        paymentMethodName: _paymentMethod,
+        clientId: _selectedClient!.id,
+      );
+
+      cart.clear();
+
+      setState(() => _isProcessing = false);
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const PaymentStatusScreen(success: true)),
+      );
+    } catch (e) {
+      setState(() => _isProcessing = false);
+      _showError("Hubo un error al registrar la venta. Intenta nuevamente.");
+    }
   }
 
   void _showError(String message) {
@@ -217,18 +231,37 @@ class _PaymentScreenState extends State<PaymentScreen> {
               ),
               child: _CardPaymentForm(
                 totalAmount: cart.total,
-                onPaymentSuccess: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (_) => const PaymentStatusScreen(success: true)),
-                  );
-                },
+                onPaymentSuccess: _confirmCardPaymentSuccess,
               ),
             ),
           ],
         );
       },
     );
+  }
+
+  void _confirmCardPaymentSuccess() async {
+    setState(() => _isProcessing = true);
+
+    try {
+      await SaleService.createSaleTransaction(
+        cart: cart,
+        paymentMethodName: _paymentMethod,
+        clientId: _selectedClient!.id,
+      );
+
+      cart.clear();
+
+      setState(() => _isProcessing = false);
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const PaymentStatusScreen(success: true)),
+      );
+    } catch (e) {
+      setState(() => _isProcessing = false);
+      _showError("Hubo un error al registrar la venta. Intenta nuevamente.");
+    }
   }
 }
 

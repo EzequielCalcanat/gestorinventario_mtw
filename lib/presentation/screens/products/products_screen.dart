@@ -19,6 +19,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
   List<Product> _products = [];
   List<Product> _filteredProducts = [];
   bool _isFiltering = false;
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -27,10 +28,14 @@ class _ProductsScreenState extends State<ProductsScreen> {
   }
 
   Future<void> _loadProducts() async {
+    setState(() {
+      _isLoading = true;
+    });
     final products = await ProductRepository.getAllProductsByBranch(isActive: true);
     setState(() {
       _products = products;
       _filteredProducts = products;
+      _isLoading = false;
     });
   }
 
@@ -173,7 +178,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
             ),
             const SizedBox(height: 10),
             Expanded(
-              child: _products.isEmpty
+              child: _isLoading
                   ? ListView.builder(
                 itemCount: 10,
                 itemBuilder: (_, index) {

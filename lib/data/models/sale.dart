@@ -2,7 +2,7 @@ class Sale {
   final String id;
   final String date;
   final int saleNumber;
-  final String paymentMethod;
+  final String paymentMethodId;
   final double total;
   final String branchId;
   final String clientId;
@@ -14,7 +14,7 @@ class Sale {
     required this.id,
     required this.saleNumber,
     required this.date,
-    required this.paymentMethod,
+    required this.paymentMethodId,
     required this.total,
     required this.branchId,
     required this.clientId,
@@ -28,7 +28,7 @@ class Sale {
       'id': id,
       'sale_number': saleNumber,
       'date': date,
-      'payment_method': paymentMethod,
+      'payment_method_id': paymentMethodId,
       'total': total,
       'branch_id': branchId,
       'client_id': clientId,
@@ -46,7 +46,7 @@ class Sale {
       id: map['id'],
       saleNumber: map['sale_number'],
       date: map['date'],
-      paymentMethod: map['payment_method'],
+      paymentMethodId: map['payment_method_id'],
       total: map['total'],
       branchId: map['branch_id'],
       clientId: map['client_id'],

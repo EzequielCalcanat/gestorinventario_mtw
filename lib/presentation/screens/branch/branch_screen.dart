@@ -80,10 +80,10 @@ class _BranchScreenState extends State<BranchScreen> {
                       hintText: 'Buscar sucursal...',
                       prefixIcon: const Icon(Icons.search),
                       border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8)
-                      ),
+                          borderRadius: BorderRadius.circular(8)),
                       enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey.shade400, width: 1.0),
+                        borderSide: BorderSide(
+                            color: Colors.grey.shade400, width: 1.0),
                       ),
                     ),
                     onChanged: (_) {
@@ -112,16 +112,17 @@ class _BranchScreenState extends State<BranchScreen> {
               ],
             ),
             const SizedBox(height: 10),
-            _isLoading
-                ? Expanded(
-              child: ListView.builder(
+            Expanded(
+              child: _isLoading
+                  ? ListView.builder(
                 itemCount: 10,
                 itemBuilder: (_, index) {
                   return Shimmer.fromColors(
                     baseColor: Colors.grey[300]!,
                     highlightColor: Colors.grey[100]!,
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      padding:
+                      const EdgeInsets.symmetric(vertical: 8.0),
                       child: Container(
                         height: 80.0,
                         color: Colors.white,
@@ -129,22 +130,26 @@ class _BranchScreenState extends State<BranchScreen> {
                     ),
                   );
                 },
-              ),
-            )
-                : filteredBranches.isEmpty
-                ? Center(child: Text("No hay sucursales"))
-                : Expanded(
-              child: ListView.builder(
+              )
+                  : (filteredBranches.isEmpty
+                  ? const Center(
+                child: Text(
+                  "No hay sucursales",
+                  style: TextStyle(fontSize: 16),
+                ),
+              )
+                  : ListView.builder(
                 itemCount: filteredBranches.length,
                 itemBuilder: (_, index) {
                   final branch = filteredBranches[index];
                   return BranchRow(
                     branch: branch,
-                    onEdit: () => _navigateToBranchForm(branch: branch),
+                    onEdit: () =>
+                        _navigateToBranchForm(branch: branch),
                     onDelete: () => _deleteBranch(branch),
                   );
                 },
-              ),
+              )),
             ),
           ],
         ),

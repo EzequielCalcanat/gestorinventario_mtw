@@ -18,6 +18,7 @@ class _ClientsScreenState extends State<ClientsScreen> {
   final TextEditingController _searchController = TextEditingController();
   List<Client> _clients = [];
   List<Client> _filteredClients = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -26,10 +27,15 @@ class _ClientsScreenState extends State<ClientsScreen> {
   }
 
   Future<void> _loadClients() async {
+    setState(() {
+      _isLoading = true;
+    });
+
     final clients = await ClientRepository.getAllClients(isActive: true);
     setState(() {
       _clients = clients;
       _filteredClients = clients;
+      _isLoading = false;
     });
   }
 
@@ -89,7 +95,7 @@ class _ClientsScreenState extends State<ClientsScreen> {
             ),
             const SizedBox(height: 10),
             Expanded(
-              child: _clients.isEmpty
+              child: _isLoading
                   ? ListView.builder(
                 itemCount: 10,
                 itemBuilder: (_, index) {
@@ -98,13 +104,21 @@ class _ClientsScreenState extends State<ClientsScreen> {
                     highlightColor: Colors.grey[100]!,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Container(height: 80.0, color: Colors.white),
+                      child: Container(
+                        height: 80.0,
+                        color: Colors.white,
+                      ),
                     ),
                   );
                 },
               )
                   : (_filteredClients.isEmpty
-                  ? const Center(child: Text("No hay clientes"))
+                  ? const Center(
+                child: Text(
+                  "No hay clientes",
+                  style: TextStyle(fontSize: 16),
+                ),
+              )
                   : ListView.builder(
                 itemCount: _filteredClients.length,
                 itemBuilder: (_, index) {
