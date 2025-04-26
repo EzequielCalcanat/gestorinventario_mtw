@@ -282,7 +282,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
       SnackBar(
         content: Text(message),
         backgroundColor: Colors.redAccent,
-        behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );

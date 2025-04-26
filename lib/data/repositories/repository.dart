@@ -4,6 +4,7 @@ import 'package:flutterinventory/data/models/client.dart';
 import 'package:flutterinventory/data/models/log.dart';
 import 'package:flutterinventory/data/models/product.dart';
 import 'package:flutterinventory/data/models/sale.dart';
+import 'package:flutterinventory/data/models/sale_detail.dart';
 import 'package:flutterinventory/data/models/user.dart';
 import 'package:flutterinventory/data/repositories/log_repository.dart';
 import 'package:uuid/uuid.dart';
@@ -142,6 +143,8 @@ class Repository<T> {
       return (action == 'save' || action == 'update') ? (item as User).name : 'Usuario: ${(item as User).id}';
     } else if (item is Sale) {
       return (action == 'save') ? 'Venta #${(item as Sale).saleNumber}' : 'Venta: ${(item as Sale).id}';
+    }else if (item is SaleDetail) {
+      return (action == 'save') ? 'Detalles de la venta #${(item as SaleDetail).saleId}' : 'Detalle de Venta: ${(item as SaleDetail).id}';
     }
 
     return item.toString();
