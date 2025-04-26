@@ -39,7 +39,7 @@ class _SalesBodyState extends State<SalesBody> {
   }
 
   Future<void> _loadProducts() async {
-    _products = await ProductRepository.getAllProductsByBranch(isActive: true);
+    _products = await ProductRepository.getAllProductsByBranchWithStock(isActive: true);
     setState(() {
       _filteredProducts = _products;
     });

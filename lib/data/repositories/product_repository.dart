@@ -29,6 +29,17 @@ class ProductRepository {
     List<Product> filteredProducts = await _repository.getFiltered(filters);
     return filteredProducts;
   }
+  static Future<List<Product>> getAllProductsByBranchWithStock({bool isActive = true}) async {
+    final prefs = await SharedPreferences.getInstance();
+    final branchId = prefs.getString('user_branch_id');
+    List<Map<String, dynamic>> filters = [
+      {'name': 'branch_id', 'operator': '==', 'value': branchId},
+      {'name': 'is_active', 'operator': '==', 'value': isActive},
+      {'name': 'stock', 'operator': '>=', 'value': 1},
+    ];
+    List<Product> filteredProducts = await _repository.getFiltered(filters);
+    return filteredProducts;
+  }
 
   static Future<int> updateProduct(Product product) async {
     return await _repository.update(product, product.id);
