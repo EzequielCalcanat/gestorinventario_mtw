@@ -38,7 +38,7 @@ class Product {
       id: map['id'],
       name: map['name'],
       description: map['description'],
-      price: map['price'],
+      price: map['price'].toDouble(),
       stock: map['stock'],
       isActive: map['is_active'] == 1,
       createdAt: map['created_at'],
@@ -46,4 +46,13 @@ class Product {
       branchId: map['branch_id'],
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is Product && other.id == id;
+  }
+
+  @override
+  int get hashCode => id.hashCode;
 }

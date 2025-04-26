@@ -60,7 +60,9 @@ class _TopBarState extends State<TopBar> {
             IconButton(
               icon: const Icon(Icons.shopping_cart),
               onPressed: () {
-                showCartDetails(context);
+                Future.delayed(Duration.zero, () {
+                  showCartDetails(context);
+                });
               },
             ),
             Positioned(
