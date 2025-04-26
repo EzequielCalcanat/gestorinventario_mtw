@@ -55,5 +55,4 @@ class Sale {
       createdAt: map['created_at'],
     );
   }
-
 }

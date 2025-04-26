@@ -4,7 +4,7 @@ class User {
   final String email;
   final String password;
   final String role;
-  final String? branchId;
+  final String branchId;
   final bool isActive;
   final String? createdAt;
   final String? updatedAt;
@@ -15,7 +15,7 @@ class User {
     required this.email,
     required this.password,
     required this.role,
-    this.branchId,
+    required this.branchId,
     this.isActive = true,
     this.createdAt,
     this.updatedAt,

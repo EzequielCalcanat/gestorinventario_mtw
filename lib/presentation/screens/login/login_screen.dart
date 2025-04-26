@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutterinventory/data/models/user.dart';
+import 'package:flutterinventory/data/models/branch.dart';
 import 'package:flutterinventory/data/repositories/login_repository.dart';
+import 'package:flutterinventory/data/repositories/branch_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -38,7 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
       matchingUser = null;
     }
 
-    await Future.delayed(const Duration(seconds: 1)); // Simulate loading
+    await Future.delayed(const Duration(seconds: 1));
 
     if (matchingUser == null) {
       _showError('El usuario no está registrado en el sistema');
@@ -47,10 +49,15 @@ class _LoginScreenState extends State<LoginScreen> {
     } else {
       final prefs = await SharedPreferences.getInstance();
 
-      // Guardar tanto el user_id como el role del usuario
+      // Obtener el nombre de la sucursal solo si no es un admin
+      String branchName = await BranchRepository.getBranchName(matchingUser.branchId);
+
+      // Guardar los datos del usuario incluyendo branch_name
       await prefs.setString('logged_user_id', matchingUser.id);
       await prefs.setString('user_name', matchingUser.name);
       await prefs.setString('user_role', matchingUser.role ?? 'guest');
+      await prefs.setString('user_branch_id', matchingUser.branchId ?? 'all');
+      await prefs.setString('user_branch_name', branchName);
 
       // Redirigir según el rol del usuario
       if (matchingUser.role == 'admin') {

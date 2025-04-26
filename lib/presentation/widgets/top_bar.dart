@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutterinventory/presentation/widgets/right_cart_side_bar.dart';
-import 'package:flutterinventory/data/models/cart.dart';  // Asegúrate de importar el carrito
+import 'package:flutterinventory/data/models/cart.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TopBar extends StatefulWidget implements PreferredSizeWidget {
   final String title;
@@ -18,11 +19,21 @@ class TopBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _TopBarState extends State<TopBar> {
-  int _cartItemCount = 0;
+  String userBranchName = '';
 
   @override
   void initState() {
     super.initState();
+    _loadUserData();
+    print(userBranchName);
+  }
+
+  Future<void> _loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      userBranchName = prefs.getString('user_branch_name') ?? 'Sin sucursal';
+    });
   }
 
   @override
@@ -31,7 +42,7 @@ class _TopBarState extends State<TopBar> {
     final itemCount = cart.totalItems;
     return AppBar(
       backgroundColor: const Color(0xFF3491B3),
-      title: Text(widget.title),
+      title: Text(userBranchName),
       actions: [
         Stack(
           children: [

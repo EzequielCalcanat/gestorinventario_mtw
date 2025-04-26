@@ -95,7 +95,7 @@ class DatabaseHelper {
       email TEXT NOT NULL,
       password TEXT NOT NULL,
       role TEXT NOT NULL,
-      branch_id TEXT,
+      branch_id TEXT NOT NULL,
       is_active BOOLEAN NOT NULL DEFAULT TRUE,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
