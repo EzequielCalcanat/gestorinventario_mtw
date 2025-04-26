@@ -289,7 +289,7 @@ class _HomeScreenState  extends State<HomeScreen> {
               children: [
                 _LogItem(
                   user: log.userName,
-                  description: log.description ?? "Descripción no disponible",
+                  description: _shortenText(log.description ?? "Descripción no disponible", 30),
                   module: log.module ?? "Módulo no disponible",
                   createdAt: log.createdAt
                 ),
@@ -320,6 +320,14 @@ class _HomeScreenState  extends State<HomeScreen> {
       },
     );
   }
+  String _shortenText(String text, int maxLength) {
+    if (text.length <= maxLength) {
+      return text;
+    } else {
+      return text.substring(0, maxLength) + '...';
+    }
+  }
+
 }
 
 class _LogItem extends StatelessWidget {
@@ -362,6 +370,8 @@ class _LogItem extends StatelessWidget {
                       fontWeight: FontWeight.w500,
                       fontSize: 15,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 6),
                   Row(

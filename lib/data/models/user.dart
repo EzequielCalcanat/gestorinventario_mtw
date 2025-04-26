@@ -4,7 +4,7 @@ class User {
   final String email;
   final String password;
   final String role;
-  final String branchId;
+  String? branchId;
   final bool isActive;
   final String? createdAt;
   final String? updatedAt;

@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutterinventory/data/models/product.dart';
-import 'package:flutterinventory/data/models/branch.dart';
 import 'package:flutterinventory/data/repositories/product_repository.dart';
 import 'package:flutterinventory/presentation/widgets/base_scaffold.dart';
 import 'package:uuid/uuid.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProductFormScreen extends StatefulWidget {
   final Product? product;
-  final List<Branch> branches;
   final Future<void> Function() onSave;
 
   const ProductFormScreen({
     super.key,
     this.product,
-    required this.branches,
     required this.onSave,
   });
 
@@ -27,27 +24,32 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _stockController = TextEditingController();
-  Branch? _selectedBranch;  // Aquí seleccionas la sucursal
-  late List<Branch> branches;
+  String branchId = '';
+
 
   @override
   void initState() {
     super.initState();
-    branches = widget.branches;
+
     if (widget.product != null) {
       _nameController.text = widget.product!.name;
       _descriptionController.text = widget.product!.description ?? '';
       _priceController.text = widget.product!.price.toString();
       _stockController.text = widget.product!.stock.toString();
-      _selectedBranch = branches.firstWhere((branch) =>
-      branch.id == widget.product!.branchId,
-          orElse: () => branches.first);
     }
+    _getBranchId();
+  }
+
+  Future<void> _getBranchId() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      branchId = (prefs.getString('user_branch_id') ?? null)!;
+    });
   }
 
   final Uuid uuid = Uuid();
   void _saveProduct() async {
-    if (_selectedBranch == null) return;
     final isEditing = widget.product != null;
     final product = Product(
       id: widget.product?.id ?? uuid.v4(),
@@ -55,7 +57,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
       description: _descriptionController.text,
       price: double.parse(_priceController.text),
       stock: int.parse(_stockController.text),
-      branchId: _selectedBranch!.id,
+      branchId: branchId,
     );
     if (isEditing) {
       await ProductRepository.updateProduct(product);
@@ -116,29 +118,6 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                   border: OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.number,
-              ),
-              const SizedBox(height: 16),
-              DropdownSearch<Branch>(
-                items: branches,
-                itemAsString: (Branch branch) => branch.name,
-                selectedItem: _selectedBranch,
-                onChanged: (branch) {
-                  setState(() {
-                    _selectedBranch = branch!;
-                  });
-                },
-                dropdownDecoratorProps: DropDownDecoratorProps(
-                  dropdownSearchDecoration: InputDecoration(
-                    labelText: "Seleccionar Sucursal",
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                ),
-                filterFn: (branch, filter) {
-                  return branch.name.toLowerCase().contains(filter.toLowerCase());
-                },
-                popupProps: const PopupProps.menu(
-                  showSearchBox: true,
-                ),
               ),
               const SizedBox(height: 16),
               Row(

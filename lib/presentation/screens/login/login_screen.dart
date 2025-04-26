@@ -50,7 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
       final prefs = await SharedPreferences.getInstance();
 
       // Obtener el nombre de la sucursal solo si no es un admin
-      String branchName = await BranchRepository.getBranchName(matchingUser.branchId);
+      String branchName = await BranchRepository.getBranchName(matchingUser.branchId ?? "all");
 
       // Guardar los datos del usuario incluyendo branch_name
       await prefs.setString('logged_user_id', matchingUser.id);

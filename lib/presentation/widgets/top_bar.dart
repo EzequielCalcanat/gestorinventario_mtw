@@ -3,7 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutterinventory/presentation/widgets/right_cart_side_bar.dart';
 import 'package:flutterinventory/data/models/cart.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutterinventory/data/models/branch.dart';
+import 'package:flutterinventory/data/repositories/branch_repository.dart';
+import 'package:flutterinventory/data/repositories/login_repository.dart';
 
 class TopBar extends StatefulWidget implements PreferredSizeWidget {
   final String title;
@@ -13,19 +15,18 @@ class TopBar extends StatefulWidget implements PreferredSizeWidget {
   @override
   State<TopBar> createState() => _TopBarState();
 
-  // Aquí implementamos el getter preferredSize
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
 
 class _TopBarState extends State<TopBar> {
   String userBranchName = '';
+  String userRole = ''; // Agregamos la variable para el rol del usuario
 
   @override
   void initState() {
     super.initState();
     _loadUserData();
-    print(userBranchName);
   }
 
   Future<void> _loadUserData() async {
@@ -33,6 +34,7 @@ class _TopBarState extends State<TopBar> {
 
     setState(() {
       userBranchName = prefs.getString('user_branch_name') ?? 'Sin sucursal';
+      userRole = prefs.getString('user_role') ?? 'guest'; // Cargar el rol del usuario
     });
   }
 
@@ -40,10 +42,19 @@ class _TopBarState extends State<TopBar> {
   Widget build(BuildContext context) {
     final cart = Provider.of<Cart>(context);
     final itemCount = cart.totalItems;
+
     return AppBar(
       backgroundColor: const Color(0xFF3491B3),
       title: Text(userBranchName),
       actions: [
+        if (userRole == 'admin')
+          IconButton(
+            icon: const Icon(Icons.storefront_sharp),
+            onPressed: () {
+              showBranchSelector(context);
+            },
+          ),
+        const SizedBox(width: 10),
         Stack(
           children: [
             IconButton(
@@ -58,7 +69,7 @@ class _TopBarState extends State<TopBar> {
               child: Container(
                 padding: const EdgeInsets.all(2),
                 decoration: BoxDecoration(
-                  color: Colors.red,  // Rojo si el carrito tiene productos
+                  color: Colors.red,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 constraints: const BoxConstraints(
@@ -74,11 +85,11 @@ class _TopBarState extends State<TopBar> {
                   ),
                   textAlign: TextAlign.center,
                 ),
+
               ),
             ),
           ],
         ),
-        const SizedBox(width: 10),
         GestureDetector(
           onTap: () {
             showMenuOptions(context);
@@ -150,6 +161,37 @@ class _TopBarState extends State<TopBar> {
             end: Offset.zero,
           ).animate(anim1),
           child: child,
+        );
+      },
+    );
+  }
+
+  void showBranchSelector(BuildContext context) async {
+    // Obtener todas las sucursales activas
+    List<Branch> activeBranches = await BranchRepository.getAllBranches(isActive: true);
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Seleccionar Sucursal'),
+          content: SingleChildScrollView(
+            child: Column(
+              children: activeBranches.map((branch) {
+                return ListTile(
+                  title: Text(branch.name),
+                  onTap: () async {
+                    await LoginRepository.updateUserBranchId(branch.id);
+                    setState(() {
+                      userBranchName = branch.name;
+                    });
+                    Navigator.pop(context);
+                    Navigator.pushReplacementNamed(context, '/home');
+                  },
+                );
+              }).toList(),
+            ),
+          ),
         );
       },
     );
