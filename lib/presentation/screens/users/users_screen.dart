@@ -7,36 +7,16 @@ import 'package:flutterinventory/presentation/screens/users/user_form_screen.dar
 import 'package:flutterinventory/presentation/widgets/base_scaffold.dart';
 import 'package:flutterinventory/presentation/widgets/tables/item_row.dart';
 import 'package:shimmer/shimmer.dart';
-
 import '../../widgets/common/module_breadcrumb.dart';
 
-class UsersScreen extends StatelessWidget {
+class UsersScreen extends StatefulWidget {
   const UsersScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return BaseScaffold(
-      title: "Usuarios",
-      body: const UsersBody(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          final bodyState = context.findAncestorStateOfType<_UsersBodyState>();
-          bodyState?._navigateToUserForm();
-        },
-        child: const Icon(Icons.add),
-      ),
-    );
-  }
+  State<UsersScreen> createState() => _UsersScreenState();
 }
 
-class UsersBody extends StatefulWidget {
-  const UsersBody({super.key});
-
-  @override
-  State<UsersBody> createState() => _UsersBodyState();
-}
-
-class _UsersBodyState extends State<UsersBody> {
+class _UsersScreenState extends State<UsersScreen> {
   final TextEditingController _searchController = TextEditingController();
   List<User> _users = [];
   List<User> _filteredUsers = [];
@@ -66,7 +46,7 @@ class _UsersBodyState extends State<UsersBody> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => UserFormScreen(
+        builder: (context) => UserFormScreen(
           user: user,
           branches: _branches,
           onSave: _loadData,
@@ -154,86 +134,93 @@ class _UsersBodyState extends State<UsersBody> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const ModuleBreadcrumb(text: "/ Usuarios"),
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: 'Buscar usuario...',
-                    prefixIcon: const Icon(Icons.search),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
+    return BaseScaffold(
+      title: "Usuarios",
+      body: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const ModuleBreadcrumb(text: "/ Usuarios"),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      hintText: 'Buscar usuario...',
+                      prefixIcon: const Icon(Icons.search),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey.shade400, width: 1.0),
+                      ),
                     ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey.shade400, width: 1.0),
+                    onChanged: (_) => _onSearchChanged(),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5),
                     ),
+                    side: BorderSide(color: Colors.grey.shade400),
+                    padding: const EdgeInsets.all(14),
+                    minimumSize: const Size(50, 50),
+                    backgroundColor:
+                    _isFiltering ? const Color(0xFF3491B3) : Colors.transparent,
+                    foregroundColor:
+                    _isFiltering ? Colors.white : const Color(0xFF3491B3),
+                    elevation: 0,
                   ),
-                  onChanged: (_) => _onSearchChanged(),
-                ),
-              ),
-              const SizedBox(width: 10),
-              OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5),
+                  onPressed: _openFilterSheet,
+                  child: Icon(
+                    _isFiltering ? Icons.filter_alt_off : Icons.filter_list,
                   ),
-                  side: BorderSide(color: Colors.grey.shade400),
-                  padding: const EdgeInsets.all(14),
-                  minimumSize: const Size(50, 50),
-                  backgroundColor:
-                  _isFiltering ? const Color(0xFF3491B3) : Colors.transparent,
-                  foregroundColor:
-                  _isFiltering ? Colors.white : const Color(0xFF3491B3),
-                  elevation: 0,
                 ),
-                onPressed: _openFilterSheet,
-                child: Icon(
-                  _isFiltering ? Icons.filter_alt_off : Icons.filter_list,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Expanded(
-            child: _users.isEmpty
-                ? ListView.builder(
-              itemCount: 10,
-              itemBuilder: (_, index) {
-                return Shimmer.fromColors(
-                  baseColor: Colors.grey[300]!,
-                  highlightColor: Colors.grey[100]!,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Container(
-                      height: 80.0,
-                      color: Colors.white,
+              ],
+            ),
+            const SizedBox(height: 10),
+            Expanded(
+              child: _users.isEmpty
+                  ? ListView.builder(
+                itemCount: 10,
+                itemBuilder: (_, index) {
+                  return Shimmer.fromColors(
+                    baseColor: Colors.grey[300]!,
+                    highlightColor: Colors.grey[100]!,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Container(
+                        height: 80.0,
+                        color: Colors.white,
+                      ),
                     ),
-                  ),
-                );
-              },
-            )
-                : (_filteredUsers.isEmpty
-                ? const Center(child: Text("No hay usuarios"))
-                : ListView.builder(
-              itemCount: _filteredUsers.length,
-              itemBuilder: (_, index) {
-                final user = _filteredUsers[index];
-                return UserRow(
-                  user: user,
-                  onEdit: () => _navigateToUserForm(user: user),
-                  onDelete: () => _deleteUser(user),
-                );
-              },
-            )),
-          ),
-        ],
+                  );
+                },
+              )
+                  : (_filteredUsers.isEmpty
+                  ? const Center(child: Text("No hay usuarios"))
+                  : ListView.builder(
+                itemCount: _filteredUsers.length,
+                itemBuilder: (_, index) {
+                  final user = _filteredUsers[index];
+                  return UserRow(
+                    user: user,
+                    onEdit: () => _navigateToUserForm(user: user),
+                    onDelete: () => _deleteUser(user),
+                  );
+                },
+              )),
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _navigateToUserForm(),
+        child: const Icon(Icons.add),
       ),
     );
   }

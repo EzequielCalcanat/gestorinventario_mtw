@@ -8,14 +8,14 @@ class BaseScaffold extends StatelessWidget {
   final String title;
   final Widget body;
   final int currentNavIndex;
-  final FloatingActionButton? floatingActionButton;  // Parámetro opcional para el FAB
+  final FloatingActionButton? floatingActionButton;
 
   const BaseScaffold({
     super.key,
     required this.title,
     required this.body,
     this.currentNavIndex = 0,
-    this.floatingActionButton,  // Se pasa como parámetro opcional
+    this.floatingActionButton,
   });
 
   @override
@@ -42,7 +42,7 @@ class BaseScaffold extends StatelessWidget {
         },
       ),
       body: body,
-      floatingActionButton: floatingActionButton,  // Se utiliza el parámetro aquí
+      floatingActionButton: floatingActionButton,
     );
   }
 }

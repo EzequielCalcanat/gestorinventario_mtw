@@ -49,23 +49,20 @@ class _LoginScreenState extends State<LoginScreen> {
     } else {
       final prefs = await SharedPreferences.getInstance();
 
-      // Obtener el nombre de la sucursal solo si no es un admin
       String branchName = await BranchRepository.getBranchName(matchingUser.branchId ?? "all");
 
-      // Guardar los datos del usuario incluyendo branch_name
       await prefs.setString('logged_user_id', matchingUser.id);
       await prefs.setString('user_name', matchingUser.name);
       await prefs.setString('user_role', matchingUser.role ?? 'guest');
       await prefs.setString('user_branch_id', matchingUser.branchId ?? 'all');
       await prefs.setString('user_branch_name', branchName);
 
-      // Redirigir según el rol del usuario
       if (matchingUser.role == 'admin') {
-        Navigator.of(context).pushReplacementNamed('/home');  // Admin tiene acceso a todas las rutas
+        Navigator.of(context).pushReplacementNamed('/home');
       } else if (matchingUser.role == 'employee') {
-        Navigator.of(context).pushReplacementNamed('/home');  // Empleado puede ver solo su sucursal
+        Navigator.of(context).pushReplacementNamed('/home');
       } else if (matchingUser.role == 'sales') {
-        Navigator.of(context).pushReplacementNamed('/sales');  // Sales solo puede ver ventas
+        Navigator.of(context).pushReplacementNamed('/sales');
       }
 
       if (!mounted) return;
@@ -182,7 +179,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-// Custom clipper (unchanged)
 class TopCurveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {

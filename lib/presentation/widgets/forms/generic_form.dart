@@ -41,10 +41,7 @@ class _GenericFormState extends State<GenericForm> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          // Construir los campos dinámicamente
           ...widget.buildFields(formData, _onChanged),
-
-          // Botón para enviar el formulario
           ElevatedButton(
             onPressed: () => widget.onSubmit(formData),
             child: const Text("Guardar"),

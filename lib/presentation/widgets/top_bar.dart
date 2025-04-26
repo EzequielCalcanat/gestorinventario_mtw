@@ -21,7 +21,7 @@ class TopBar extends StatefulWidget implements PreferredSizeWidget {
 
 class _TopBarState extends State<TopBar> {
   String userBranchName = '';
-  String userRole = ''; // Agregamos la variable para el rol del usuario
+  String userRole = '';
 
   @override
   void initState() {
@@ -34,7 +34,7 @@ class _TopBarState extends State<TopBar> {
 
     setState(() {
       userBranchName = prefs.getString('user_branch_name') ?? 'Sin sucursal';
-      userRole = prefs.getString('user_role') ?? 'guest'; // Cargar el rol del usuario
+      userRole = prefs.getString('user_role') ?? 'guest';
     });
   }
 
@@ -132,7 +132,7 @@ class _TopBarState extends State<TopBar> {
                 title: const Text('Cerrar Sesión'),
                 onTap: () async {
                   final prefs = await SharedPreferences.getInstance();
-                  await prefs.remove('logged_user_id'); // Borra el ID de usuario
+                  await prefs.remove('logged_user_id');
 
                   Navigator.pushReplacementNamed(context, '/login');
                 },
@@ -167,7 +167,6 @@ class _TopBarState extends State<TopBar> {
   }
 
   void showBranchSelector(BuildContext context) async {
-    // Obtener todas las sucursales activas
     List<Branch> activeBranches = await BranchRepository.getAllBranches(isActive: true);
 
     showDialog(

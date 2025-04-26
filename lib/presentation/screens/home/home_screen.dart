@@ -43,7 +43,6 @@ class _HomeScreenState  extends State<HomeScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Sección superior (tarjetas y gráfico) - altura fija
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -351,7 +350,6 @@ class _LogItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        // Aquí puedes navegar a detalles u otra acción
       },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14),
@@ -391,7 +389,7 @@ class _LogItem extends StatelessWidget {
                       ),
                       if (createdAt != null)
                         Padding(
-                          padding: const EdgeInsets.only(right: 8), // Alineación con el badge
+                          padding: const EdgeInsets.only(right: 8),
                           child: Text(
                             _formatDate(createdAt!),
                             style: TextStyle(

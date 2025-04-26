@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shimmer/shimmer.dart'; // Importa shimmer
+import 'package:shimmer/shimmer.dart';
 import 'package:flutterinventory/data/models/branch.dart';
 import 'package:flutterinventory/data/repositories/branch_repository.dart';
 import 'package:flutterinventory/presentation/widgets/tables/item_row.dart';
@@ -18,7 +18,7 @@ class _BranchScreenState extends State<BranchScreen> {
   final TextEditingController _searchController = TextEditingController();
 
   List<Branch> _branches = [];
-  bool _isLoading = true; // Agregar un flag de carga
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -28,11 +28,11 @@ class _BranchScreenState extends State<BranchScreen> {
 
   Future<void> _loadBranches() async {
     setState(() {
-      _isLoading = true; // Iniciar carga
+      _isLoading = true;
     });
     _branches = await BranchRepository.getAllBranches(isActive: true);
     setState(() {
-      _isLoading = false; // Fin de carga
+      _isLoading = false;
     });
   }
 
@@ -45,14 +45,12 @@ class _BranchScreenState extends State<BranchScreen> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => BranchFormScreen(
+        builder: (context) => BranchFormScreen(
           branch: branch,
           onSave: _loadBranches,
         ),
       ),
     );
-
-    // Si el formulario fue guardado correctamente, recargar las sucursales
     if (result == true) {
       _loadBranches();
     }
@@ -89,7 +87,7 @@ class _BranchScreenState extends State<BranchScreen> {
                       ),
                     ),
                     onChanged: (_) {
-                      setState(() {}); // Vuelve a construir la lista filtrada
+                      setState(() {});
                     },
                   ),
                 ),
@@ -117,7 +115,7 @@ class _BranchScreenState extends State<BranchScreen> {
             _isLoading
                 ? Expanded(
               child: ListView.builder(
-                itemCount: 10, // Muestra 10 elementos "vacíos" como ejemplo
+                itemCount: 10,
                 itemBuilder: (_, index) {
                   return Shimmer.fromColors(
                     baseColor: Colors.grey[300]!,
@@ -125,7 +123,7 @@ class _BranchScreenState extends State<BranchScreen> {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: Container(
-                        height: 80.0, // Ajusta el tamaño del contenedor
+                        height: 80.0,
                         color: Colors.white,
                       ),
                     ),
@@ -134,7 +132,7 @@ class _BranchScreenState extends State<BranchScreen> {
               ),
             )
                 : filteredBranches.isEmpty
-                ? Center(child: Text("No hay sucursales")) // Muestra el mensaje si no hay sucursales
+                ? Center(child: Text("No hay sucursales"))
                 : Expanded(
               child: ListView.builder(
                 itemCount: filteredBranches.length,

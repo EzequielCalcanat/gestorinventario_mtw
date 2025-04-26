@@ -123,9 +123,8 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  // Botón de Cancelar
                   TextButton(
-                    onPressed: () => Navigator.pop(context), // Cancelar
+                    onPressed: () => Navigator.pop(context),
                     child: const Text('Cancelar'),
                     style: TextButton.styleFrom(
                       backgroundColor: Colors.grey[300],
@@ -137,7 +136,6 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                     ),
                   ),
                   const SizedBox(width: 10),
-                  // Botón de Guardar
                   ElevatedButton(
                     onPressed: _saveProduct,
                     child: const Text('Guardar'),

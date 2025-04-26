@@ -27,10 +27,10 @@ class _UserFormScreenState extends State<UserFormScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   String _selectedRole = 'employee';
-  Branch? _selectedBranch;  // Para seleccionar la sucursal
+  Branch? _selectedBranch;
   late List<Branch> branches;
 
-  final Uuid uuid = Uuid();  // Instancia de Uuid
+  final Uuid uuid = Uuid();
 
   @override
   void initState() {
@@ -169,9 +169,8 @@ class _UserFormScreenState extends State<UserFormScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  // Botón de Cancelar
                   TextButton(
-                    onPressed: () => Navigator.pop(context), // Cancelar
+                    onPressed: () => Navigator.pop(context),
                     child: const Text('Cancelar'),
                     style: TextButton.styleFrom(
                       backgroundColor: Colors.grey[300],
@@ -183,7 +182,6 @@ class _UserFormScreenState extends State<UserFormScreen> {
                     ),
                   ),
                   const SizedBox(width: 10),
-                  // Botón de Guardar
                   ElevatedButton(
                     onPressed: _saveUser,
                     child: const Text('Guardar'),

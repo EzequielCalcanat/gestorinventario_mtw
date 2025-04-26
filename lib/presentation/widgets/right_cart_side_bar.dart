@@ -49,7 +49,6 @@ class RightCartSidebar extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Fila 1: nombre + eliminar
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -71,7 +70,6 @@ class RightCartSidebar extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            // Fila 2: botones de cantidad + total
                             Row(
                               children: [
                                 IconButton(

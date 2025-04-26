@@ -30,7 +30,6 @@ class SideBar extends StatelessWidget {
               ),
               ListView(
                 children: [
-                  // Header
                   SizedBox(
                     height: 100,
                     child: DrawerHeader(
@@ -68,8 +67,6 @@ class SideBar extends StatelessWidget {
     );
 
   }
-
-  // Método para crear cada ListTile con ícono y texto
   Widget _buildListTile(BuildContext context, IconData icon, String title, String route) {
     final currentRoute = ModalRoute.of(context)?.settings.name ?? '/home';
     final bool isSelected = currentRoute == '/$route';
@@ -91,7 +88,7 @@ class SideBar extends StatelessWidget {
         ],
       ),
       onTap: () {
-        Navigator.pop(context); // Cierra el drawer
+        Navigator.pop(context);
         onNavigate(route);
       },
       selected: isSelected,

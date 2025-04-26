@@ -5,36 +5,16 @@ import 'package:flutterinventory/presentation/screens/products/product_form_scre
 import 'package:flutterinventory/presentation/widgets/tables/item_row.dart';
 import 'package:flutterinventory/presentation/widgets/base_scaffold.dart';
 import 'package:shimmer/shimmer.dart';
-
 import '../../widgets/common/module_breadcrumb.dart';
 
-class ProductsScreen extends StatelessWidget {
+class ProductsScreen extends StatefulWidget {
   const ProductsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return BaseScaffold(
-      title: "Productos",
-      body: const ProductsBody(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          final bodyState = context.findAncestorStateOfType<_ProductsBodyState>();
-          bodyState?._navigateToProductForm();
-        },
-        child: const Icon(Icons.add),
-      ),
-    );
-  }
+  State<ProductsScreen> createState() => _ProductsScreenState();
 }
 
-class ProductsBody extends StatefulWidget {
-  const ProductsBody({super.key});
-
-  @override
-  State<ProductsBody> createState() => _ProductsBodyState();
-}
-
-class _ProductsBodyState extends State<ProductsBody> {
+class _ProductsScreenState extends State<ProductsScreen> {
   final TextEditingController _searchController = TextEditingController();
   List<Product> _products = [];
   List<Product> _filteredProducts = [];
@@ -58,7 +38,7 @@ class _ProductsBodyState extends State<ProductsBody> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => ProductFormScreen(
+        builder: (context) => ProductFormScreen(
           product: product,
           onSave: _loadProducts,
         ),
@@ -143,87 +123,95 @@ class _ProductsBodyState extends State<ProductsBody> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const ModuleBreadcrumb(text: "/ Productos"),
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: 'Buscar producto...',
-                    prefixIcon: const Icon(Icons.search),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
+    return BaseScaffold(
+      title: "Productos",
+      body: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const ModuleBreadcrumb(text: "/ Productos"),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      hintText: 'Buscar producto...',
+                      prefixIcon: const Icon(Icons.search),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey.shade400, width: 1.0),
+                      ),
                     ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey.shade400, width: 1.0),
+                    onChanged: (_) => _onSearchChanged(),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5),
                     ),
+                    side: BorderSide(color: Colors.grey.shade400),
+                    padding: const EdgeInsets.all(14),
+                    minimumSize: const Size(50, 50),
+                    backgroundColor:
+                    _isFiltering ? const Color(0xFF3491B3) : Colors.transparent,
+                    foregroundColor:
+                    _isFiltering ? Colors.white : const Color(0xFF3491B3),
+                    elevation: 0,
                   ),
-                  onChanged: (_) => _onSearchChanged(),
-                ),
-              ),
-              const SizedBox(width: 10),
-              OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5),
+                  onPressed: _openFilterSheet,
+                  child: Icon(
+                    _isFiltering ? Icons.filter_alt_off : Icons.filter_list,
                   ),
-                  side: BorderSide(color: Colors.grey.shade400),
-                  padding: const EdgeInsets.all(14),
-                  minimumSize: const Size(50, 50),
-                  backgroundColor:
-                  _isFiltering ? const Color(0xFF3491B3) : Colors.transparent,
-                  foregroundColor:
-                  _isFiltering ? Colors.white : const Color(0xFF3491B3),
-                  elevation: 0,
                 ),
-                onPressed: _openFilterSheet,
-                child: Icon(
-                  _isFiltering ? Icons.filter_alt_off : Icons.filter_list,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Expanded(
-            child: _products.isEmpty
-                ? ListView.builder(
-              itemCount: 10,
-              itemBuilder: (_, index) {
-                return Shimmer.fromColors(
-                  baseColor: Colors.grey[300]!,
-                  highlightColor: Colors.grey[100]!,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Container(
-                      height: 80.0,
-                      color: Colors.white,
+              ],
+            ),
+            const SizedBox(height: 10),
+            Expanded(
+              child: _products.isEmpty
+                  ? ListView.builder(
+                itemCount: 10,
+                itemBuilder: (_, index) {
+                  return Shimmer.fromColors(
+                    baseColor: Colors.grey[300]!,
+                    highlightColor: Colors.grey[100]!,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Container(
+                        height: 80.0,
+                        color: Colors.white,
+                      ),
                     ),
-                  ),
-                );
-              },
-            )
-                : (_filteredProducts.isEmpty
-                ? const Center(child: Text("No hay productos"))
-                : ListView.builder(
-              itemCount: _filteredProducts.length,
-              itemBuilder: (_, index) {
-                final product = _filteredProducts[index];
-                return ProductRow(
-                  product: product,
-                  onEdit: () => _navigateToProductForm(product: product),
-                  onDelete: () => _deleteProduct(product),
-                );
-              },
-            )),
-          ),
-        ],
+                  );
+                },
+              )
+                  : (_filteredProducts.isEmpty
+                  ? const Center(child: Text("No hay productos"))
+                  : ListView.builder(
+                itemCount: _filteredProducts.length,
+                itemBuilder: (_, index) {
+                  final product = _filteredProducts[index];
+                  return ProductRow(
+                    product: product,
+                    onEdit: () => _navigateToProductForm(product: product),
+                    onDelete: () => _deleteProduct(product),
+                  );
+                },
+              )),
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _navigateToProductForm(),
+        child: const Icon(Icons.add),
       ),
     );
   }
 }
+

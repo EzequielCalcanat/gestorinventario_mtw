@@ -7,33 +7,14 @@ import 'package:flutterinventory/presentation/widgets/tables/item_row.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutterinventory/presentation/widgets/common/module_breadcrumb.dart';
 
-class ClientsScreen extends StatelessWidget {
+class ClientsScreen extends StatefulWidget {
   const ClientsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return BaseScaffold(
-      title: "Clientes",
-      body: const ClientsBody(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          final bodyState = context.findAncestorStateOfType<_ClientsBodyState>();
-          bodyState?._navigateToClientForm();
-        },
-        child: const Icon(Icons.add),
-      ),
-    );
-  }
+  State<ClientsScreen> createState() => _ClientsScreenState();
 }
 
-class ClientsBody extends StatefulWidget {
-  const ClientsBody({super.key});
-
-  @override
-  State<ClientsBody> createState() => _ClientsBodyState();
-}
-
-class _ClientsBodyState extends State<ClientsBody> {
+class _ClientsScreenState extends State<ClientsScreen> {
   final TextEditingController _searchController = TextEditingController();
   List<Client> _clients = [];
   List<Client> _filteredClients = [];
@@ -56,7 +37,7 @@ class _ClientsBodyState extends State<ClientsBody> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => ClientFormScreen(
+        builder: (context) => ClientFormScreen(
           client: client,
           onSave: _loadClients,
         ),
@@ -84,57 +65,64 @@ class _ClientsBodyState extends State<ClientsBody> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const ModuleBreadcrumb(text: "/ Clientes"),
-          TextField(
-            controller: _searchController,
-            decoration: InputDecoration(
-              hintText: 'Buscar cliente...',
-              prefixIcon: const Icon(Icons.search),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
+    return BaseScaffold(
+      title: "Clientes",
+      body: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const ModuleBreadcrumb(text: "/ Clientes"),
+            TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Buscar cliente...',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey.shade400, width: 1.0),
+                ),
               ),
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey.shade400, width: 1.0),
-              ),
+              onChanged: (_) => _onSearchChanged(),
             ),
-            onChanged: (_) => _onSearchChanged(),
-          ),
-          const SizedBox(height: 10),
-          Expanded(
-            child: _clients.isEmpty
-                ? ListView.builder(
-              itemCount: 10,
-              itemBuilder: (_, index) {
-                return Shimmer.fromColors(
-                  baseColor: Colors.grey[300]!,
-                  highlightColor: Colors.grey[100]!,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Container(height: 80.0, color: Colors.white),
-                  ),
-                );
-              },
-            )
-                : (_filteredClients.isEmpty
-                ? const Center(child: Text("No hay clientes"))
-                : ListView.builder(
-              itemCount: _filteredClients.length,
-              itemBuilder: (_, index) {
-                final client = _filteredClients[index];
-                return ClientRow(
-                  client: client,
-                  onEdit: () => _navigateToClientForm(client: client),
-                  onDelete: () => _deleteClient(client),
-                );
-              },
-            )),
-          ),
-        ],
+            const SizedBox(height: 10),
+            Expanded(
+              child: _clients.isEmpty
+                  ? ListView.builder(
+                itemCount: 10,
+                itemBuilder: (_, index) {
+                  return Shimmer.fromColors(
+                    baseColor: Colors.grey[300]!,
+                    highlightColor: Colors.grey[100]!,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Container(height: 80.0, color: Colors.white),
+                    ),
+                  );
+                },
+              )
+                  : (_filteredClients.isEmpty
+                  ? const Center(child: Text("No hay clientes"))
+                  : ListView.builder(
+                itemCount: _filteredClients.length,
+                itemBuilder: (_, index) {
+                  final client = _filteredClients[index];
+                  return ClientRow(
+                    client: client,
+                    onEdit: () => _navigateToClientForm(client: client),
+                    onDelete: () => _deleteClient(client),
+                  );
+                },
+              )),
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _navigateToClientForm(),
+        child: const Icon(Icons.add),
       ),
     );
   }
