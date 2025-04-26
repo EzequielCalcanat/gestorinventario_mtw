@@ -22,14 +22,18 @@ class _HomeScreenState  extends State<HomeScreen> {
 
   Future<void> _loadLogs() async {
     setState(() {
-      _isLoading = true; // Iniciar carga
+      _isLoading = true;
     });
     _logs = await LogRepository.getAllLogs();
     _logs.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
+    if (_logs.length > 10) {
+      _logs = _logs.sublist(0, 10);
+    }
     setState(() {
-      _isLoading = false; // Fin de carga
+      _isLoading = false;
     });
   }
+
 
   @override
   Widget build(BuildContext context) {

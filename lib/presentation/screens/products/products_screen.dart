@@ -6,6 +6,8 @@ import 'package:flutterinventory/presentation/widgets/tables/item_row.dart';
 import 'package:flutterinventory/presentation/widgets/base_scaffold.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../../widgets/common/module_breadcrumb.dart';
+
 class ProductsScreen extends StatelessWidget {
   const ProductsScreen({super.key});
 
@@ -144,7 +146,9 @@ class _ProductsBodyState extends State<ProductsBody> {
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const ModuleBreadcrumb(text: "/ Productos"),
           Row(
             children: [
               Expanded(

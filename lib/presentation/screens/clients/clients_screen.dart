@@ -5,6 +5,7 @@ import 'package:flutterinventory/presentation/screens/clients/client_form_screen
 import 'package:flutterinventory/presentation/widgets/base_scaffold.dart';
 import 'package:flutterinventory/presentation/widgets/tables/item_row.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:flutterinventory/presentation/widgets/common/module_breadcrumb.dart';
 
 class ClientsScreen extends StatelessWidget {
   const ClientsScreen({super.key});
@@ -86,7 +87,9 @@ class _ClientsBodyState extends State<ClientsBody> {
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const ModuleBreadcrumb(text: "/ Clientes"),
           TextField(
             controller: _searchController,
             decoration: InputDecoration(
