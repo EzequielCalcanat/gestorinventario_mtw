@@ -6,17 +6,36 @@ import 'package:flutterinventory/presentation/widgets/base_scaffold.dart';
 import 'package:flutterinventory/presentation/widgets/tables/item_row.dart';
 import 'package:shimmer/shimmer.dart';
 
-class ClientsScreen extends StatefulWidget {
+class ClientsScreen extends StatelessWidget {
   const ClientsScreen({super.key});
 
   @override
-  State<ClientsScreen> createState() => _ClientsScreenState();
+  Widget build(BuildContext context) {
+    return BaseScaffold(
+      title: "Clientes",
+      body: const ClientsBody(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          final bodyState = context.findAncestorStateOfType<_ClientsBodyState>();
+          bodyState?._navigateToClientForm();
+        },
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
 }
 
-class _ClientsScreenState extends State<ClientsScreen> {
+class ClientsBody extends StatefulWidget {
+  const ClientsBody({super.key});
+
+  @override
+  State<ClientsBody> createState() => _ClientsBodyState();
+}
+
+class _ClientsBodyState extends State<ClientsBody> {
   final TextEditingController _searchController = TextEditingController();
   List<Client> _clients = [];
-  bool _isLoading = true;
+  List<Client> _filteredClients = [];
 
   @override
   void initState() {
@@ -25,9 +44,11 @@ class _ClientsScreenState extends State<ClientsScreen> {
   }
 
   Future<void> _loadClients() async {
-    setState(() => _isLoading = true);
-    _clients = await ClientRepository.getAllClients(isActive: true);
-    setState(() => _isLoading = false);
+    final clients = await ClientRepository.getAllClients(isActive: true);
+    setState(() {
+      _clients = clients;
+      _filteredClients = clients;
+    });
   }
 
   void _navigateToClientForm({Client? client}) async {
@@ -41,7 +62,9 @@ class _ClientsScreenState extends State<ClientsScreen> {
       ),
     );
 
-    if (result == true) _loadClients();
+    if (result == true) {
+      _loadClients();
+    }
   }
 
   Future<void> _deleteClient(Client client) async {
@@ -49,75 +72,66 @@ class _ClientsScreenState extends State<ClientsScreen> {
     _loadClients();
   }
 
+  void _onSearchChanged() {
+    final query = _searchController.text.trim().toLowerCase();
+    setState(() {
+      _filteredClients = _clients.where((client) {
+        return client.name.toLowerCase().contains(query);
+      }).toList();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final query = _searchController.text.toLowerCase();
-    final filteredClients = _clients.where((client) {
-      return client.name.toLowerCase().contains(query);
-    }).toList();
-
-    return BaseScaffold(
-      title: "Clientes",
-      body: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _searchController,
-                    decoration: InputDecoration(
-                      hintText: 'Buscar cliente...',
-                      prefixIcon: const Icon(Icons.search),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey.shade400, width: 1.0),
-                      ),
-                    ),
-                    onChanged: (_) => setState(() {}),
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Column(
+        children: [
+          TextField(
+            controller: _searchController,
+            decoration: InputDecoration(
+              hintText: 'Buscar cliente...',
+              prefixIcon: const Icon(Icons.search),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey.shade400, width: 1.0),
+              ),
+            ),
+            onChanged: (_) => _onSearchChanged(),
+          ),
+          const SizedBox(height: 10),
+          Expanded(
+            child: _clients.isEmpty
+                ? ListView.builder(
+              itemCount: 10,
+              itemBuilder: (_, index) {
+                return Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Container(height: 80.0, color: Colors.white),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            _isLoading
-                ? Expanded(
-              child: ListView.builder(
-                itemCount: 10,
-                itemBuilder: (_, index) {
-                  return Shimmer.fromColors(
-                    baseColor: Colors.grey[300]!,
-                    highlightColor: Colors.grey[100]!,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Container(height: 80.0, color: Colors.white),
-                    ),
-                  );
-                },
-              ),
+                );
+              },
             )
-                : filteredClients.isEmpty
-                ? const Expanded(child: Center(child: Text("No hay clientes")))
-                : Expanded(
-              child: ListView.builder(
-                itemCount: filteredClients.length,
-                itemBuilder: (_, index) {
-                  final client = filteredClients[index];
-                  return ClientRow(
-                    client: client,
-                    onEdit: () => _navigateToClientForm(client: client),
-                    onDelete: () => _deleteClient(client),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _navigateToClientForm(),
-        child: const Icon(Icons.add),
+                : (_filteredClients.isEmpty
+                ? const Center(child: Text("No hay clientes"))
+                : ListView.builder(
+              itemCount: _filteredClients.length,
+              itemBuilder: (_, index) {
+                final client = _filteredClients[index];
+                return ClientRow(
+                  client: client,
+                  onEdit: () => _navigateToClientForm(client: client),
+                  onDelete: () => _deleteClient(client),
+                );
+              },
+            )),
+          ),
+        ],
       ),
     );
   }
