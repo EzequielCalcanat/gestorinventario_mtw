@@ -7,8 +7,9 @@ import 'package:flutterinventory/data/models/client.dart';
 import 'package:flutterinventory/data/models/product.dart';
 import 'package:flutterinventory/data/repositories/client_repository.dart';
 import 'package:flutterinventory/presentation/widgets/base_scaffold.dart';
-import '../../../data/services/sale_service.dart';
-import 'payment_status.dart';
+import 'package:flutterinventory/data/services/sale_service.dart';
+import 'package:flutterinventory/presentation/screens/payment/payment_status.dart';
+import 'package:flutterinventory/presentation/screens/clients/client_form_screen.dart';
 
 class PaymentScreen extends StatefulWidget {
   const PaymentScreen({super.key});
@@ -32,9 +33,34 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   Future<void> _loadClients() async {
     final clients = await ClientRepository.getAllClients(isActive: true);
-    setState(() {
-      _clients = clients;
-    });
+    if (mounted) {
+      setState(() {
+        _clients = clients;
+      });
+    }
+  }
+
+  Future<void> _navigateToAddClient() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ClientFormScreen(
+          onSave: () async {
+            await _loadClients();
+          },
+        ),
+      ),
+    );
+
+    if (result == true) {
+      final refreshedClients = await ClientRepository.getAllClients(isActive: true);
+      if (mounted) {
+        setState(() {
+          _clients = refreshedClients;
+          _selectedClient = refreshedClients.isNotEmpty ? refreshedClients.last : null;
+        });
+      }
+    }
   }
 
   @override
@@ -54,7 +80,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
               items: _clients,
               itemAsString: (client) => client.name,
               selectedItem: _selectedClient,
-              onChanged: (client) => setState(() => _selectedClient = client),
+              onChanged: (client) {
+                if (client != _selectedClient) {
+                  setState(() {
+                    _selectedClient = client;
+                  });
+                }
+              },
               dropdownDecoratorProps: DropDownDecoratorProps(
                 dropdownSearchDecoration: InputDecoration(
                   labelText: "Seleccionar Cliente",
@@ -67,6 +99,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
               ),
               filterFn: (client, filter) => client.name.toLowerCase().contains(filter.toLowerCase()),
               popupProps: const PopupProps.menu(showSearchBox: true),
+            ),
+            const SizedBox(height: 8),
+            TextButton.icon(
+              onPressed: _navigateToAddClient,
+              icon: const Icon(Icons.add, size: 18),
+              label: const Text("Agregar nuevo cliente"),
             ),
             const SizedBox(height: 30),
 
@@ -101,16 +139,20 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 Expanded(
                   child: Align(
                     alignment: Alignment.centerRight,
-                    child: SegmentedButton<String>(
-                      segments: const [
-                        ButtonSegment(value: 'Efectivo', label: Text('Efectivo')),
-                        ButtonSegment(value: 'Tarjeta', label: Text('Tarjeta')),
-                      ],
-                      selected: {_paymentMethod},
-                      onSelectionChanged: (selection) {
-                        setState(() {
-                          _paymentMethod = selection.first;
-                        });
+                    child: StatefulBuilder(
+                      builder: (context, setLocalState) {
+                        return SegmentedButton<String>(
+                          segments: const [
+                            ButtonSegment(value: 'Efectivo', label: Text('Efectivo')),
+                            ButtonSegment(value: 'Tarjeta', label: Text('Tarjeta')),
+                          ],
+                          selected: {_paymentMethod},
+                          onSelectionChanged: (selection) {
+                            setLocalState(() {
+                              _paymentMethod = selection.first;
+                            });
+                          },
+                        );
                       },
                     ),
                   ),
@@ -177,7 +219,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     }
   }
 
-  void _confirmEfectivo() async {
+  Future<void> _confirmEfectivo() async {
     setState(() => _isProcessing = true);
 
     try {
@@ -189,16 +231,50 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
       cart.clear();
 
-      setState(() => _isProcessing = false);
+      if (mounted) {
+        setState(() => _isProcessing = false);
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const PaymentStatusScreen(success: true)),
-      );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const PaymentStatusScreen(success: true)),
+        );
+      }
     } catch (e) {
-      setState(() => _isProcessing = false);
-      _showError("Hubo un error al registrar la venta. Intenta nuevamente.");
+      if (mounted) {
+        setState(() => _isProcessing = false);
+        _showError("Hubo un error al registrar la venta. Intenta nuevamente.");
+      }
     }
+  }
+
+  void _showCardPaymentSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            top: 20,
+            left: 20,
+            right: 20,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+          ),
+          child: IntrinsicHeight(
+            child: _CardPaymentForm(
+              totalAmount: cart.total,
+              onPaymentSuccess: _confirmCardPaymentSuccess,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _confirmCardPaymentSuccess() async {
+    await _confirmEfectivo();
   }
 
   void _showError(String message) {
@@ -210,58 +286,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
-  }
-
-  void _showCardPaymentSheet() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return Wrap(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(
-                top: 20,
-                left: 20,
-                right: 20,
-                bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-              ),
-              child: _CardPaymentForm(
-                totalAmount: cart.total,
-                onPaymentSuccess: _confirmCardPaymentSuccess,
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _confirmCardPaymentSuccess() async {
-    setState(() => _isProcessing = true);
-
-    try {
-      await SaleService.createSaleTransaction(
-        cart: cart,
-        paymentMethodName: _paymentMethod,
-        clientId: _selectedClient!.id,
-      );
-
-      cart.clear();
-
-      setState(() => _isProcessing = false);
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const PaymentStatusScreen(success: true)),
-      );
-    } catch (e) {
-      setState(() => _isProcessing = false);
-      _showError("Hubo un error al registrar la venta. Intenta nuevamente.");
-    }
   }
 }
 
@@ -288,7 +312,6 @@ class _CardPaymentFormState extends State<_CardPaymentForm> {
       children: [
         const Text("Pagar con Tarjeta", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
         const SizedBox(height: 20),
-
         TextFormField(
           controller: _cardNumberController,
           keyboardType: TextInputType.number,
@@ -300,13 +323,16 @@ class _CardPaymentFormState extends State<_CardPaymentForm> {
           ),
         ),
         const SizedBox(height: 12),
-
         Row(
           children: [
             Expanded(
               child: TextFormField(
                 controller: _expDateController,
-                keyboardType: TextInputType.datetime,
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  LengthLimitingTextInputFormatter(5),
+                  _ExpiryDateTextInputFormatter(),
+                ],
                 decoration: const InputDecoration(
                   labelText: "Vencimiento (MM/AA)",
                   prefixIcon: Icon(Icons.calendar_today_outlined),
@@ -333,7 +359,6 @@ class _CardPaymentFormState extends State<_CardPaymentForm> {
           ],
         ),
         const SizedBox(height: 20),
-
         SizedBox(
           width: double.infinity,
           child: ElevatedButton(
@@ -354,11 +379,41 @@ class _CardPaymentFormState extends State<_CardPaymentForm> {
   }
 
   void _handlePayment() async {
+    if (_cardNumberController.text.isEmpty ||
+        _expDateController.text.isEmpty ||
+        _cvvController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Por favor, completa todos los campos.'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
+    }
+
     setState(() => _isPaying = true);
     await Future.delayed(const Duration(seconds: 2));
     setState(() => _isPaying = false);
 
     Navigator.pop(context);
     widget.onPaymentSuccess();
+  }
+}
+class _ExpiryDateTextInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue,
+      TextEditingValue newValue,
+      ) {
+    var text = newValue.text.replaceAll('/', '');
+
+    if (text.length >= 3) {
+      text = text.substring(0, 2) + '/' + text.substring(2);
+    }
+
+    return TextEditingValue(
+      text: text,
+      selection: TextSelection.collapsed(offset: text.length),
+    );
   }
 }
