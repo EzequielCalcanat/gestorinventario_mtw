@@ -83,8 +83,10 @@ class Repository<T> {
     final db = await DatabaseHelper.instance.database;
     final result = await db.insert(table, map);
 
-    final logDescription = _getLogDescription(item, "save");
-    await _createLog("save", logDescription);
+    if (item is! SaleDetail){
+      final logDescription = _getLogDescription(item, "save");
+      await _createLog("save", logDescription);
+    }
     return result;
   }
 
@@ -161,10 +163,6 @@ class Repository<T> {
       return (action == 'save')
           ? 'Venta #${(item as Sale).saleNumber}'
           : 'Venta: ${(item as Sale).id}';
-    } else if (item is SaleDetail) {
-      return (action == 'save')
-          ? 'Detalles de la venta #${(item as SaleDetail).saleId}'
-          : 'Detalle de Venta: ${(item as SaleDetail).id}';
     }
 
     return item.toString();
