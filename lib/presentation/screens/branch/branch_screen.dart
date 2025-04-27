@@ -36,11 +36,6 @@ class _BranchScreenState extends State<BranchScreen> {
     });
   }
 
-  Future<void> _deleteBranch(Branch branch) async {
-    await BranchRepository.deleteBranch(branch);
-    _loadBranches();
-  }
-
   void _navigateToBranchForm({Branch? branch}) async {
     final result = await Navigator.push(
       context,
@@ -145,8 +140,7 @@ class _BranchScreenState extends State<BranchScreen> {
                   return BranchRow(
                     branch: branch,
                     onEdit: () =>
-                        _navigateToBranchForm(branch: branch),
-                    onDelete: () => _deleteBranch(branch),
+                        _navigateToBranchForm(branch: branch)
                   );
                 },
               )),

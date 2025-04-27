@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutterinventory/data/models/product.dart';
 import 'package:flutterinventory/data/models/branch.dart';
-import 'package:flutterinventory/data/models/sale.dart';
 import 'package:flutterinventory/data/models/sale_item.dart';
 import 'package:flutterinventory/data/models/user.dart';
 import 'package:flutterinventory/data/models/client.dart';
 import 'package:flutterinventory/data/models/cart.dart';
 import 'package:provider/provider.dart';
 
-class ProductRow extends StatelessWidget {
+class ProductRow extends StatefulWidget {
   final Product product;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
   const ProductRow({Key? key, required this.product, required this.onEdit, required this.onDelete}) : super(key: key);
+
+  @override
+  _ProductRowState createState() => _ProductRowState();
+}
+
+class _ProductRowState extends State<ProductRow> {
+  bool _isExpanded = false;
 
   Color _stockColor(int stock) {
     if (stock <= 5) return const Color(0xFFFFCDD2);
@@ -28,7 +34,7 @@ class ProductRow extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         title: const Text("¿Eliminar producto?"),
-        content: const Text("¿Estás seguro de eliminar este producto?"),
+        content: const Text("¿Estás seguro de eliminar este producto? no se borrará de las ventas ya realizadas."),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("Cancelar")),
           ElevatedButton(
@@ -47,26 +53,68 @@ class ProductRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _DismissibleCard(
-      key: ValueKey(product.id),
+      key: ValueKey(widget.product.id),
       onConfirmDelete: () => _confirmDelete(context),
-      onDelete: onDelete,
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        leading: const Icon(Icons.inventory_2, color: Colors.grey),
-        title: Text(product.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15), maxLines: 1, overflow: TextOverflow.ellipsis),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Precio: \$${product.price.toStringAsFixed(2)} MXN', style: const TextStyle(color: Colors.grey), maxLines: 1, overflow: TextOverflow.ellipsis),
-            const SizedBox(height: 4),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-              decoration: BoxDecoration(color: _stockColor(product.stock), borderRadius: BorderRadius.circular(8)),
-              child: Text(_stockText(product.stock), style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500)),
-            ),
-          ],
+      onDelete: widget.onDelete,
+      child: InkWell(
+        onTap: () {
+          setState(() {
+            _isExpanded = !_isExpanded;
+          });
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.inventory_2, color: Colors.grey),
+                title: Text(
+                  widget.product.name,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Precio: \$${widget.product.price.toStringAsFixed(2)} MXN',
+                      style: const TextStyle(color: Colors.grey),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: _stockColor(widget.product.stock),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        _stockText(widget.product.stock),
+                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                    if (_isExpanded) ...[
+                      const SizedBox(height: 8),
+                      if (widget.product.description != null)
+                        Text(
+                          'Descripción: ${widget.product.description!}',
+                          style: const TextStyle(fontSize: 13),
+                        ),
+                    ]
+                  ],
+                ),
+                trailing: IconButton(
+                  icon: const Icon(Icons.edit, color: Colors.blue),
+                  onPressed: widget.onEdit,
+                ),
+              ),
+            ],
+          ),
         ),
-        trailing: IconButton(icon: const Icon(Icons.edit, color: Colors.blue), onPressed: onEdit),
       ),
     );
   }
@@ -75,37 +123,17 @@ class ProductRow extends StatelessWidget {
 class BranchRow extends StatelessWidget {
   final Branch branch;
   final VoidCallback onEdit;
-  final VoidCallback onDelete;
 
-  const BranchRow({Key? key, required this.branch, required this.onEdit, required this.onDelete}) : super(key: key);
-
-  Future<bool?> _confirmDelete(BuildContext context) async {
-    return showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text("¿Eliminar sucursal?"),
-        content: const Text("¿Seguro que deseas eliminar esta sucursal?"),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("Cancelar")),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text(
-              "Eliminar",
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  const BranchRow({
+    Key? key,
+    required this.branch,
+    required this.onEdit,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return _DismissibleCard(
+    return _NonDismissibleCard(
       key: ValueKey(branch.id),
-      onConfirmDelete: () => _confirmDelete(context),
-      onDelete: onDelete,
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         leading: const Icon(Icons.store, color: Colors.grey),
@@ -121,7 +149,10 @@ class BranchRow extends StatelessWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
-        trailing: IconButton(icon: const Icon(Icons.edit, color: Colors.blue), onPressed: onEdit),
+        trailing: IconButton(
+          icon: const Icon(Icons.edit, color: Colors.blue),
+          onPressed: onEdit,
+        ),
       ),
     );
   }
@@ -157,7 +188,7 @@ class UserRow extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         title: const Text("¿Eliminar usuario?"),
-        content: const Text("¿Seguro que deseas eliminar este usuario?"),
+        content: const Text("¿Seguro que deseas eliminar este usuario? "),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("Cancelar")),
           ElevatedButton(
@@ -360,7 +391,55 @@ class SalesRow extends StatelessWidget {
   }
 }
 
-// Widget base para todos los Dismissible
+// Widget base para todos los non dismissible (no se pueden eliminar)
+class _NonDismissibleCard extends StatelessWidget {
+  final Key key;
+  final Widget child;
+
+  const _NonDismissibleCard({
+    required this.key,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      child: Dismissible(
+        key: key,
+        direction: DismissDirection.endToStart,
+        confirmDismiss: (_) async {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("No se pueden eliminar las sucursales."),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+          return false;
+        },
+        background: Container(
+          alignment: Alignment.centerRight,
+          padding: const EdgeInsets.only(right: 20),
+          decoration: BoxDecoration(
+            color: Colors.grey,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: const Icon(
+            Icons.lock_outline,
+            color: Colors.white,
+          ),
+        ),
+        child: Card(
+          elevation: 3,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          child: child,
+        ),
+      ),
+    );
+  }
+}
+
+// Widget base para todos los Dismissible (se pueden eliminar)
 class _DismissibleCard extends StatelessWidget {
   final Key key;
   final Widget child;
