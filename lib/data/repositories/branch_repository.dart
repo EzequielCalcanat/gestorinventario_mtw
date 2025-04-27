@@ -1,6 +1,8 @@
 import 'package:flutterinventory/data/models/branch.dart';
 import 'package:flutterinventory/data/repositories/repository.dart';
 
+import '../database/database_helper.dart';
+
 class BranchRepository {
   static final Repository<Branch> _repository = Repository<Branch>(
     table: 'branches',
@@ -39,4 +41,19 @@ class BranchRepository {
   static Future<int> deleteBranch(Branch branch) async {
     return await _repository.delete(branch, branch.id);
   }
+  static Future<List<Branch>> getBranchesBetweenDates(DateTime start, DateTime end) async {
+    final db = await DatabaseHelper.instance.database;
+
+    final result = await db.query(
+      'branches',
+      where: 'created_at BETWEEN ? AND ? AND is_active = 1',
+      whereArgs: [
+        start.toIso8601String(),
+        end.toIso8601String()
+      ],
+    );
+
+    return result.map((map) => Branch.fromMap(map)).toList();
+  }
+
 }

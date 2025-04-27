@@ -3,44 +3,81 @@ import 'package:flutterinventory/data/repositories/log_repository.dart';
 import 'package:flutterinventory/data/models/log.dart';
 import 'package:flutterinventory/presentation/widgets/base_scaffold.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutterinventory/data/repositories/sale_repository.dart';
+import 'package:flutterinventory/data/repositories/client_repository.dart';
+import 'package:flutterinventory/data/repositories/branch_repository.dart';
+import 'package:flutterinventory/data/repositories/product_repository.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState  extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> {
   List<Log> _logs = [];
   bool _isLoading = true;
+
+  Map<String, double> salesData = {};
+  int totalClients = 0;
+  int totalBranches = 0;
+  int totalProducts = 0;
+  double totalSalesToday = 0.0;
+  int lowStockProducts = 0;
 
   @override
   void initState() {
     super.initState();
-    _loadLogs();
+    _loadDashboardData();
   }
 
-  Future<void> _loadLogs() async {
+  Future<void> _loadDashboardData() async {
     setState(() {
       _isLoading = true;
     });
-    _logs = await LogRepository.getAllLogs();
-    _logs.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
-    if (_logs.length > 10) {
-      _logs = _logs.sublist(0, 10);
-    }
+
+    await _loadLogs();
+
+    // Cargar datos de ventas, productos, clientes y sucursales
+    salesData = await SaleRepository.getSalesOfLast7Days();
+    final clients = await ClientRepository.getAllClients();
+    final branches = await BranchRepository.getAllBranches();
+    final products = await ProductRepository.getAllProducts();
+
+    totalClients = clients.length;
+    totalBranches = branches.length;
+    totalProducts = products.length;
+
+    // Calcular total de ventas de hoy
+    DateTime today = DateTime.now();
+    String todayKey = "${today.year}-${_twoDigits(today.month)}-${_twoDigits(today.day)}";
+    totalSalesToday = salesData[todayKey] ?? 0.0;
+
+    // Productos con stock bajo (< 5 por ejemplo)
+    lowStockProducts = products.where((p) => p.stock <= 5).length;
+
     setState(() {
       _isLoading = false;
     });
   }
 
+  Future<void> _loadLogs() async {
+    _logs = await LogRepository.getAllLogs();
+    _logs.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
+    if (_logs.length > 10) {
+      _logs = _logs.sublist(0, 10);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return BaseScaffold(
       title: "Inicio",
       currentNavIndex: 0,
-      body: Column(
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
@@ -79,7 +116,7 @@ class _HomeScreenState  extends State<HomeScreen> {
           children: [
             _buildStatCardItem(
               title: "Ventas Hoy",
-              value: "\$1,500",
+              value: "\$${totalSalesToday.toStringAsFixed(2)}",
               icon: Icons.attach_money,
               backgroundColor: const Color(0xFFEAFCEF),
               borderColor: const Color(0xFFA5D6A7),
@@ -87,7 +124,7 @@ class _HomeScreenState  extends State<HomeScreen> {
             ),
             _buildStatCardItem(
               title: "Productos Activos",
-              value: "320",
+              value: "$totalProducts",
               icon: Icons.inventory,
               backgroundColor: const Color(0xFFE3F2FD),
               borderColor: const Color(0xFF90CAF9),
@@ -95,7 +132,7 @@ class _HomeScreenState  extends State<HomeScreen> {
             ),
             _buildStatCardItem(
               title: "Stock Bajo",
-              value: "12",
+              value: "$lowStockProducts",
               icon: Icons.warning,
               backgroundColor: const Color(0xFFFFF3E0),
               borderColor: const Color(0xFFFFCC80),
@@ -103,7 +140,7 @@ class _HomeScreenState  extends State<HomeScreen> {
             ),
             _buildStatCardItem(
               title: "Sucursales",
-              value: "4",
+              value: "$totalBranches",
               icon: Icons.store,
               backgroundColor: const Color(0xFFF3E5F5),
               borderColor: const Color(0xFFCE93D8),
@@ -160,6 +197,18 @@ class _HomeScreenState  extends State<HomeScreen> {
   }
 
   Widget _buildSalesChart() {
+    final today = DateTime.now();
+    final startDate = today.subtract(Duration(days: 6));
+
+    // Generar lista de los últimos 7 días
+    List<DateTime> last7Days = List.generate(7, (index) => startDate.add(Duration(days: index)));
+
+    final spots = last7Days.map((date) {
+      final dateKey = "${date.year}-${_twoDigits(date.month)}-${_twoDigits(date.day)}";
+      final salesAmount = salesData[dateKey] ?? 0.0;
+      return FlSpot(last7Days.indexOf(date).toDouble(), salesAmount);
+    }).toList();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -177,6 +226,7 @@ class _HomeScreenState  extends State<HomeScreen> {
             height: 220,
             child: LineChart(
               LineChartData(
+                minY: 0,
                 gridData: FlGridData(show: false),
                 titlesData: FlTitlesData(
                   leftTitles: AxisTitles(
@@ -200,14 +250,20 @@ class _HomeScreenState  extends State<HomeScreen> {
                       showTitles: true,
                       interval: 1,
                       getTitlesWidget: (value, meta) {
-                        final days = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Text(
-                            days[value.toInt() % 7],
-                            style: const TextStyle(fontSize: 12),
-                          ),
-                        );
+                        int index = value.toInt();
+                        if (index >= 0 && index < last7Days.length) {
+                          final date = last7Days[index];
+                          final dayNames = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Text(
+                              dayNames[date.weekday % 7],
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                          );
+                        } else {
+                          return const Text('');
+                        }
                       },
                     ),
                   ),
@@ -215,21 +271,13 @@ class _HomeScreenState  extends State<HomeScreen> {
                 borderData: FlBorderData(show: false),
                 lineBarsData: [
                   LineChartBarData(
-                    isCurved: true,
+                    isCurved: false,
                     color: Colors.teal,
                     barWidth: 3,
-                    dotData: FlDotData(show: false),
+                    dotData: FlDotData(show: true),
                     belowBarData: BarAreaData(
                         show: true, color: Colors.teal.withOpacity(0.15)),
-                    spots: [
-                      FlSpot(0, 500),
-                      FlSpot(1, 700),
-                      FlSpot(2, 650),
-                      FlSpot(3, 800),
-                      FlSpot(4, 900),
-                      FlSpot(5, 750),
-                      FlSpot(6, 1100),
-                    ],
+                    spots: spots,
                   ),
                 ],
               ),
@@ -291,10 +339,10 @@ class _HomeScreenState  extends State<HomeScreen> {
             child: Stack(
               children: [
                 _LogItem(
-                  user: log.userName,
-                  description: _shortenText(log.description ?? "Descripción no disponible", 30),
-                  module: log.module ?? "Módulo no disponible",
-                  createdAt: log.createdAt
+                    user: log.userName,
+                    description: _shortenText(log.description ?? "Descripción no disponible", 30),
+                    module: log.module ?? "Módulo no disponible",
+                    createdAt: log.createdAt
                 ),
                 Positioned(
                   right: 0,
@@ -323,6 +371,7 @@ class _HomeScreenState  extends State<HomeScreen> {
       },
     );
   }
+
   String _shortenText(String text, int maxLength) {
     if (text.length <= maxLength) {
       return text;
@@ -331,6 +380,7 @@ class _HomeScreenState  extends State<HomeScreen> {
     }
   }
 
+  String _twoDigits(int n) => n.toString().padLeft(2, '0');
 }
 
 class _LogItem extends StatelessWidget {
@@ -349,8 +399,7 @@ class _LogItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-      },
+      onTap: () {},
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14),
         child: Row(
@@ -408,7 +457,6 @@ class _LogItem extends StatelessWidget {
       ),
     );
   }
-
 
   String _formatDate(String dateString) {
     try {

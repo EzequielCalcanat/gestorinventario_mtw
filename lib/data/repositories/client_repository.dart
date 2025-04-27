@@ -1,6 +1,8 @@
 import 'package:flutterinventory/data/models/client.dart';
 import 'package:flutterinventory/data/repositories/repository.dart';
 
+import '../database/database_helper.dart';
+
 class ClientRepository {
   static final Repository<Client> _repository = Repository<Client>(
     table: 'clients',
@@ -24,4 +26,20 @@ class ClientRepository {
   static Future<int> deleteClient(Client client) async {
     return await _repository.delete(client, client.id);
   }
+
+  static Future<List<Client>> getClientsBetweenDates(DateTime start, DateTime end) async {
+    final db = await DatabaseHelper.instance.database;
+
+    final result = await db.query(
+      'clients',
+      where: 'created_at BETWEEN ? AND ? AND is_active = 1',
+      whereArgs: [
+        start.toIso8601String(),
+        end.toIso8601String()
+      ],
+    );
+
+    return result.map((map) => Client.fromMap(map)).toList();
+  }
+
 }

@@ -2,6 +2,7 @@ import 'package:flutterinventory/data/models/user.dart';
 import 'package:flutterinventory/data/repositories/repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../database/database_helper.dart';
 import 'branch_repository.dart';
 
 class LoginRepository {
@@ -56,4 +57,20 @@ class LoginRepository {
       throw Exception('No se encontró el userId en SharedPreferences');
     }
   }
+
+  static Future<List<User>> getUsersBetweenDates(DateTime start, DateTime end) async {
+    final db = await DatabaseHelper.instance.database;
+
+    final result = await db.query(
+      'users',
+      where: 'created_at BETWEEN ? AND ? AND is_active = 1',
+      whereArgs: [
+        start.toIso8601String(),
+        end.toIso8601String()
+      ],
+    );
+
+    return result.map((map) => User.fromMap(map)).toList();
+  }
+
 }
