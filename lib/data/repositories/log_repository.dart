@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutterinventory/data/repositories/repository.dart';
 
 class LogRepository {
-  static final Repository<Log> _logRepository = Repository<Log>(
+  static final Repository<Log> _repository = Repository<Log>(
     table: 'logs',
     moduleName: "Logs",
     fromMap: (map) => Log.fromMap(map),
@@ -17,7 +17,19 @@ class LogRepository {
   }
 
   static Future<List<Log>> getAllLogs({int? isActive}) async {
-    return await _logRepository.getAll(isActive: isActive);
+    return await _repository.getAll(isActive: isActive);
+  }
+
+  static Future<List<Log>> getAllLogsByUser({
+    bool isActive = true,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString('logged_user_id');
+    List<Map<String, dynamic>> filters = [
+      {'name': 'user_id', 'operator': '==', 'value': userId}
+    ];
+    List<Log> filteredLogs = await _repository.getFiltered(filters);
+    return filteredLogs;
   }
 
   Future<String?> getLoggedUserId() async {

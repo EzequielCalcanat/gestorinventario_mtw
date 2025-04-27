@@ -4,7 +4,6 @@ import 'package:flutterinventory/data/models/branch.dart';
 import 'package:flutterinventory/data/repositories/branch_repository.dart';
 import 'package:flutterinventory/presentation/widgets/tables/item_row.dart';
 import 'package:flutterinventory/presentation/widgets/base_scaffold.dart';
-import 'package:flutterinventory/presentation/widgets/common/module_breadcrumb.dart';
 import 'package:flutterinventory/presentation/screens/branch/branch_form_screen.dart';
 
 class BranchScreen extends StatefulWidget {
@@ -63,9 +62,7 @@ class _BranchScreenState extends State<BranchScreen> {
       body: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const ModuleBreadcrumb(text: "/ Sucursales"),
             Row(
               children: [
                 Expanded(

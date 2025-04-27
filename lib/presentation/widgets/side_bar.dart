@@ -44,6 +44,7 @@ class SideBar extends StatelessWidget {
                       ),
                     ),
                   ),
+                  if (role != 'sales')
                   _buildListTile(context, Icons.home, 'Inicio', 'home'),
                   if (role == 'admin')
                     _buildListTile(context, Icons.store, 'Sucursales', 'branch'),

@@ -45,7 +45,27 @@ class _TopBarState extends State<TopBar> {
 
     return AppBar(
       backgroundColor: const Color(0xFF3491B3),
-      title: Text(userBranchName),
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            widget.title,
+            style: const TextStyle(
+              fontSize: 18, // Más grande el título principal
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            userBranchName,
+            style: TextStyle(
+              fontSize: 12, // Más pequeño
+              color: Colors.grey[200], // Gris clarito
+              fontWeight: FontWeight.normal,
+            ),
+          ),
+        ],
+      ),
       actions: [
         if (userRole == 'admin')
           IconButton(
@@ -87,7 +107,6 @@ class _TopBarState extends State<TopBar> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-
               ),
             ),
           ],

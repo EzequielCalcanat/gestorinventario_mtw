@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutterinventory/data/models/product.dart';
 import 'package:flutterinventory/data/repositories/product_repository.dart';
 import 'package:flutterinventory/presentation/screens/products/product_form_screen.dart';
-import 'package:flutterinventory/presentation/widgets/common/module_breadcrumb.dart';
 import 'package:flutterinventory/presentation/widgets/tables/item_row.dart';
 import 'package:flutterinventory/presentation/widgets/base_scaffold.dart';
 import 'package:shimmer/shimmer.dart';
@@ -133,9 +132,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
       body: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const ModuleBreadcrumb(text: "/ Productos"),
             Row(
               children: [
                 Expanded(

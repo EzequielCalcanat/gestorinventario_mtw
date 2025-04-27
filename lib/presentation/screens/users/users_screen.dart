@@ -5,7 +5,6 @@ import 'package:flutterinventory/data/repositories/branch_repository.dart';
 import 'package:flutterinventory/data/repositories/login_repository.dart';
 import 'package:flutterinventory/presentation/screens/users/user_form_screen.dart';
 import 'package:flutterinventory/presentation/widgets/base_scaffold.dart';
-import 'package:flutterinventory/presentation/widgets/common/module_breadcrumb.dart';
 import 'package:flutterinventory/presentation/widgets/tables/item_row.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -146,9 +145,7 @@ class _UsersScreenState extends State<UsersScreen> {
       body: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const ModuleBreadcrumb(text: "/ Usuarios"),
             Row(
               children: [
                 Expanded(

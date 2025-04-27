@@ -7,6 +7,7 @@ import 'package:flutterinventory/data/repositories/sale_repository.dart';
 import 'package:flutterinventory/data/repositories/client_repository.dart';
 import 'package:flutterinventory/data/repositories/branch_repository.dart';
 import 'package:flutterinventory/data/repositories/product_repository.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -21,7 +22,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Map<String, double> salesData = {};
   int totalClients = 0;
-  int totalBranches = 0;
   int totalProducts = 0;
   double totalSalesToday = 0.0;
   int lowStockProducts = 0;
@@ -42,11 +42,9 @@ class _HomeScreenState extends State<HomeScreen> {
     // Cargar datos de ventas, productos, clientes y sucursales
     salesData = await SaleRepository.getSalesOfLast7Days();
     final clients = await ClientRepository.getAllClients();
-    final branches = await BranchRepository.getAllBranches();
-    final products = await ProductRepository.getAllProducts();
+    final products = await ProductRepository.getAllProductsByBranch();
 
     totalClients = clients.length;
-    totalBranches = branches.length;
     totalProducts = products.length;
 
     // Calcular total de ventas de hoy
@@ -63,8 +61,17 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadLogs() async {
-    _logs = await LogRepository.getAllLogs();
+    final prefs = await SharedPreferences.getInstance();
+    final userRole = prefs.getString('user_role') ?? 'guest';
+
+    if (userRole == 'admin') {
+      _logs = await LogRepository.getAllLogs();
+    } else {
+      _logs = await LogRepository.getAllLogsByUser();
+    }
+
     _logs.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
+
     if (_logs.length > 10) {
       _logs = _logs.sublist(0, 10);
     }
@@ -137,14 +144,6 @@ class _HomeScreenState extends State<HomeScreen> {
               backgroundColor: const Color(0xFFFFF3E0),
               borderColor: const Color(0xFFFFCC80),
               textColor: const Color(0xFFEF6C00),
-            ),
-            _buildStatCardItem(
-              title: "Sucursales",
-              value: "$totalBranches",
-              icon: Icons.store,
-              backgroundColor: const Color(0xFFF3E5F5),
-              borderColor: const Color(0xFFCE93D8),
-              textColor: const Color(0xFF6A1B9A),
             ),
           ],
         ),
