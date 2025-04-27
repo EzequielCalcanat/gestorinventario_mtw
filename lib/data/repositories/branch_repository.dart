@@ -11,7 +11,7 @@ class BranchRepository {
     moduleName: "Sucursal"
   );
 
-  static Future<List<Branch>> getAllBranches({bool? isActive}) async {
+  static Future<List<Branch>> getAllBranches({int? isActive}) async {
     return await _repository.getAll(isActive: isActive);
   }
 
@@ -55,5 +55,26 @@ class BranchRepository {
 
     return result.map((map) => Branch.fromMap(map)).toList();
   }
+
+  static Future<Map<String, double>> getSalesByBranchBetweenDates(DateTime start, DateTime end) async {
+    final db = await DatabaseHelper.instance.database;
+
+    final result = await db.rawQuery('''
+    SELECT b.name as branch_name, SUM(s.total) as total_sales
+    FROM sales s
+    JOIN branches b ON s.branch_id = b.id
+    WHERE s.date BETWEEN ? AND ? AND s.is_active = 1
+    GROUP BY s.branch_id
+  ''', [start.toIso8601String(), end.toIso8601String()]);
+
+    Map<String, double> salesByBranch = {};
+
+    for (var row in result) {
+      salesByBranch[row['branch_name'] as String] = (row['total_sales'] as num?)?.toDouble() ?? 0.0;
+    }
+
+    return salesByBranch;
+  }
+
 
 }

@@ -11,7 +11,7 @@ class ClientRepository {
     moduleName: "Cliente"
   );
 
-  static Future<List<Client>> getAllClients({bool? isActive}) async {
+  static Future<List<Client>> getAllClients({int? isActive}) async {
     return await _repository.getAll(isActive: isActive);
   }
 

@@ -15,7 +15,7 @@ class ProductRepository {
   }
 
   // Método para obtener todos los productos con filtro opcional por is_active
-  static Future<List<Product>> getAllProducts({bool? isActive}) async {
+  static Future<List<Product>> getAllProducts({int? isActive}) async {
     return await _repository.getAll(isActive: isActive);
   }
 

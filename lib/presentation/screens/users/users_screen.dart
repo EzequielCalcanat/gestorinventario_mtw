@@ -38,8 +38,8 @@ class _UsersScreenState extends State<UsersScreen> {
       _isLoading = true;
     });
 
-    final users = await LoginRepository.getAllUsers(isActive: true);
-    final branches = await BranchRepository.getAllBranches(isActive: true);
+    final users = await LoginRepository.getAllUsers(isActive: 1);
+    final branches = await BranchRepository.getAllBranches(isActive: 1);
 
     setState(() {
       _users = users;

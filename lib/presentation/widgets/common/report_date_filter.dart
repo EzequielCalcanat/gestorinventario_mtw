@@ -24,37 +24,59 @@ class ReportDateFilter extends StatelessWidget {
           child: ElevatedButton(
             onPressed: onPickStartDate,
             style: _dateButtonStyle(),
-            child: Text(
-              startDate == null
-                  ? "Desde"
-                  : "${startDate!.day}/${startDate!.month}/${startDate!.year}",
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  "Inicio",
+                  style: TextStyle(fontSize: 10, color: Colors.grey),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  startDate == null
+                      ? "--/--/----"
+                      : "${startDate!.day.toString().padLeft(2, '0')}/${startDate!.month.toString().padLeft(2, '0')}/${startDate!.year}",
+                  style: const TextStyle(fontSize: 13),
+                ),
+              ],
             ),
           ),
         ),
         const SizedBox(width: 8),
         Expanded(
           child: ElevatedButton(
-            onPressed: onPickEndDate,
+            onPressed: startDate == null ? null : onPickEndDate,
             style: _dateButtonStyle(),
-            child: Text(
-              endDate == null
-                  ? "Hasta"
-                  : "${endDate!.day}/${endDate!.month}/${endDate!.year}",
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  "Fin",
+                  style: TextStyle(fontSize: 10, color: Colors.grey),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  endDate == null
+                      ? "--/--/----"
+                      : "${endDate!.day.toString().padLeft(2, '0')}/${endDate!.month.toString().padLeft(2, '0')}/${endDate!.year}",
+                  style: const TextStyle(fontSize: 13),
+                ),
+              ],
             ),
           ),
         ),
         const SizedBox(width: 8),
         ConstrainedBox(
           constraints: const BoxConstraints(
-            minWidth: 48,
-            minHeight: 48,
-            maxWidth: 48,
-            maxHeight: 48,
+            minWidth: 44,
+            minHeight: 44,
+            maxWidth: 44,
+            maxHeight: 44,
           ),
           child: ElevatedButton(
-            onPressed: onSearch,
+            onPressed: (startDate != null && endDate != null) ? onSearch : null,
             style: _searchButtonStyle(),
-            child: const Icon(Icons.search, size: 22),
+            child: const Icon(Icons.search, size: 20),
           ),
         ),
       ],
@@ -69,8 +91,9 @@ class ReportDateFilter extends StatelessWidget {
         borderRadius: BorderRadius.circular(5),
         side: const BorderSide(color: Color(0xFFBDBDBD)),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6), // Menos vertical
       elevation: 0,
+      minimumSize: const Size(0, 44), // Forzar altura mínima
     );
   }
 

@@ -16,7 +16,7 @@ class LogRepository {
     await db.insert('logs', log.toMap());
   }
 
-  static Future<List<Log>> getAllLogs({bool? isActive}) async {
+  static Future<List<Log>> getAllLogs({int? isActive}) async {
     return await _logRepository.getAll(isActive: isActive);
   }
 

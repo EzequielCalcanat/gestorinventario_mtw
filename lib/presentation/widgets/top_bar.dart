@@ -169,7 +169,7 @@ class _TopBarState extends State<TopBar> {
   }
 
   void showBranchSelector(BuildContext context) async {
-    List<Branch> activeBranches = await BranchRepository.getAllBranches(isActive: true);
+    List<Branch> activeBranches = await BranchRepository.getAllBranches(isActive: 1);
 
     showDialog(
       context: context,

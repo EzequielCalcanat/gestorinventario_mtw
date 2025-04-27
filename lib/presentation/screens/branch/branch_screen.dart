@@ -30,7 +30,7 @@ class _BranchScreenState extends State<BranchScreen> {
     setState(() {
       _isLoading = true;
     });
-    _branches = await BranchRepository.getAllBranches(isActive: true);
+    _branches = await BranchRepository.getAllBranches(isActive: 1);
     setState(() {
       _isLoading = false;
     });

@@ -22,7 +22,7 @@ class _ProductsReportScreenState extends State<ProductsReportScreen> {
       isLoading = true;
     });
 
-    products = await ProductRepository.getAllProducts(isActive: true);
+    products = await ProductRepository.getAllProducts(isActive: 1);
 
     setState(() {
       isLoading = false;

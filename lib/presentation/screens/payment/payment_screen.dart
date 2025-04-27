@@ -32,7 +32,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
   }
 
   Future<void> _loadClients() async {
-    final clients = await ClientRepository.getAllClients(isActive: true);
+    final clients = await ClientRepository.getAllClients(isActive: 1);
     if (mounted) {
       setState(() {
         _clients = clients;
@@ -53,7 +53,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     );
 
     if (result == true) {
-      final refreshedClients = await ClientRepository.getAllClients(isActive: true);
+      final refreshedClients = await ClientRepository.getAllClients(isActive: 1);
       if (mounted) {
         setState(() {
           _clients = refreshedClients;

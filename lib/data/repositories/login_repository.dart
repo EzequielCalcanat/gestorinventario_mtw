@@ -13,7 +13,7 @@ class LoginRepository {
     moduleName: "Usuario"
   );
 
-  static Future<List<User>> getAllUsers({bool? isActive}) async {
+  static Future<List<User>> getAllUsers({int? isActive}) async {
     return await _repository.getAll(isActive: isActive);
   }
 
@@ -22,7 +22,7 @@ class LoginRepository {
   }
 
   static Future<User?> login(String name, String password) async {
-    final users = await getAllUsers(isActive: true);
+    final users = await getAllUsers(isActive: 1);
     try {
       return users.firstWhere((u) => u.name == name && u.password == password);
     } catch (e) {

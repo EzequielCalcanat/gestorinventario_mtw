@@ -31,7 +31,7 @@ class _ClientsScreenState extends State<ClientsScreen> {
       _isLoading = true;
     });
 
-    final clients = await ClientRepository.getAllClients(isActive: true);
+    final clients = await ClientRepository.getAllClients(isActive: 1);
     setState(() {
       _clients = clients;
       _filteredClients = clients;

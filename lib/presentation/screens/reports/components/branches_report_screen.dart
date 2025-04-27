@@ -6,6 +6,8 @@ import 'package:flutterinventory/presentation/widgets/common/report_date_filter.
 import 'package:path_provider/path_provider.dart';
 import 'package:csv/csv.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'dart:math';
 
 class BranchesReportScreen extends StatefulWidget {
   const BranchesReportScreen({super.key});
@@ -18,6 +20,7 @@ class _BranchesReportScreenState extends State<BranchesReportScreen> {
   DateTime? startDate;
   DateTime? endDate;
   List<Branch> branches = [];
+  Map<String, double> salesByBranch = {};
   bool isLoading = false;
 
   Future<void> _pickStartDate() async {
@@ -37,8 +40,8 @@ class _BranchesReportScreenState extends State<BranchesReportScreen> {
   Future<void> _pickEndDate() async {
     DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: endDate ?? DateTime.now(),
-      firstDate: DateTime(2020),
+      initialDate: endDate ?? startDate ?? DateTime.now(),
+      firstDate: startDate ?? DateTime(2020),
       lastDate: DateTime(2100),
     );
     if (picked != null) {
@@ -56,6 +59,7 @@ class _BranchesReportScreenState extends State<BranchesReportScreen> {
     });
 
     branches = await BranchRepository.getBranchesBetweenDates(startDate!, endDate!);
+    salesByBranch = await BranchRepository.getSalesByBranchBetweenDates(startDate!, endDate!);
 
     setState(() {
       isLoading = false;
@@ -63,15 +67,21 @@ class _BranchesReportScreenState extends State<BranchesReportScreen> {
   }
 
   Future<void> _exportCSV() async {
+    if (startDate == null || endDate == null) return;
+
     List<List<dynamic>> rows = [
-      ["Nombre de Sucursal", "Ubicación", "Fecha de Creación"]
+      ["Nombre de Sucursal", "Ubicación", "Total Vendido", "Periodo"]
     ];
 
     for (var branch in branches) {
+      final totalSales = salesByBranch[branch.name] ?? 0.0;
+      final period = "${_formatDate(startDate)} - ${_formatDate(endDate)}";
+
       rows.add([
         branch.name,
         branch.location ?? '',
-        branch.createdAt?.substring(0, 10) ?? '',
+        "\$${totalSales.toStringAsFixed(2)}",
+        period,
       ]);
     }
 
@@ -84,6 +94,11 @@ class _BranchesReportScreenState extends State<BranchesReportScreen> {
     await file.writeAsString(csv);
 
     await Share.shareXFiles([XFile(file.path)], text: "Reporte de Sucursales");
+  }
+
+  String _formatDate(DateTime? date) {
+    if (date == null) return '';
+    return "${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}";
   }
 
   @override
@@ -100,21 +115,68 @@ class _BranchesReportScreenState extends State<BranchesReportScreen> {
             onSearch: _fetchBranches,
           ),
           const SizedBox(height: 16),
-          isLoading
-              ? const CircularProgressIndicator()
-              : Expanded(
-            child: branches.isEmpty
-                ? const Center(child: Text("No hay sucursales en este rango."))
-                : ListView.builder(
-              itemCount: branches.length,
-              itemBuilder: (context, index) {
-                final branch = branches[index];
-                return ListTile(
-                  title: Text(branch.name),
-                  subtitle: Text(branch.location ?? "Ubicación no disponible"),
-                  trailing: Text(branch.createdAt?.substring(0, 10) ?? ''),
-                );
-              },
+          _buildSalesPieChart(),
+          const SizedBox(height: 16),
+          Expanded(
+            child: Scrollbar(
+              child: branches.isEmpty
+                  ? const Center(child: Text("No hay sucursales en este rango."))
+                  : ListView.builder(
+                itemCount: branches.length,
+                itemBuilder: (context, index) {
+                  final branch = branches[index];
+                  final totalSales = salesByBranch[branch.name] ?? 0.0;
+
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 6.0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                branch.name,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                branch.location ?? "Ubicación no disponible",
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.grey[600],
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFD0F0C0), // Verde pastel clarito
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            "\$${totalSales.toStringAsFixed(2)}",
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+            ),
             ),
           ),
           const SizedBox(height: 16),
@@ -125,6 +187,73 @@ class _BranchesReportScreenState extends State<BranchesReportScreen> {
             style: _buttonStyle(),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSalesPieChart() {
+    if (salesByBranch.isEmpty) {
+      return const SizedBox(
+        height: 250,
+        child: Center(
+          child: Text("No hubo ventas en este periodo."),
+        ),
+      );
+    }
+
+    return SizedBox(
+      height: 250,
+      child: PieChart(
+        PieChartData(
+          sectionsSpace: 2,
+          centerSpaceRadius: 40,
+          startDegreeOffset: 0,
+          sections: _buildPieChartSections(),
+        ),
+        swapAnimationDuration: const Duration(milliseconds: 800),
+        swapAnimationCurve: Curves.easeInOut,
+      ),
+    );
+  }
+
+  List<PieChartSectionData> _buildPieChartSections() {
+    final Random random = Random();
+    double totalSales = salesByBranch.values.fold(0, (a, b) => a + b);
+
+    return salesByBranch.entries.map((entry) {
+      final percentage = totalSales == 0 ? 0 : (entry.value / totalSales) * 100;
+
+      final color = Color.fromARGB(
+        255,
+        random.nextInt(256),
+        random.nextInt(256),
+        random.nextInt(256),
+      );
+
+      return PieChartSectionData(
+        color: color,
+        value: entry.value,
+        title: '${percentage.toStringAsFixed(1)}%',
+        radius: 70,
+        titleStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+        badgeWidget: _buildBadge(entry.key, color),
+        badgePositionPercentageOffset: 1.2,
+      );
+    }).toList();
+  }
+
+  Widget _buildBadge(String branchName, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color, width: 1.5),
+      ),
+      child: Text(
+        branchName,
+        style: TextStyle(fontSize: 10, color: color, fontWeight: FontWeight.bold),
+        overflow: TextOverflow.ellipsis,
       ),
     );
   }

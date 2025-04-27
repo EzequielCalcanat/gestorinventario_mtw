@@ -87,7 +87,7 @@ class Repository<T> {
     return result;
   }
 
-  Future<List<T>> getAll({bool? isActive}) async {
+  Future<List<T>> getAll({int? isActive}) async {
     final db = await DatabaseHelper.instance.database;
     if (isActive == null) {
       final List<Map<String, dynamic>> maps = await db.query(table);
