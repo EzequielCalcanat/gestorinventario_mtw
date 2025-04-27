@@ -31,7 +31,6 @@ class SaleRepository extends Repository<Sale> {
     final userBranchId = prefs.getString('user_branch_id');
 
     if (userBranchId == null) {
-      // Opcional: podrías lanzar una excepción, o simplemente retornar todo 0
       return {};
     }
 
@@ -50,11 +49,7 @@ class SaleRepository extends Repository<Sale> {
     GROUP BY DATE(date)
     ORDER BY sale_date ASC
     ''',
-      [
-        sevenDaysAgo.toIso8601String(),
-        now.toIso8601String(),
-        userBranchId,
-      ],
+      [sevenDaysAgo.toIso8601String(), now.toIso8601String(), userBranchId],
     );
 
     Map<String, double> salesByDate = {};
@@ -100,11 +95,11 @@ class SaleRepository extends Repository<Sale> {
     final userBranchId = prefs.getString('user_branch_id');
 
     if (userBranchId == null) {
-      // Opcionalmente podrías manejar error aquí si no existe la sucursal activa
       return [];
     }
 
-    final result = await db.rawQuery('''
+    final result = await db.rawQuery(
+      '''
     SELECT 
       s.id,
       c.name as client_name,
@@ -118,7 +113,9 @@ class SaleRepository extends Repository<Sale> {
     WHERE s.is_active = 1
       AND s.branch_id = ?
     ORDER BY s.date DESC
-  ''', [userBranchId]);
+  ''',
+      [userBranchId],
+    );
 
     return result.map((map) {
       return SaleItem(

@@ -20,13 +20,11 @@ class LogRepository {
     return await _repository.getAll(isActive: isActive);
   }
 
-  static Future<List<Log>> getAllLogsByUser({
-    bool isActive = true,
-  }) async {
+  static Future<List<Log>> getAllLogsByUser({bool isActive = true}) async {
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getString('logged_user_id');
     List<Map<String, dynamic>> filters = [
-      {'name': 'user_id', 'operator': '==', 'value': userId}
+      {'name': 'user_id', 'operator': '==', 'value': userId},
     ];
     List<Log> filteredLogs = await _repository.getFiltered(filters);
     return filteredLogs;

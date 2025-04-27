@@ -43,5 +43,4 @@ class Log {
       createdAt: map['created_at'],
     );
   }
-
 }

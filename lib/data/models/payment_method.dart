@@ -24,7 +24,9 @@ class PaymentMethod {
 
   factory PaymentMethod.fromMap(Map<String, dynamic> map) {
     if (map['id'] == null || map['name'] == null) {
-      throw Exception("PaymentMethod.fromMap error: 'id' or 'name' is null. Map: $map");
+      throw Exception(
+        "PaymentMethod.fromMap error: 'id' or 'name' is null. Map: $map",
+      );
     }
 
     return PaymentMethod(

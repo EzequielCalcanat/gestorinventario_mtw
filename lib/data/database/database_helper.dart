@@ -210,6 +210,7 @@ class DatabaseHelper {
   }
 
   final _uuid = Uuid();
+
   Future<List<String>> insertTestBranches(Database db) async {
     List<String> branchIds = [];
     final branches = [
@@ -234,16 +235,66 @@ class DatabaseHelper {
 
   Future<void> insertTestProducts(Database db, String branchId) async {
     final products = [
-      {'name': 'Papas Sabritas', 'description': 'Papas fritas clásicas', 'price': 18.0, 'stock': 50},
-      {'name': 'Doritos Nacho', 'description': 'Botana de maíz con queso', 'price': 20.0, 'stock': 45},
-      {'name': 'Churrumais', 'description': 'Botana de harina de maíz', 'price': 12.0, 'stock': 60},
-      {'name': 'Galletas Oreo', 'description': 'Galletas de chocolate', 'price': 16.0, 'stock': 40},
-      {'name': 'Coca-Cola 600ml', 'description': 'Refresco de cola', 'price': 22.0, 'stock': 70},
-      {'name': 'Chocolate Hershey\'s', 'description': 'Barra de chocolate con leche', 'price': 25.0, 'stock': 35},
-      {'name': 'Panditas Ricolino', 'description': 'Gomitas de sabores', 'price': 14.0, 'stock': 55},
-      {'name': 'Galletas Emperador', 'description': 'Galletas rellenas', 'price': 17.0, 'stock': 30},
-      {'name': 'Gatorade 500ml', 'description': 'Bebida hidratante', 'price': 28.0, 'stock': 25},
-      {'name': 'Takis Fuego', 'description': 'Botana de maíz muy picante', 'price': 21.0, 'stock': 38},
+      {
+        'name': 'Papas Sabritas',
+        'description': 'Papas fritas clásicas',
+        'price': 18.0,
+        'stock': 50,
+      },
+      {
+        'name': 'Doritos Nacho',
+        'description': 'Botana de maíz con queso',
+        'price': 20.0,
+        'stock': 45,
+      },
+      {
+        'name': 'Churrumais',
+        'description': 'Botana de harina de maíz',
+        'price': 12.0,
+        'stock': 60,
+      },
+      {
+        'name': 'Galletas Oreo',
+        'description': 'Galletas de chocolate',
+        'price': 16.0,
+        'stock': 40,
+      },
+      {
+        'name': 'Coca-Cola 600ml',
+        'description': 'Refresco de cola',
+        'price': 22.0,
+        'stock': 70,
+      },
+      {
+        'name': 'Chocolate Hershey\'s',
+        'description': 'Barra de chocolate con leche',
+        'price': 25.0,
+        'stock': 35,
+      },
+      {
+        'name': 'Panditas Ricolino',
+        'description': 'Gomitas de sabores',
+        'price': 14.0,
+        'stock': 55,
+      },
+      {
+        'name': 'Galletas Emperador',
+        'description': 'Galletas rellenas',
+        'price': 17.0,
+        'stock': 30,
+      },
+      {
+        'name': 'Gatorade 500ml',
+        'description': 'Bebida hidratante',
+        'price': 28.0,
+        'stock': 25,
+      },
+      {
+        'name': 'Takis Fuego',
+        'description': 'Botana de maíz muy picante',
+        'price': 21.0,
+        'stock': 38,
+      },
     ];
 
     for (var product in products) {
@@ -262,16 +313,52 @@ class DatabaseHelper {
 
   Future<void> insertTestClients(Database db) async {
     final clients = [
-      {'name': 'Carlos Martínez', 'email': 'carlos@example.com', 'phone': '5551234567'},
+      {
+        'name': 'Carlos Martínez',
+        'email': 'carlos@example.com',
+        'phone': '5551234567',
+      },
       {'name': 'Ana López', 'email': 'ana@example.com', 'phone': '5559876543'},
-      {'name': 'Luis Hernández', 'email': 'luis@example.com', 'phone': '5557890123'},
-      {'name': 'Laura García', 'email': 'laura@example.com', 'phone': '5554567890'},
-      {'name': 'Pedro Sánchez', 'email': 'pedro@example.com', 'phone': '5553210987'},
-      {'name': 'María Fernández', 'email': 'maria@example.com', 'phone': '5556543210'},
-      {'name': 'José Ramírez', 'email': 'jose@example.com', 'phone': '5555678901'},
-      {'name': 'Sofía Torres', 'email': 'sofia@example.com', 'phone': '5556789012'},
-      {'name': 'Miguel Díaz', 'email': 'miguel@example.com', 'phone': '5557891234'},
-      {'name': 'Paola Cruz', 'email': 'paola@example.com', 'phone': '5558901234'},
+      {
+        'name': 'Luis Hernández',
+        'email': 'luis@example.com',
+        'phone': '5557890123',
+      },
+      {
+        'name': 'Laura García',
+        'email': 'laura@example.com',
+        'phone': '5554567890',
+      },
+      {
+        'name': 'Pedro Sánchez',
+        'email': 'pedro@example.com',
+        'phone': '5553210987',
+      },
+      {
+        'name': 'María Fernández',
+        'email': 'maria@example.com',
+        'phone': '5556543210',
+      },
+      {
+        'name': 'José Ramírez',
+        'email': 'jose@example.com',
+        'phone': '5555678901',
+      },
+      {
+        'name': 'Sofía Torres',
+        'email': 'sofia@example.com',
+        'phone': '5556789012',
+      },
+      {
+        'name': 'Miguel Díaz',
+        'email': 'miguel@example.com',
+        'phone': '5557891234',
+      },
+      {
+        'name': 'Paola Cruz',
+        'email': 'paola@example.com',
+        'phone': '5558901234',
+      },
     ];
     for (var client in clients) {
       final id = _uuid.v4();
@@ -288,7 +375,11 @@ class DatabaseHelper {
   // Insertar datos en cualquier tabla
   Future<int> insert<T>(String table, Map<String, dynamic> data) async {
     final db = await database;
-    return await db.insert(table, data, conflictAlgorithm: ConflictAlgorithm.replace);
+    return await db.insert(
+      table,
+      data,
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
   // Consultar datos de cualquier tabla
@@ -303,23 +394,39 @@ class DatabaseHelper {
     return await db.update(table, data, where: 'id = ?', whereArgs: [id]);
   }
 
-  // Eliminar datos lógicamente (cambiar is_active a false)
+  // Eliminar datos lógicamente
   Future<int> delete<T>(String table, int id) async {
     final db = await database;
-    return await db.update(table, {'is_active': false}, where: 'id = ?', whereArgs: [id]);
+    return await db.update(
+      table,
+      {'is_active': false},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 
   // Insertar una entidad genérica
   Future<int> insertEntity<T>(String table, T entity) async {
     final db = await database;
     final entityMap = _entityToMap(entity);
-    return await db.insert(table, entityMap, conflictAlgorithm: ConflictAlgorithm.replace);
+    return await db.insert(
+      table,
+      entityMap,
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
   // Consultar entidades genéricas
-  Future<List<T>> getEntities<T>(String table, T Function(Map<String, dynamic>) fromMap) async {
+  Future<List<T>> getEntities<T>(
+    String table,
+    T Function(Map<String, dynamic>) fromMap,
+  ) async {
     final db = await database;
-    final result = await db.query(table, where: 'is_active = ?', whereArgs: [true]);
+    final result = await db.query(
+      table,
+      where: 'is_active = ?',
+      whereArgs: [true],
+    );
     return result.map((json) => fromMap(json)).toList();
   }
 
@@ -344,7 +451,10 @@ class DatabaseHelper {
   }
 
   // Convertir un mapa a un objeto
-  T _mapToEntity<T>(Map<String, dynamic> map, T Function(Map<String, dynamic>) fromMap) {
+  T _mapToEntity<T>(
+    Map<String, dynamic> map,
+    T Function(Map<String, dynamic>) fromMap,
+  ) {
     return fromMap(map);
   }
 }

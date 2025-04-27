@@ -38,5 +38,4 @@ class Branch {
       updatedAt: map['updated_at'],
     );
   }
-
 }

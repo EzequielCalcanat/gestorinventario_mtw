@@ -83,7 +83,7 @@ class Repository<T> {
     final db = await DatabaseHelper.instance.database;
     final result = await db.insert(table, map);
 
-    if (item is! SaleDetail){
+    if (item is! SaleDetail) {
       final logDescription = _getLogDescription(item, "save");
       await _createLog("save", logDescription);
     }

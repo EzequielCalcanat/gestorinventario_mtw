@@ -50,5 +50,4 @@ class User {
       updatedAt: map['updated_at'],
     );
   }
-
 }

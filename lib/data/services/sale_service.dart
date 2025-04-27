@@ -9,7 +9,6 @@ import 'package:flutterinventory/data/repositories/sale_detail_repository.dart';
 import 'package:flutterinventory/data/repositories/shared_prefs_repository.dart';
 import 'package:uuid/uuid.dart';
 
-
 class SaleService {
   static Future<void> createSaleTransaction({
     required Cart cart,
@@ -20,7 +19,9 @@ class SaleService {
     final saleRepo = SaleRepository();
     final saleDetailRepo = SaleDetailRepository();
 
-    final paymentMethod = await paymentRepo.getOrCreatePaymentMethod(paymentMethodName);
+    final paymentMethod = await paymentRepo.getOrCreatePaymentMethod(
+      paymentMethodName,
+    );
 
     final branchId = await SharedPrefsRepository.getBranchId();
     final userId = await SharedPrefsRepository.getUserId();
