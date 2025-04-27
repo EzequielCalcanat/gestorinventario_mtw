@@ -32,7 +32,10 @@ class ProductRow extends StatelessWidget {
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text("Eliminar"),
+            child: const Text(
+              "Eliminar",
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -85,7 +88,10 @@ class BranchRow extends StatelessWidget {
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text("Eliminar"),
+            child: const Text(
+              "Eliminar",
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -155,7 +161,10 @@ class UserRow extends StatelessWidget {
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text("Eliminar"),
+            child: const Text(
+              "Eliminar",
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -221,7 +230,10 @@ class ClientRow extends StatelessWidget {
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text("Eliminar"),
+            child: const Text(
+                "Eliminar",
+                style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
