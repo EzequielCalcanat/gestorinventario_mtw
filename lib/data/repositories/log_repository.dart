@@ -24,6 +24,7 @@ class LogRepository {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('logged_user_id');
   }
+
   Future<String?> getLoggedUserName() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('user_name');

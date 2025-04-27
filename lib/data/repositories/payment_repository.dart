@@ -3,16 +3,16 @@ import 'package:flutterinventory/data/repositories/repository.dart';
 
 class PaymentRepository extends Repository<PaymentMethod> {
   PaymentRepository()
-      : super(
-    table: 'payment_methods',
-    moduleName: 'Métodos de Pago',
-    fromMap: (map) => PaymentMethod.fromMap(map),
-    toMap: (paymentMethod) => paymentMethod.toMap(),
-  );
+    : super(
+        table: 'payment_methods',
+        moduleName: 'Métodos de Pago',
+        fromMap: (map) => PaymentMethod.fromMap(map),
+        toMap: (paymentMethod) => paymentMethod.toMap(),
+      );
 
   Future<PaymentMethod> getOrCreatePaymentMethod(String name) async {
     final existing = await getFiltered([
-      {'name': 'name', 'operator': '=', 'value': name}
+      {'name': 'name', 'operator': '=', 'value': name},
     ]);
 
     if (existing.isNotEmpty) {

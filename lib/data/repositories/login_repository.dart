@@ -9,7 +9,7 @@ class LoginRepository {
     table: 'users',
     fromMap: (map) => User.fromMap(map),
     toMap: (user) => user.toMap(),
-    moduleName: "Usuario"
+    moduleName: "Usuario",
   );
 
   static Future<List<User>> getAllUsers({int? isActive}) async {
@@ -44,23 +44,35 @@ class LoginRepository {
 
     if (userId != null) {
       final users = await getAllUsers();
-      final user = users.firstWhere((u) => u.id == userId, orElse: () {
-        throw Exception('Usuario no encontrado');
-      });
+      final user = users.firstWhere(
+        (u) => u.id == userId,
+        orElse: () {
+          throw Exception('Usuario no encontrado');
+        },
+      );
       user.branchId = branchId;
       await updateUser(user);
 
-      String branchName = await BranchRepository.getBranchName(user.branchId ?? "all");
-      await prefs.setString('user_branch_name', branchName ?? 'Sucursal no encontrada');
+      String branchName = await BranchRepository.getBranchName(
+        user.branchId ?? "all",
+      );
+      await prefs.setString(
+        'user_branch_name',
+        branchName ?? 'Sucursal no encontrada',
+      );
     } else {
       throw Exception('No se encontró el userId en SharedPreferences');
     }
   }
 
-  static Future<List<Map<String, dynamic>>> getTopSellingUsers(DateTime start, DateTime end) async {
+  static Future<List<Map<String, dynamic>>> getTopSellingUsers(
+    DateTime start,
+    DateTime end,
+  ) async {
     final db = await DatabaseHelper.instance.database;
 
-    final result = await db.rawQuery('''
+    final result = await db.rawQuery(
+      '''
     SELECT 
       u.name as user_name, 
       b.name as branch_name, 
@@ -72,10 +84,10 @@ class LoginRepository {
     WHERE u.is_active = 1
     GROUP BY u.id
     ORDER BY total_sales_amount DESC
-  ''', [start.toIso8601String(), end.toIso8601String()]);
+  ''',
+      [start.toIso8601String(), end.toIso8601String()],
+    );
 
     return result;
   }
-
-
 }

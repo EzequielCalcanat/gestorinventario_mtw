@@ -40,6 +40,7 @@ class Repository<T> {
 
     await _logRepository.insertLog(log);
   }
+
   Future<List<T>> getFiltered(List<Map<String, dynamic>> filters) async {
     final db = await DatabaseHelper.instance.database;
 
@@ -104,9 +105,11 @@ class Repository<T> {
 
   Future<int> update(T item, String id) async {
     final map = toMap(item);
-    map.removeWhere((key, value) =>
-    (key == 'isActive' || key == 'created_at' || key == 'updated_at') &&
-        value == null);
+    map.removeWhere(
+      (key, value) =>
+          (key == 'isActive' || key == 'created_at' || key == 'updated_at') &&
+          value == null,
+    );
 
     final db = await DatabaseHelper.instance.database;
     final result = await db.update(
@@ -124,7 +127,12 @@ class Repository<T> {
 
   Future<int> delete(T item, String id) async {
     final db = await DatabaseHelper.instance.database;
-    final result = await db.update(table, {'is_active': false}, where: 'id = ?', whereArgs: [id]);
+    final result = await db.update(
+      table,
+      {'is_active': false},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
 
     final logDescription = _getLogDescription(item, "save");
     await _createLog("delete", logDescription);
@@ -134,17 +142,29 @@ class Repository<T> {
   // Método para obtener una descripción de log
   String _getLogDescription(T item, String action) {
     if (item is Branch) {
-      return (action == 'save' || action == 'update') ? (item as Branch).name : 'Sucursal: ${(item as Branch).id}';
+      return (action == 'save' || action == 'update')
+          ? (item as Branch).name
+          : 'Sucursal: ${(item as Branch).id}';
     } else if (item is Client) {
-      return (action == 'save' || action == 'update') ? (item as Client).name : 'Cliente: ${(item as Client).id}';
+      return (action == 'save' || action == 'update')
+          ? (item as Client).name
+          : 'Cliente: ${(item as Client).id}';
     } else if (item is Product) {
-      return (action == 'save' || action == 'update') ? (item as Product).name : 'Producto: ${(item as Product).id}';
+      return (action == 'save' || action == 'update')
+          ? (item as Product).name
+          : 'Producto: ${(item as Product).id}';
     } else if (item is User) {
-      return (action == 'save' || action == 'update') ? (item as User).name : 'Usuario: ${(item as User).id}';
+      return (action == 'save' || action == 'update')
+          ? (item as User).name
+          : 'Usuario: ${(item as User).id}';
     } else if (item is Sale) {
-      return (action == 'save') ? 'Venta #${(item as Sale).saleNumber}' : 'Venta: ${(item as Sale).id}';
-    }else if (item is SaleDetail) {
-      return (action == 'save') ? 'Detalles de la venta #${(item as SaleDetail).saleId}' : 'Detalle de Venta: ${(item as SaleDetail).id}';
+      return (action == 'save')
+          ? 'Venta #${(item as Sale).saleNumber}'
+          : 'Venta: ${(item as Sale).id}';
+    } else if (item is SaleDetail) {
+      return (action == 'save')
+          ? 'Detalles de la venta #${(item as SaleDetail).saleId}'
+          : 'Detalle de Venta: ${(item as SaleDetail).id}';
     }
 
     return item.toString();

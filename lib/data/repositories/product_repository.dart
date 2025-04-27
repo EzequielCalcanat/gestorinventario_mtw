@@ -8,7 +8,7 @@ class ProductRepository {
     table: 'products',
     fromMap: (map) => Product.fromMap(map),
     toMap: (product) => product.toMap(),
-    moduleName: "Producto"
+    moduleName: "Producto",
   );
 
   static Future<int> addProduct(Product product) async {
@@ -20,7 +20,9 @@ class ProductRepository {
     return await _repository.getAll(isActive: isActive);
   }
 
-  static Future<List<Product>> getAllProductsByBranch({bool isActive = true}) async {
+  static Future<List<Product>> getAllProductsByBranch({
+    bool isActive = true,
+  }) async {
     final prefs = await SharedPreferences.getInstance();
     final branchId = prefs.getString('user_branch_id');
     List<Map<String, dynamic>> filters = [
@@ -30,7 +32,10 @@ class ProductRepository {
     List<Product> filteredProducts = await _repository.getFiltered(filters);
     return filteredProducts;
   }
-  static Future<List<Product>> getAllProductsByBranchWithStock({bool isActive = true}) async {
+
+  static Future<List<Product>> getAllProductsByBranchWithStock({
+    bool isActive = true,
+  }) async {
     final prefs = await SharedPreferences.getInstance();
     final branchId = prefs.getString('user_branch_id');
     List<Map<String, dynamic>> filters = [
@@ -50,10 +55,14 @@ class ProductRepository {
     return await _repository.delete(product, product.id);
   }
 
-  static Future<List<Map<String, dynamic>>> getTopSellingProducts(DateTime start, DateTime end) async {
+  static Future<List<Map<String, dynamic>>> getTopSellingProducts(
+    DateTime start,
+    DateTime end,
+  ) async {
     final db = await DatabaseHelper.instance.database;
 
-    final result = await db.rawQuery('''
+    final result = await db.rawQuery(
+      '''
     SELECT 
       p.name as product_name, 
       b.name as branch_name, 
@@ -66,7 +75,9 @@ class ProductRepository {
     WHERE p.is_active = 1
     GROUP BY p.id
     ORDER BY total_quantity DESC
-  ''', [start.toIso8601String(), end.toIso8601String()]);
+  ''',
+      [start.toIso8601String(), end.toIso8601String()],
+    );
 
     return result;
   }
