@@ -1,4 +1,5 @@
 import 'package:flutterinventory/data/models/sale.dart';
+import 'package:flutterinventory/data/models/sale_item.dart';
 import 'package:flutterinventory/data/repositories/repository.dart';
 import 'package:flutterinventory/data/database/database_helper.dart';
 
@@ -75,6 +76,38 @@ class SaleRepository extends Repository<Sale> {
     );
 
     return result.map((map) => Sale.fromMap(map)).toList();
+  }
+
+  static Future<List<SaleItem>> getSalesHistory() async {
+    final db = await DatabaseHelper.instance.database;
+
+    final result = await db.rawQuery('''
+    SELECT 
+      s.id,
+      c.name as client_name,
+      pm.name as payment_method_name,
+      s.total,
+      s.date,
+      (SELECT SUM(quantity) FROM sale_details sd WHERE sd.sale_id = s.id) as total_products
+    FROM sales s
+    JOIN clients c ON s.client_id = c.id
+    JOIN payment_methods pm ON s.payment_method_id = pm.id
+    WHERE s.is_active = 1
+    ORDER BY s.date DESC
+  ''');
+
+    return result
+        .map(
+          (map) => SaleItem(
+            id: map['id'] as String,
+            clientName: map['client_name'] as String,
+            paymentMethodName: map['payment_method_name'] as String,
+            total: (map['total'] as num).toDouble(),
+            totalProducts: (map['total_products'] as int?) ?? 0,
+            date: map['date'] as String,
+          ),
+        )
+        .toList();
   }
 
   static String _twoDigits(int n) => n.toString().padLeft(2, '0');
