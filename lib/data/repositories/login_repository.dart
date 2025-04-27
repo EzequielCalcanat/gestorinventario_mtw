@@ -1,8 +1,7 @@
 import 'package:flutterinventory/data/models/user.dart';
 import 'package:flutterinventory/data/repositories/repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../database/database_helper.dart';
+import 'package:flutterinventory/data/database/database_helper.dart';
 import 'branch_repository.dart';
 
 class LoginRepository {
@@ -71,6 +70,26 @@ class LoginRepository {
     );
 
     return result.map((map) => User.fromMap(map)).toList();
+  }
+
+  static Future<List<Map<String, dynamic>>> getTopSellingUsers(DateTime start, DateTime end) async {
+    final db = await DatabaseHelper.instance.database;
+
+    final result = await db.rawQuery('''
+    SELECT 
+      u.name as user_name, 
+      b.name as branch_name, 
+      COUNT(s.id) as total_sales_count, 
+      SUM(s.total) as total_sales_amount
+    FROM sales s
+    JOIN users u ON s.user_id = u.id
+    JOIN branches b ON u.branch_id = b.id
+    WHERE s.date BETWEEN ? AND ? AND s.is_active = 1
+    GROUP BY s.user_id
+    ORDER BY total_sales_amount DESC
+  ''', [start.toIso8601String(), end.toIso8601String()]);
+
+    return result;
   }
 
 }

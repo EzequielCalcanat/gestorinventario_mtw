@@ -1,7 +1,6 @@
 import 'package:flutterinventory/data/models/branch.dart';
 import 'package:flutterinventory/data/repositories/repository.dart';
-
-import '../database/database_helper.dart';
+import 'package:flutterinventory/data/database/database_helper.dart';
 
 class BranchRepository {
   static final Repository<Branch> _repository = Repository<Branch>(

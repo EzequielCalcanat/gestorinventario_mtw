@@ -1,3 +1,4 @@
+import 'package:flutterinventory/data/database/database_helper.dart';
 import 'package:flutterinventory/data/models/product.dart';
 import 'package:flutterinventory/data/repositories/repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -47,5 +48,26 @@ class ProductRepository {
 
   static Future<int> deleteProduct(Product product) async {
     return await _repository.delete(product, product.id);
+  }
+
+  static Future<List<Map<String, dynamic>>> getTopSellingProducts(DateTime start, DateTime end) async {
+    final db = await DatabaseHelper.instance.database;
+
+    final result = await db.rawQuery('''
+    SELECT 
+      p.name as product_name, 
+      b.name as branch_name, 
+      IFNULL(SUM(sd.quantity), 0) as total_quantity, 
+      IFNULL(SUM(sd.price * sd.quantity), 0) as total_sales
+    FROM products p
+    JOIN branches b ON p.branch_id = b.id
+    LEFT JOIN sale_details sd ON p.id = sd.product_id
+    LEFT JOIN sales s ON sd.sale_id = s.id AND s.date BETWEEN ? AND ? AND s.is_active = 1
+    WHERE p.is_active = 1
+    GROUP BY p.id
+    ORDER BY total_quantity DESC
+  ''', [start.toIso8601String(), end.toIso8601String()]);
+
+    return result;
   }
 }

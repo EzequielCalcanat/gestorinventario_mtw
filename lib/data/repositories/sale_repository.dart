@@ -1,7 +1,6 @@
 import 'package:flutterinventory/data/models/sale.dart';
 import 'package:flutterinventory/data/repositories/repository.dart';
-
-import '../database/database_helper.dart';
+import 'package:flutterinventory/data/database/database_helper.dart';
 
 class SaleRepository extends Repository<Sale> {
   SaleRepository()
