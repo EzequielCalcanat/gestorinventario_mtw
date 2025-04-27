@@ -12,7 +12,12 @@ class ProductRow extends StatefulWidget {
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
-  const ProductRow({Key? key, required this.product, required this.onEdit, required this.onDelete}) : super(key: key);
+  const ProductRow({
+    Key? key,
+    required this.product,
+    required this.onEdit,
+    required this.onDelete,
+  }) : super(key: key);
 
   @override
   _ProductRowState createState() => _ProductRowState();
@@ -27,26 +32,33 @@ class _ProductRowState extends State<ProductRow> {
     return const Color(0xFFC8E6C9);
   }
 
-  String _stockText(int stock) => stock == 1 ? '1 disponible' : '$stock disponibles';
+  String _stockText(int stock) =>
+      stock == 1 ? '1 disponible' : '$stock disponibles';
 
   Future<bool?> _confirmDelete(BuildContext context) async {
     return showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: const Text("¿Eliminar producto?"),
-        content: const Text("¿Estás seguro de eliminar este producto? no se borrará de las ventas ya realizadas."),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("Cancelar")),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text(
-              "Eliminar",
-              style: TextStyle(color: Colors.white),
+      builder:
+          (_) => AlertDialog(
+            title: const Text("¿Eliminar producto?"),
+            content: const Text(
+              "¿Estás seguro de eliminar este producto? no se borrará de las ventas ya realizadas.",
             ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text("Cancelar"),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                child: const Text(
+                  "Eliminar",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -72,7 +84,10 @@ class _ProductRowState extends State<ProductRow> {
                 leading: const Icon(Icons.inventory_2, color: Colors.grey),
                 title: Text(
                   widget.product.name,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -87,14 +102,20 @@ class _ProductRowState extends State<ProductRow> {
                     ),
                     const SizedBox(height: 4),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
                         color: _stockColor(widget.product.stock),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         _stockText(widget.product.stock),
-                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
+                        style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                     if (_isExpanded) ...[
@@ -104,7 +125,7 @@ class _ProductRowState extends State<ProductRow> {
                           'Descripción: ${widget.product.description!}',
                           style: const TextStyle(fontSize: 13),
                         ),
-                    ]
+                    ],
                   ],
                 ),
                 trailing: IconButton(
@@ -124,11 +145,8 @@ class BranchRow extends StatelessWidget {
   final Branch branch;
   final VoidCallback onEdit;
 
-  const BranchRow({
-    Key? key,
-    required this.branch,
-    required this.onEdit,
-  }) : super(key: key);
+  const BranchRow({Key? key, required this.branch, required this.onEdit})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -163,44 +181,61 @@ class UserRow extends StatelessWidget {
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
-  const UserRow({Key? key, required this.user, required this.onEdit, required this.onDelete}) : super(key: key);
+  const UserRow({
+    Key? key,
+    required this.user,
+    required this.onEdit,
+    required this.onDelete,
+  }) : super(key: key);
 
   Color _badgeColor(String role) {
     switch (role) {
-      case 'admin': return const Color(0xFFE8D5F7);
-      case 'employee': return const Color(0xFFD6EAF8);
-      case 'sales': return const Color(0xFFFFF9C4);
-      default: return Colors.grey.shade200;
+      case 'admin':
+        return const Color(0xFFE8D5F7);
+      case 'employee':
+        return const Color(0xFFD6EAF8);
+      case 'sales':
+        return const Color(0xFFFFF9C4);
+      default:
+        return Colors.grey.shade200;
     }
   }
 
   String _roleLabel(String role) {
     switch (role) {
-      case 'admin': return 'Administrador';
-      case 'employee': return 'Empleado';
-      case 'sales': return 'Ventas';
-      default: return 'Desconocido';
+      case 'admin':
+        return 'Administrador';
+      case 'employee':
+        return 'Empleado';
+      case 'sales':
+        return 'Ventas';
+      default:
+        return 'Desconocido';
     }
   }
 
   Future<bool?> _confirmDelete(BuildContext context) async {
     return showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: const Text("¿Eliminar usuario?"),
-        content: const Text("¿Seguro que deseas eliminar este usuario? "),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("Cancelar")),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text(
-              "Eliminar",
-              style: TextStyle(color: Colors.white),
-            ),
+      builder:
+          (_) => AlertDialog(
+            title: const Text("¿Eliminar usuario?"),
+            content: const Text("¿Seguro que deseas eliminar este usuario? "),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text("Cancelar"),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                child: const Text(
+                  "Eliminar",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -231,15 +266,25 @@ class UserRow extends StatelessWidget {
             const SizedBox(height: 4),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              decoration: BoxDecoration(color: _badgeColor(user.role), borderRadius: BorderRadius.circular(8)),
+              decoration: BoxDecoration(
+                color: _badgeColor(user.role),
+                borderRadius: BorderRadius.circular(8),
+              ),
               child: Text(
                 _roleLabel(user.role),
-                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.black87),
+                style: const TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
               ),
             ),
           ],
         ),
-        trailing: IconButton(icon: const Icon(Icons.edit, color: Colors.blue), onPressed: onEdit),
+        trailing: IconButton(
+          icon: const Icon(Icons.edit, color: Colors.blue),
+          onPressed: onEdit,
+        ),
       ),
     );
   }
@@ -250,26 +295,35 @@ class ClientRow extends StatelessWidget {
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
-  const ClientRow({Key? key, required this.client, required this.onEdit, required this.onDelete}) : super(key: key);
+  const ClientRow({
+    Key? key,
+    required this.client,
+    required this.onEdit,
+    required this.onDelete,
+  }) : super(key: key);
 
   Future<bool?> _confirmDelete(BuildContext context) async {
     return showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: const Text("¿Eliminar cliente?"),
-        content: const Text("¿Seguro que deseas eliminar este cliente?"),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("Cancelar")),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text(
-                "Eliminar",
-                style: TextStyle(color: Colors.white),
-            ),
+      builder:
+          (_) => AlertDialog(
+            title: const Text("¿Eliminar cliente?"),
+            content: const Text("¿Seguro que deseas eliminar este cliente?"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text("Cancelar"),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                child: const Text(
+                  "Eliminar",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -314,7 +368,10 @@ class ClientRow extends StatelessWidget {
             ],
           ],
         ),
-        trailing: IconButton(icon: const Icon(Icons.edit, color: Colors.blue), onPressed: onEdit),
+        trailing: IconButton(
+          icon: const Icon(Icons.edit, color: Colors.blue),
+          onPressed: onEdit,
+        ),
       ),
     );
   }
@@ -331,7 +388,8 @@ class SalesRow extends StatelessWidget {
     return Colors.green.shade100;
   }
 
-  String _stockLabel(int stock) => '$stock ${stock == 1 ? "disponible" : "disponibles"}';
+  String _stockLabel(int stock) =>
+      '$stock ${stock == 1 ? "disponible" : "disponibles"}';
 
   @override
   Widget build(BuildContext context) {
@@ -344,7 +402,10 @@ class SalesRow extends StatelessWidget {
         elevation: 3,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         child: ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 14,
+            vertical: 8,
+          ),
           leading: const Icon(Icons.inventory_2_outlined, color: Colors.grey),
           title: Text(
             product.name,
@@ -363,10 +424,16 @@ class SalesRow extends StatelessWidget {
               const SizedBox(height: 4),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(color: _stockColor(product.stock), borderRadius: BorderRadius.circular(12)),
+                decoration: BoxDecoration(
+                  color: _stockColor(product.stock),
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Text(
                   _stockLabel(product.stock),
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ],
@@ -381,7 +448,10 @@ class SalesRow extends StatelessWidget {
               Text('$quantity', style: const TextStyle(fontSize: 16)),
               IconButton(
                 icon: const Icon(Icons.add, color: Colors.black54),
-                onPressed: quantity < product.stock ? () => cart.addItem(product) : null,
+                onPressed:
+                    quantity < product.stock
+                        ? () => cart.addItem(product)
+                        : null,
               ),
             ],
           ),
@@ -396,10 +466,7 @@ class _NonDismissibleCard extends StatelessWidget {
   final Key key;
   final Widget child;
 
-  const _NonDismissibleCard({
-    required this.key,
-    required this.child,
-  });
+  const _NonDismissibleCard({required this.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -424,10 +491,7 @@ class _NonDismissibleCard extends StatelessWidget {
             color: Colors.grey,
             borderRadius: BorderRadius.circular(8),
           ),
-          child: const Icon(
-            Icons.lock_outline,
-            color: Colors.white,
-          ),
+          child: const Icon(Icons.lock_outline, color: Colors.white),
         ),
         child: Card(
           elevation: 3,
@@ -456,7 +520,7 @@ class _DismissibleCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4), // MÁS DELGADO
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       child: Dismissible(
         key: key,
         direction: DismissDirection.endToStart,
@@ -515,7 +579,7 @@ class SaleRow extends StatelessWidget {
           ],
         ),
         trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween, // <-- Para empujar arriba y abajo
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(
@@ -523,16 +587,13 @@ class SaleRow extends StatelessWidget {
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 15,
-                color: Colors.green, // <-- Precio en verde
+                color: Colors.green,
               ),
             ),
             const SizedBox(height: 4),
             Text(
               _formatDate(sale.date),
-              style: const TextStyle(
-                fontSize: 11,
-                color: Colors.grey,
-              ),
+              style: const TextStyle(fontSize: 11, color: Colors.grey),
             ),
           ],
         ),

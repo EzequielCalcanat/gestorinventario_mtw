@@ -31,7 +31,6 @@ class _BranchFormScreenState extends State<BranchFormScreen> {
 
   void _saveBranch() async {
     if (!_formKey.currentState!.validate()) {
-      // Si el formulario no es válido, no hace nada
       return;
     }
 
@@ -59,7 +58,7 @@ class _BranchFormScreenState extends State<BranchFormScreen> {
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Form(
-            key: _formKey, // Asociamos el formulario con el GlobalKey
+            key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

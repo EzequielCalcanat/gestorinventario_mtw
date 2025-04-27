@@ -64,7 +64,13 @@ class _UsersReportScreenState extends State<UsersReportScreen> {
 
   Future<void> _exportCSV() async {
     List<List<dynamic>> rows = [
-      ["Vendedor", "Sucursal", "Cantidad de Ventas", "Total Vendido", "Periodo"]
+      [
+        "Vendedor",
+        "Sucursal",
+        "Cantidad de Ventas",
+        "Total Vendido",
+        "Periodo",
+      ],
     ];
 
     for (var seller in sellers) {
@@ -109,82 +115,101 @@ class _UsersReportScreenState extends State<UsersReportScreen> {
           isLoading
               ? const CircularProgressIndicator()
               : Expanded(
-            child: Scrollbar(
-              child: sellers.isEmpty
-                  ? const Center(child: Text("No hay vendedores en este rango."))
-                  : ListView.builder(
-                itemCount: sellers.length,
-                itemBuilder: (context, index) {
-                  final seller = sellers[index];
-                  final salesCount = seller['total_sales_count'] ?? 0;
-                  final totalSales = (seller['total_sales_amount'] as num?) ?? 0.0;
+                child: Scrollbar(
+                  child:
+                      sellers.isEmpty
+                          ? const Center(
+                            child: Text("No hay vendedores en este rango."),
+                          )
+                          : ListView.builder(
+                            itemCount: sellers.length,
+                            itemBuilder: (context, index) {
+                              final seller = sellers[index];
+                              final salesCount =
+                                  seller['total_sales_count'] ?? 0;
+                              final totalSales =
+                                  (seller['total_sales_amount'] as num?) ?? 0.0;
 
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 6.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                seller['user_name'] ?? '',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 6.0,
                                 ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                seller['branch_name'] ?? '',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: Colors.grey[600],
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            seller['user_name'] ?? '',
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            seller['branch_name'] ?? '',
+                                            style: TextStyle(
+                                              fontSize: 13,
+                                              color: Colors.grey[600],
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      children: [
+                                        Text(
+                                          "x$salesCount ventas",
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey[700],
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 6,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color:
+                                                totalSales > 0
+                                                    ? const Color(0xFFD0F0C0)
+                                                    : Colors.grey[300],
+                                            borderRadius: BorderRadius.circular(
+                                              20,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            totalSales > 0
+                                                ? "\$${totalSales.toStringAsFixed(2)}"
+                                                : "Sin ventas",
+                                            style: const TextStyle(
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black87,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
+                              );
+                            },
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              "x$salesCount ventas",
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey[700],
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: totalSales > 0 ? const Color(0xFFD0F0C0) : Colors.grey[300],
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Text(
-                                totalSales > 0 ? "\$${totalSales.toStringAsFixed(2)}" : "Sin ventas",
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  );
-                },
+                ),
               ),
-            ),
-          ),
           const SizedBox(height: 16),
           ElevatedButton.icon(
             onPressed: sellers.isEmpty ? null : _exportCSV,
@@ -201,7 +226,8 @@ class _UsersReportScreenState extends State<UsersReportScreen> {
     Map<String, double> chartData = {};
 
     for (var seller in sellers.take(10)) {
-      chartData[seller['user_name']] = (seller['total_sales_amount'] as num?)?.toDouble() ?? 0.0;
+      chartData[seller['user_name']] =
+          (seller['total_sales_amount'] as num?)?.toDouble() ?? 0.0;
     }
 
     return CommonPieChart(data: chartData);
@@ -216,9 +242,7 @@ class _UsersReportScreenState extends State<UsersReportScreen> {
     return ElevatedButton.styleFrom(
       backgroundColor: const Color(0xFF3491B3),
       foregroundColor: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(5),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
     );
   }
