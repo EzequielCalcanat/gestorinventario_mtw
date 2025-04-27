@@ -5,9 +5,9 @@ import 'package:flutterinventory/data/repositories/branch_repository.dart';
 import 'package:flutterinventory/data/repositories/login_repository.dart';
 import 'package:flutterinventory/presentation/screens/users/user_form_screen.dart';
 import 'package:flutterinventory/presentation/widgets/base_scaffold.dart';
+import 'package:flutterinventory/presentation/widgets/common/module_breadcrumb.dart';
 import 'package:flutterinventory/presentation/widgets/tables/item_row.dart';
 import 'package:shimmer/shimmer.dart';
-import '../../widgets/common/module_breadcrumb.dart';
 
 class UsersScreen extends StatefulWidget {
   const UsersScreen({super.key});

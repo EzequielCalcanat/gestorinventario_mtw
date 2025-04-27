@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutterinventory/data/models/product.dart';
 import 'package:flutterinventory/data/repositories/product_repository.dart';
 import 'package:flutterinventory/presentation/widgets/base_scaffold.dart';
+import 'package:flutterinventory/presentation/widgets/common/module_breadcrumb.dart';
 import 'package:flutterinventory/presentation/widgets/tables/item_row.dart';
-
-import '../../widgets/common/module_breadcrumb.dart';
 
 class SalesScreen extends StatelessWidget {
   const SalesScreen({super.key});

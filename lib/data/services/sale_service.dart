@@ -1,4 +1,5 @@
 import 'package:flutterinventory/data/models/cart.dart';
+import 'package:flutterinventory/data/models/product.dart';
 import 'package:flutterinventory/data/models/sale.dart';
 import 'package:flutterinventory/data/models/sale_detail.dart';
 import 'package:flutterinventory/data/repositories/payment_repository.dart';
@@ -8,7 +9,6 @@ import 'package:flutterinventory/data/repositories/sale_detail_repository.dart';
 import 'package:flutterinventory/data/repositories/shared_prefs_repository.dart';
 import 'package:uuid/uuid.dart';
 
-import '../models/product.dart';
 
 class SaleService {
   static Future<void> createSaleTransaction({
