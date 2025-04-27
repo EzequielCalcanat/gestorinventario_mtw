@@ -57,21 +57,6 @@ class LoginRepository {
     }
   }
 
-  static Future<List<User>> getUsersBetweenDates(DateTime start, DateTime end) async {
-    final db = await DatabaseHelper.instance.database;
-
-    final result = await db.query(
-      'users',
-      where: 'created_at BETWEEN ? AND ? AND is_active = 1',
-      whereArgs: [
-        start.toIso8601String(),
-        end.toIso8601String()
-      ],
-    );
-
-    return result.map((map) => User.fromMap(map)).toList();
-  }
-
   static Future<List<Map<String, dynamic>>> getTopSellingUsers(DateTime start, DateTime end) async {
     final db = await DatabaseHelper.instance.database;
 
@@ -79,17 +64,18 @@ class LoginRepository {
     SELECT 
       u.name as user_name, 
       b.name as branch_name, 
-      COUNT(s.id) as total_sales_count, 
-      SUM(s.total) as total_sales_amount
-    FROM sales s
-    JOIN users u ON s.user_id = u.id
+      IFNULL(COUNT(s.id), 0) as total_sales_count, 
+      IFNULL(SUM(s.total), 0) as total_sales_amount
+    FROM users u
     JOIN branches b ON u.branch_id = b.id
-    WHERE s.date BETWEEN ? AND ? AND s.is_active = 1
-    GROUP BY s.user_id
+    LEFT JOIN sales s ON s.user_id = u.id AND s.date BETWEEN ? AND ? AND s.is_active = 1
+    WHERE u.is_active = 1
+    GROUP BY u.id
     ORDER BY total_sales_amount DESC
   ''', [start.toIso8601String(), end.toIso8601String()]);
 
     return result;
   }
+
 
 }
