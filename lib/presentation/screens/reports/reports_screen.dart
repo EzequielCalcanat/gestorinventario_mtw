@@ -23,11 +23,10 @@ class _ReportsScreenState extends State<ReportsScreen> {
   ];
 
   final List<String> reportTitles = [
-    "Reporte de Ventas",
-    "Reporte de Clientes",
-    "Reporte de Sucursales",
-    "Reporte de Productos",
-    "Reporte de Usuarios",
+    "Ingresos por Clientes",
+    "Ingresos por Sucursal",
+    "Productos más vendidos",
+    "Mejores Vendedores",
   ];
 
   void _previousReport() {

@@ -2,12 +2,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutterinventory/data/models/branch.dart';
 import 'package:flutterinventory/data/repositories/branch_repository.dart';
+import 'package:flutterinventory/presentation/widgets/common/common_pie_chart.dart';
 import 'package:flutterinventory/presentation/widgets/common/report_date_filter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:csv/csv.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:fl_chart/fl_chart.dart';
-import 'dart:math';
 
 class BranchesReportScreen extends StatefulWidget {
   const BranchesReportScreen({super.key});
@@ -60,6 +59,12 @@ class _BranchesReportScreenState extends State<BranchesReportScreen> {
 
     branches = await BranchRepository.getBranchesBetweenDates(startDate!, endDate!);
     salesByBranch = await BranchRepository.getSalesByBranchBetweenDates(startDate!, endDate!);
+
+    branches.sort((a, b) {
+      final aSales = salesByBranch[a.name] ?? 0.0;
+      final bSales = salesByBranch[b.name] ?? 0.0;
+      return bSales.compareTo(aSales);
+    });
 
     setState(() {
       isLoading = false;
@@ -115,7 +120,7 @@ class _BranchesReportScreenState extends State<BranchesReportScreen> {
             onSearch: _fetchBranches,
           ),
           const SizedBox(height: 16),
-          _buildSalesPieChart(),
+          CommonPieChart(data: salesByBranch),
           const SizedBox(height: 16),
           Expanded(
             child: Scrollbar(
@@ -160,11 +165,11 @@ class _BranchesReportScreenState extends State<BranchesReportScreen> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFD0F0C0), // Verde pastel clarito
+                            color: totalSales > 0 ? const Color(0xFFD0F0C0) : Colors.grey[300],
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
-                            "\$${totalSales.toStringAsFixed(2)}",
+                            totalSales > 0 ? "\$${totalSales.toStringAsFixed(2)}" : "Sin ventas",
                             style: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
@@ -189,57 +194,6 @@ class _BranchesReportScreenState extends State<BranchesReportScreen> {
         ],
       ),
     );
-  }
-
-  Widget _buildSalesPieChart() {
-    if (salesByBranch.isEmpty) {
-      return const SizedBox(
-        height: 250,
-        child: Center(
-          child: Text("No hubo ventas en este periodo."),
-        ),
-      );
-    }
-
-    return SizedBox(
-      height: 250,
-      child: PieChart(
-        PieChartData(
-          sectionsSpace: 2,
-          centerSpaceRadius: 40,
-          startDegreeOffset: 0,
-          sections: _buildPieChartSections(),
-        ),
-        swapAnimationDuration: const Duration(milliseconds: 800),
-        swapAnimationCurve: Curves.easeInOut,
-      ),
-    );
-  }
-
-  List<PieChartSectionData> _buildPieChartSections() {
-    final Random random = Random();
-    double totalSales = salesByBranch.values.fold(0, (a, b) => a + b);
-
-    return salesByBranch.entries.map((entry) {
-      final percentage = totalSales == 0 ? 0 : (entry.value / totalSales) * 100;
-
-      final color = Color.fromARGB(
-        255,
-        random.nextInt(256),
-        random.nextInt(256),
-        random.nextInt(256),
-      );
-
-      return PieChartSectionData(
-        color: color,
-        value: entry.value,
-        title: '${percentage.toStringAsFixed(1)}%',
-        radius: 70,
-        titleStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
-        badgeWidget: _buildBadge(entry.key, color),
-        badgePositionPercentageOffset: 1.2,
-      );
-    }).toList();
   }
 
   Widget _buildBadge(String branchName, Color color) {
