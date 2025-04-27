@@ -50,17 +50,14 @@ class _TopBarState extends State<TopBar> {
         children: [
           Text(
             widget.title,
-            style: const TextStyle(
-              fontSize: 18, // Más grande el título principal
-              fontWeight: FontWeight.bold,
-            ),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 2),
           Text(
             userBranchName,
             style: TextStyle(
-              fontSize: 12, // Más pequeño
-              color: Colors.grey[200], // Gris clarito
+              fontSize: 12,
+              color: Colors.grey[200],
               fontWeight: FontWeight.normal,
             ),
           ),
@@ -94,10 +91,7 @@ class _TopBarState extends State<TopBar> {
                   color: Colors.red,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                constraints: const BoxConstraints(
-                  minWidth: 16,
-                  minHeight: 16,
-                ),
+                constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
                 child: Text(
                   '$itemCount',
                   style: const TextStyle(
@@ -188,7 +182,9 @@ class _TopBarState extends State<TopBar> {
   }
 
   void showBranchSelector(BuildContext context) async {
-    List<Branch> activeBranches = await BranchRepository.getAllBranches(isActive: 1);
+    List<Branch> activeBranches = await BranchRepository.getAllBranches(
+      isActive: 1,
+    );
 
     showDialog(
       context: context,
@@ -197,19 +193,20 @@ class _TopBarState extends State<TopBar> {
           title: const Text('Seleccionar Sucursal'),
           content: SingleChildScrollView(
             child: Column(
-              children: activeBranches.map((branch) {
-                return ListTile(
-                  title: Text(branch.name),
-                  onTap: () async {
-                    await LoginRepository.updateUserBranchId(branch.id);
-                    setState(() {
-                      userBranchName = branch.name;
-                    });
-                    Navigator.pop(context);
-                    Navigator.pushReplacementNamed(context, '/home');
-                  },
-                );
-              }).toList(),
+              children:
+                  activeBranches.map((branch) {
+                    return ListTile(
+                      title: Text(branch.name),
+                      onTap: () async {
+                        await LoginRepository.updateUserBranchId(branch.id);
+                        setState(() {
+                          userBranchName = branch.name;
+                        });
+                        Navigator.pop(context);
+                        Navigator.pushReplacementNamed(context, '/home');
+                      },
+                    );
+                  }).toList(),
             ),
           ),
         );

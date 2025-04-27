@@ -47,7 +47,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
 
   void _saveProduct() async {
     if (!_formKey.currentState!.validate()) {
-      return; // No guarda si no pasa validaciones
+      return;
     }
 
     final isEditing = widget.product != null;
@@ -78,7 +78,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Form(
-            key: _formKey, // Asociamos el formulario
+            key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

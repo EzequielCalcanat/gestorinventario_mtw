@@ -35,7 +35,7 @@ class _ClientFormScreenState extends State<ClientFormScreen> {
 
   void _saveClient() async {
     if (!_formKey.currentState!.validate()) {
-      return; // No guarda si no pasa validaciones
+      return;
     }
 
     final isEditing = widget.client != null;
@@ -68,7 +68,7 @@ class _ClientFormScreenState extends State<ClientFormScreen> {
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Form(
-            key: _formKey, // Asociar Form
+            key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

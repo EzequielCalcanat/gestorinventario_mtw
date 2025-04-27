@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutterinventory/data/models/sale_item.dart';
 import 'package:flutterinventory/data/repositories/sale_repository.dart';
 import 'package:flutterinventory/presentation/widgets/base_scaffold.dart';
-import 'package:flutterinventory/presentation/widgets/tables/item_row.dart'; // SaleRow
+import 'package:flutterinventory/presentation/widgets/tables/item_row.dart';
 import 'package:shimmer/shimmer.dart';
 
 class HistorySalesScreen extends StatelessWidget {
@@ -10,10 +10,7 @@ class HistorySalesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BaseScaffold(
-      title: "Historial de Ventas",
-      body: const SalesBody(),
-    );
+    return BaseScaffold(title: "Historial de Ventas", body: const SalesBody());
   }
 }
 
@@ -53,10 +50,11 @@ class _SalesBodyState extends State<SalesBody> {
 
   void _onSearchChanged() {
     final query = _searchController.text.trim().toLowerCase();
-    final filtered = _sales.where((sale) {
-      return sale.clientName.toLowerCase().contains(query) ||
-          sale.paymentMethodName.toLowerCase().contains(query);
-    }).toList();
+    final filtered =
+        _sales.where((sale) {
+          return sale.clientName.toLowerCase().contains(query) ||
+              sale.paymentMethodName.toLowerCase().contains(query);
+        }).toList();
 
     setState(() {
       _filteredSales = filtered;
@@ -77,7 +75,6 @@ class _SalesBodyState extends State<SalesBody> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Buscador
           Row(
             children: [
               Expanded(
@@ -99,19 +96,21 @@ class _SalesBodyState extends State<SalesBody> {
           ),
           const SizedBox(height: 10),
 
-          // Contenido
           Expanded(
-            child: _isLoading
-                ? _buildShimmerList()
-                : (_filteredSales.isEmpty
-                ? const Center(child: Text("No hay ventas registradas."))
-                : ListView.builder(
-              itemCount: _filteredSales.length,
-              itemBuilder: (_, index) {
-                final sale = _filteredSales[index];
-                return SaleRow(sale: sale);
-              },
-            )),
+            child:
+                _isLoading
+                    ? _buildShimmerList()
+                    : (_filteredSales.isEmpty
+                        ? const Center(
+                          child: Text("No hay ventas registradas."),
+                        )
+                        : ListView.builder(
+                          itemCount: _filteredSales.length,
+                          itemBuilder: (_, index) {
+                            final sale = _filteredSales[index];
+                            return SaleRow(sale: sale);
+                          },
+                        )),
           ),
         ],
       ),

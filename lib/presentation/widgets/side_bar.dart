@@ -24,9 +24,7 @@ class SideBar extends StatelessWidget {
             children: [
               Container(
                 height: MediaQuery.of(context).padding.top + 100,
-                decoration: BoxDecoration(
-                  color: Color(0xFF3491B3),
-                ),
+                decoration: BoxDecoration(color: Color(0xFF3491B3)),
               ),
               ListView(
                 children: [
@@ -45,21 +43,55 @@ class SideBar extends StatelessWidget {
                     ),
                   ),
                   if (role != 'sales')
-                  _buildListTile(context, Icons.home, 'Inicio', 'home'),
+                    _buildListTile(context, Icons.home, 'Inicio', 'home'),
                   if (role == 'admin')
-                    _buildListTile(context, Icons.store, 'Sucursales', 'branch'),
+                    _buildListTile(
+                      context,
+                      Icons.store,
+                      'Sucursales',
+                      'branch',
+                    ),
                   if (role != 'sales')
-                    _buildListTile(context, Icons.shopping_bag, 'Productos', 'products'),
+                    _buildListTile(
+                      context,
+                      Icons.shopping_bag,
+                      'Productos',
+                      'products',
+                    ),
                   if (role != 'sales')
-                    _buildListTile(context, Icons.people, 'Clientes', 'clients'),
+                    _buildListTile(
+                      context,
+                      Icons.people,
+                      'Clientes',
+                      'clients',
+                    ),
                   _buildListTile(context, Icons.store, 'Nueva Venta', 'sales'),
-                  _buildListTile(context, Icons.store, 'Historial de Ventas', 'sales_history'),
+                  _buildListTile(
+                    context,
+                    Icons.store,
+                    'Historial de Ventas',
+                    'sales_history',
+                  ),
                   if (role == 'admin')
-                    _buildListTile(context, Icons.bar_chart, 'Reportes', 'reports'),
+                    _buildListTile(
+                      context,
+                      Icons.bar_chart,
+                      'Reportes',
+                      'reports',
+                    ),
                   if (role == 'admin')
-                    _buildListTile(context, Icons.supervised_user_circle, 'Usuarios', 'users'),
-                  _buildListTile(context, Icons.settings, 'Configuraciones', 'settings'),
-
+                    _buildListTile(
+                      context,
+                      Icons.supervised_user_circle,
+                      'Usuarios',
+                      'users',
+                    ),
+                  _buildListTile(
+                    context,
+                    Icons.settings,
+                    'Configuraciones',
+                    'settings',
+                  ),
                 ],
               ),
             ],
@@ -67,19 +99,21 @@ class SideBar extends StatelessWidget {
         );
       },
     );
-
   }
-  Widget _buildListTile(BuildContext context, IconData icon, String title, String route) {
+
+  Widget _buildListTile(
+    BuildContext context,
+    IconData icon,
+    String title,
+    String route,
+  ) {
     final currentRoute = ModalRoute.of(context)?.settings.name ?? '/home';
     final bool isSelected = currentRoute == '/$route';
 
     return ListTile(
       title: Row(
         children: [
-          Icon(
-            icon,
-            color: isSelected ? Color(0xFF3491B3) : Colors.grey[700],
-          ),
+          Icon(icon, color: isSelected ? Color(0xFF3491B3) : Colors.grey[700]),
           SizedBox(width: 8),
           Text(
             title,

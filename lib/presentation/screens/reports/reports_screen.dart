@@ -31,7 +31,8 @@ class _ReportsScreenState extends State<ReportsScreen> {
 
   void _previousReport() {
     setState(() {
-      currentIndex = (currentIndex - 1 + reportScreens.length) % reportScreens.length;
+      currentIndex =
+          (currentIndex - 1 + reportScreens.length) % reportScreens.length;
     });
   }
 
@@ -58,7 +59,10 @@ class _ReportsScreenState extends State<ReportsScreen> {
                 ),
                 Text(
                   reportTitles[currentIndex],
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 IconButton(
                   icon: const Icon(Icons.arrow_forward_ios),
@@ -67,12 +71,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
               ],
             ),
           ),
-          Expanded(
-            child: reportScreens[currentIndex],
-          ),
+          Expanded(child: reportScreens[currentIndex]),
         ],
       ),
     );
   }
 }
-

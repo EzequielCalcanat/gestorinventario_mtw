@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
-typedef FormFieldBuilder = List<Widget> Function(
-    Map<String, dynamic> formData,
-    void Function(String key, dynamic value) onChanged,
+typedef FormFieldBuilder =
+    List<Widget> Function(
+      Map<String, dynamic> formData,
+      void Function(String key, dynamic value) onChanged,
     );
 
 class GenericForm extends StatefulWidget {

@@ -1,4 +1,3 @@
-// presentation/widgets/base_scaffold.dart
 import 'package:flutter/material.dart';
 import 'package:flutterinventory/presentation/widgets/top_bar.dart';
 import 'package:flutterinventory/presentation/widgets/side_bar.dart';

@@ -101,9 +101,7 @@ class ReportDateFilter extends StatelessWidget {
     return ElevatedButton.styleFrom(
       backgroundColor: const Color(0xFF3491B3),
       foregroundColor: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(5),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
       padding: EdgeInsets.zero,
       elevation: 0,
     );

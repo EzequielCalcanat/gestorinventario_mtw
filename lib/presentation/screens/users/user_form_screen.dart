@@ -93,7 +93,7 @@ class _UserFormScreenState extends State<UserFormScreen> {
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Form(
-            key: _formKey, // Asociamos el formulario
+            key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

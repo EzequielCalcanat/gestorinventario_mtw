@@ -37,7 +37,9 @@ class _SalesBodyState extends State<SalesBody> {
   }
 
   Future<void> _loadProducts() async {
-    _products = await ProductRepository.getAllProductsByBranchWithStock(isActive: true);
+    _products = await ProductRepository.getAllProductsByBranchWithStock(
+      isActive: true,
+    );
     setState(() {
       _filteredProducts = _products;
     });
@@ -105,9 +107,10 @@ class _SalesBodyState extends State<SalesBody> {
   void _onSearchChanged() {
     final query = _searchController.text.trim().toLowerCase();
     setState(() {
-      _filteredProducts = _products.where((product) {
-        return product.name.toLowerCase().contains(query);
-      }).toList();
+      _filteredProducts =
+          _products.where((product) {
+            return product.name.toLowerCase().contains(query);
+          }).toList();
     });
   }
 
@@ -147,11 +150,12 @@ class _SalesBodyState extends State<SalesBody> {
                   side: BorderSide(color: Colors.grey.shade400),
                   padding: const EdgeInsets.all(14),
                   minimumSize: const Size(50, 50),
-                  backgroundColor: _isFiltering
-                      ? const Color(0xFF3491B3)
-                      : Colors.transparent,
+                  backgroundColor:
+                      _isFiltering
+                          ? const Color(0xFF3491B3)
+                          : Colors.transparent,
                   foregroundColor:
-                  _isFiltering ? Colors.white : const Color(0xFF3491B3),
+                      _isFiltering ? Colors.white : const Color(0xFF3491B3),
                   elevation: 0,
                 ),
                 onPressed: _openFilterSheet,
@@ -164,17 +168,17 @@ class _SalesBodyState extends State<SalesBody> {
           const SizedBox(height: 10),
           _filteredProducts.isEmpty
               ? const Expanded(
-            child: Center(child: Text("No se encontraron productos")),
-          )
+                child: Center(child: Text("No se encontraron productos")),
+              )
               : Expanded(
-            child: ListView.builder(
-              itemCount: _filteredProducts.length,
-              itemBuilder: (_, index) {
-                final product = _filteredProducts[index];
-                return SalesRow(product: product);
-              },
-            ),
-          ),
+                child: ListView.builder(
+                  itemCount: _filteredProducts.length,
+                  itemBuilder: (_, index) {
+                    final product = _filteredProducts[index];
+                    return SalesRow(product: product);
+                  },
+                ),
+              ),
         ],
       ),
     );

@@ -44,20 +44,24 @@ class _PaymentScreenState extends State<PaymentScreen> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ClientFormScreen(
-          onSave: () async {
-            await _loadClients();
-          },
-        ),
+        builder:
+            (context) => ClientFormScreen(
+              onSave: () async {
+                await _loadClients();
+              },
+            ),
       ),
     );
 
     if (result == true) {
-      final refreshedClients = await ClientRepository.getAllClients(isActive: 1);
+      final refreshedClients = await ClientRepository.getAllClients(
+        isActive: 1,
+      );
       if (mounted) {
         setState(() {
           _clients = refreshedClients;
-          _selectedClient = refreshedClients.isNotEmpty ? refreshedClients.last : null;
+          _selectedClient =
+              refreshedClients.isNotEmpty ? refreshedClients.last : null;
         });
       }
     }
@@ -74,7 +78,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text("Cliente", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+            const Text(
+              "Cliente",
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 10),
             DropdownSearch<Client>(
               items: _clients,
@@ -90,14 +97,21 @@ class _PaymentScreenState extends State<PaymentScreen> {
               dropdownDecoratorProps: DropDownDecoratorProps(
                 dropdownSearchDecoration: InputDecoration(
                   labelText: "Seleccionar Cliente",
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.blue.shade600, width: 2),
+                    borderSide: BorderSide(
+                      color: Colors.blue.shade600,
+                      width: 2,
+                    ),
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
               ),
-              filterFn: (client, filter) => client.name.toLowerCase().contains(filter.toLowerCase()),
+              filterFn:
+                  (client, filter) =>
+                      client.name.toLowerCase().contains(filter.toLowerCase()),
               popupProps: const PopupProps.menu(showSearchBox: true),
             ),
             const SizedBox(height: 8),
@@ -108,7 +122,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
             ),
             const SizedBox(height: 30),
 
-            const Text("Resumen de la Compra", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+            const Text(
+              "Resumen de la Compra",
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 10),
             ...items.map((entry) {
               final Product product = entry.key;
@@ -116,9 +133,17 @@ class _PaymentScreenState extends State<PaymentScreen> {
               return ListTile(
                 dense: true,
                 contentPadding: EdgeInsets.zero,
-                title: Text(product.name, maxLines: 1, overflow: TextOverflow.fade),
-                subtitle: Text("$quantity x \$${product.price.toStringAsFixed(2)}"),
-                trailing: Text("\$${(product.price * quantity).toStringAsFixed(2)}"),
+                title: Text(
+                  product.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.fade,
+                ),
+                subtitle: Text(
+                  "$quantity x \$${product.price.toStringAsFixed(2)}",
+                ),
+                trailing: Text(
+                  "\$${(product.price * quantity).toStringAsFixed(2)}",
+                ),
               );
             }).toList(),
             const Divider(height: 30),
@@ -126,8 +151,17 @@ class _PaymentScreenState extends State<PaymentScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text("Total", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                Text("\$${cart.total.toStringAsFixed(2)}", style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                const Text(
+                  "Total",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  "\$${cart.total.toStringAsFixed(2)}",
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 30),
@@ -135,7 +169,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text("Método de Pago", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                const Text(
+                  "Método de Pago",
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                ),
                 Expanded(
                   child: Align(
                     alignment: Alignment.centerRight,
@@ -143,8 +180,14 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       builder: (context, setLocalState) {
                         return SegmentedButton<String>(
                           segments: const [
-                            ButtonSegment(value: 'Efectivo', label: Text('Efectivo')),
-                            ButtonSegment(value: 'Tarjeta', label: Text('Tarjeta')),
+                            ButtonSegment(
+                              value: 'Efectivo',
+                              label: Text('Efectivo'),
+                            ),
+                            ButtonSegment(
+                              value: 'Tarjeta',
+                              label: Text('Tarjeta'),
+                            ),
                           ],
                           selected: {_paymentMethod},
                           onSelectionChanged: (selection) {
@@ -165,7 +208,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
               children: [
                 Expanded(
                   child: OutlinedButton.icon(
-                    onPressed: () => Navigator.pushReplacementNamed(context, "/sales"),
+                    onPressed:
+                        () => Navigator.pushReplacementNamed(context, "/sales"),
                     icon: const Icon(Icons.arrow_back),
                     label: const Text("Regresar"),
                     style: OutlinedButton.styleFrom(
@@ -174,7 +218,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5),
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
                     ),
                   ),
                 ),
@@ -182,19 +229,34 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: _isProcessing ? null : _handleConfirmPressed,
-                    icon: _isProcessing
-                        ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                        : const Icon(Icons.check),
-                    label: Text(_isProcessing
-                        ? "Procesando..."
-                        : (_paymentMethod == 'Efectivo' ? "Confirmar Compra" : "Pago con Tarjeta")),
+                    icon:
+                        _isProcessing
+                            ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                            : const Icon(Icons.check),
+                    label: Text(
+                      _isProcessing
+                          ? "Procesando..."
+                          : (_paymentMethod == 'Efectivo'
+                              ? "Confirmar Compra"
+                              : "Pago con Tarjeta"),
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF3491B3),
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5),
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
                     ),
                   ),
                 ),
@@ -236,7 +298,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => const PaymentStatusScreen(success: true)),
+          MaterialPageRoute(
+            builder: (_) => const PaymentStatusScreen(success: true),
+          ),
         );
       }
     } catch (e) {
@@ -292,7 +356,10 @@ class _CardPaymentForm extends StatefulWidget {
   final double totalAmount;
   final VoidCallback onPaymentSuccess;
 
-  const _CardPaymentForm({required this.totalAmount, required this.onPaymentSuccess});
+  const _CardPaymentForm({
+    required this.totalAmount,
+    required this.onPaymentSuccess,
+  });
 
   @override
   State<_CardPaymentForm> createState() => _CardPaymentFormState();
@@ -309,7 +376,10 @@ class _CardPaymentFormState extends State<_CardPaymentForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text("Pagar con Tarjeta", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+        const Text(
+          "Pagar con Tarjeta",
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+        ),
         const SizedBox(height: 20),
         TextFormField(
           controller: _cardNumberController,
@@ -362,7 +432,11 @@ class _CardPaymentFormState extends State<_CardPaymentForm> {
           width: double.infinity,
           child: ElevatedButton(
             onPressed: _isPaying ? null : _handlePayment,
-            child: Text(_isPaying ? "Procesando..." : "Pagar \$${widget.totalAmount.toStringAsFixed(2)} MXN"),
+            child: Text(
+              _isPaying
+                  ? "Procesando..."
+                  : "Pagar \$${widget.totalAmount.toStringAsFixed(2)} MXN",
+            ),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF3491B3),
               foregroundColor: Colors.white,
@@ -398,12 +472,13 @@ class _CardPaymentFormState extends State<_CardPaymentForm> {
     widget.onPaymentSuccess();
   }
 }
+
 class _ExpiryDateTextInputFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue,
-      TextEditingValue newValue,
-      ) {
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
     var text = newValue.text.replaceAll('/', '');
 
     if (text.length >= 3) {

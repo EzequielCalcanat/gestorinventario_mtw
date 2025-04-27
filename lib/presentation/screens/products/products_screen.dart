@@ -30,7 +30,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
     setState(() {
       _isLoading = true;
     });
-    final products = await ProductRepository.getAllProductsByBranch(isActive: true);
+    final products = await ProductRepository.getAllProductsByBranch(
+      isActive: true,
+    );
     setState(() {
       _products = products;
       _filteredProducts = products;
@@ -42,10 +44,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ProductFormScreen(
-          product: product,
-          onSave: _loadProducts,
-        ),
+        builder:
+            (context) =>
+                ProductFormScreen(product: product, onSave: _loadProducts),
       ),
     );
 
@@ -82,7 +83,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 onTap: () {
                   setState(() {
                     _isFiltering = true;
-                    _filteredProducts = _products.where((p) => p.stock <= 5).toList();
+                    _filteredProducts =
+                        _products.where((p) => p.stock <= 5).toList();
                   });
                   Navigator.pop(context);
                 },
@@ -93,7 +95,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 onTap: () {
                   setState(() {
                     _isFiltering = true;
-                    _filteredProducts = _products.where((p) => p.price < 100).toList();
+                    _filteredProducts =
+                        _products.where((p) => p.price < 100).toList();
                   });
                   Navigator.pop(context);
                 },
@@ -119,9 +122,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
   void _onSearchChanged() {
     final query = _searchController.text.trim().toLowerCase();
     setState(() {
-      _filteredProducts = _products.where((product) {
-        return product.name.toLowerCase().contains(query);
-      }).toList();
+      _filteredProducts =
+          _products.where((product) {
+            return product.name.toLowerCase().contains(query);
+          }).toList();
     });
   }
 
@@ -145,7 +149,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey.shade400, width: 1.0),
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade400,
+                          width: 1.0,
+                        ),
                       ),
                     ),
                     onChanged: (_) => _onSearchChanged(),
@@ -161,9 +168,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     padding: const EdgeInsets.all(14),
                     minimumSize: const Size(50, 50),
                     backgroundColor:
-                    _isFiltering ? const Color(0xFF3491B3) : Colors.transparent,
+                        _isFiltering
+                            ? const Color(0xFF3491B3)
+                            : Colors.transparent,
                     foregroundColor:
-                    _isFiltering ? Colors.white : const Color(0xFF3491B3),
+                        _isFiltering ? Colors.white : const Color(0xFF3491B3),
                     elevation: 0,
                   ),
                   onPressed: _openFilterSheet,
@@ -175,36 +184,42 @@ class _ProductsScreenState extends State<ProductsScreen> {
             ),
             const SizedBox(height: 10),
             Expanded(
-              child: _isLoading
-                  ? ListView.builder(
-                itemCount: 10,
-                itemBuilder: (_, index) {
-                  return Shimmer.fromColors(
-                    baseColor: Colors.grey[300]!,
-                    highlightColor: Colors.grey[100]!,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Container(
-                        height: 80.0,
-                        color: Colors.white,
-                      ),
-                    ),
-                  );
-                },
-              )
-                  : (_filteredProducts.isEmpty
-                  ? const Center(child: Text("No hay productos"))
-                  : ListView.builder(
-                itemCount: _filteredProducts.length,
-                itemBuilder: (_, index) {
-                  final product = _filteredProducts[index];
-                  return ProductRow(
-                    product: product,
-                    onEdit: () => _navigateToProductForm(product: product),
-                    onDelete: () => _deleteProduct(product),
-                  );
-                },
-              )),
+              child:
+                  _isLoading
+                      ? ListView.builder(
+                        itemCount: 10,
+                        itemBuilder: (_, index) {
+                          return Shimmer.fromColors(
+                            baseColor: Colors.grey[300]!,
+                            highlightColor: Colors.grey[100]!,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 8.0,
+                              ),
+                              child: Container(
+                                height: 80.0,
+                                color: Colors.white,
+                              ),
+                            ),
+                          );
+                        },
+                      )
+                      : (_filteredProducts.isEmpty
+                          ? const Center(child: Text("No hay productos"))
+                          : ListView.builder(
+                            itemCount: _filteredProducts.length,
+                            itemBuilder: (_, index) {
+                              final product = _filteredProducts[index];
+                              return ProductRow(
+                                product: product,
+                                onEdit:
+                                    () => _navigateToProductForm(
+                                      product: product,
+                                    ),
+                                onDelete: () => _deleteProduct(product),
+                              );
+                            },
+                          )),
             ),
           ],
         ),
@@ -216,4 +231,3 @@ class _ProductsScreenState extends State<ProductsScreen> {
     );
   }
 }
-

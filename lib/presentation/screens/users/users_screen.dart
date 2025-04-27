@@ -52,11 +52,12 @@ class _UsersScreenState extends State<UsersScreen> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => UserFormScreen(
-          user: user,
-          branches: _branches,
-          onSave: _loadData,
-        ),
+        builder:
+            (context) => UserFormScreen(
+              user: user,
+              branches: _branches,
+              onSave: _loadData,
+            ),
       ),
     );
 
@@ -81,42 +82,43 @@ class _UsersScreenState extends State<UsersScreen> {
           padding: const EdgeInsets.all(20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            children: _roles.map((role) {
-              String displayName;
-              IconData icon;
+            children:
+                _roles.map((role) {
+                  String displayName;
+                  IconData icon;
 
-              switch (role) {
-                case 'admin':
-                  displayName = 'Administrador';
-                  icon = Icons.admin_panel_settings;
-                  break;
-                case 'employee':
-                  displayName = 'Empleado';
-                  icon = Icons.badge;
-                  break;
-                case 'sales':
-                  displayName = 'Ventas';
-                  icon = Icons.point_of_sale;
-                  break;
-                case 'Todos':
-                default:
-                  displayName = 'Quitar Filtros';
-                  icon = Icons.clear_all;
-              }
+                  switch (role) {
+                    case 'admin':
+                      displayName = 'Administrador';
+                      icon = Icons.admin_panel_settings;
+                      break;
+                    case 'employee':
+                      displayName = 'Empleado';
+                      icon = Icons.badge;
+                      break;
+                    case 'sales':
+                      displayName = 'Ventas';
+                      icon = Icons.point_of_sale;
+                      break;
+                    case 'Todos':
+                    default:
+                      displayName = 'Quitar Filtros';
+                      icon = Icons.clear_all;
+                  }
 
-              return ListTile(
-                leading: Icon(icon),
-                title: Text(displayName),
-                onTap: () {
-                  setState(() {
-                    _isFiltering = role != 'Todos';
-                    _selectedRole = role;
-                    _applyFilters();
-                  });
-                  Navigator.pop(context);
-                },
-              );
-            }).toList(),
+                  return ListTile(
+                    leading: Icon(icon),
+                    title: Text(displayName),
+                    onTap: () {
+                      setState(() {
+                        _isFiltering = role != 'Todos';
+                        _selectedRole = role;
+                        _applyFilters();
+                      });
+                      Navigator.pop(context);
+                    },
+                  );
+                }).toList(),
           ),
         );
       },
@@ -126,11 +128,13 @@ class _UsersScreenState extends State<UsersScreen> {
   void _applyFilters() {
     final query = _searchController.text.trim().toLowerCase();
     setState(() {
-      _filteredUsers = _users.where((user) {
-        final matchName = user.name.toLowerCase().contains(query);
-        final matchRole = _selectedRole == 'Todos' || user.role == _selectedRole;
-        return matchName && matchRole;
-      }).toList();
+      _filteredUsers =
+          _users.where((user) {
+            final matchName = user.name.toLowerCase().contains(query);
+            final matchRole =
+                _selectedRole == 'Todos' || user.role == _selectedRole;
+            return matchName && matchRole;
+          }).toList();
     });
   }
 
@@ -158,7 +162,10 @@ class _UsersScreenState extends State<UsersScreen> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey.shade400, width: 1.0),
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade400,
+                          width: 1.0,
+                        ),
                       ),
                     ),
                     onChanged: (_) => _onSearchChanged(),
@@ -174,9 +181,11 @@ class _UsersScreenState extends State<UsersScreen> {
                     padding: const EdgeInsets.all(14),
                     minimumSize: const Size(50, 50),
                     backgroundColor:
-                    _isFiltering ? const Color(0xFF3491B3) : Colors.transparent,
+                        _isFiltering
+                            ? const Color(0xFF3491B3)
+                            : Colors.transparent,
                     foregroundColor:
-                    _isFiltering ? Colors.white : const Color(0xFF3491B3),
+                        _isFiltering ? Colors.white : const Color(0xFF3491B3),
                     elevation: 0,
                   ),
                   onPressed: _openFilterSheet,
@@ -188,41 +197,44 @@ class _UsersScreenState extends State<UsersScreen> {
             ),
             const SizedBox(height: 10),
             Expanded(
-              child: _isLoading
-                  ? ListView.builder(
-                itemCount: 10,
-                itemBuilder: (_, index) {
-                  return Shimmer.fromColors(
-                    baseColor: Colors.grey[300]!,
-                    highlightColor: Colors.grey[100]!,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Container(
-                        height: 80.0,
-                        color: Colors.white,
-                      ),
-                    ),
-                  );
-                },
-              )
-                  : (_filteredUsers.isEmpty
-                  ? const Center(
-                child: Text(
-                  "No hay usuarios",
-                  style: TextStyle(fontSize: 16),
-                ),
-              )
-                  : ListView.builder(
-                itemCount: _filteredUsers.length,
-                itemBuilder: (_, index) {
-                  final user = _filteredUsers[index];
-                  return UserRow(
-                    user: user,
-                    onEdit: () => _navigateToUserForm(user: user),
-                    onDelete: () => _deleteUser(user),
-                  );
-                },
-              )),
+              child:
+                  _isLoading
+                      ? ListView.builder(
+                        itemCount: 10,
+                        itemBuilder: (_, index) {
+                          return Shimmer.fromColors(
+                            baseColor: Colors.grey[300]!,
+                            highlightColor: Colors.grey[100]!,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 8.0,
+                              ),
+                              child: Container(
+                                height: 80.0,
+                                color: Colors.white,
+                              ),
+                            ),
+                          );
+                        },
+                      )
+                      : (_filteredUsers.isEmpty
+                          ? const Center(
+                            child: Text(
+                              "No hay usuarios",
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          )
+                          : ListView.builder(
+                            itemCount: _filteredUsers.length,
+                            itemBuilder: (_, index) {
+                              final user = _filteredUsers[index];
+                              return UserRow(
+                                user: user,
+                                onEdit: () => _navigateToUserForm(user: user),
+                                onDelete: () => _deleteUser(user),
+                              );
+                            },
+                          )),
             ),
           ],
         ),

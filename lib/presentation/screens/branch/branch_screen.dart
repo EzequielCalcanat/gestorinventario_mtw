@@ -39,10 +39,9 @@ class _BranchScreenState extends State<BranchScreen> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => BranchFormScreen(
-          branch: branch,
-          onSave: _loadBranches,
-        ),
+        builder:
+            (context) =>
+                BranchFormScreen(branch: branch, onSave: _loadBranches),
       ),
     );
     if (result == true) {
@@ -52,10 +51,11 @@ class _BranchScreenState extends State<BranchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final filteredBranches = _branches.where((branch) {
-      final query = _searchController.text.toLowerCase();
-      return branch.name.toLowerCase().contains(query);
-    }).toList();
+    final filteredBranches =
+        _branches.where((branch) {
+          final query = _searchController.text.toLowerCase();
+          return branch.name.toLowerCase().contains(query);
+        }).toList();
 
     return BaseScaffold(
       title: "Sucursales",
@@ -72,10 +72,13 @@ class _BranchScreenState extends State<BranchScreen> {
                       hintText: 'Buscar sucursal...',
                       prefixIcon: const Icon(Icons.search),
                       border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8)),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(
-                            color: Colors.grey.shade400, width: 1.0),
+                          color: Colors.grey.shade400,
+                          width: 1.0,
+                        ),
                       ),
                     ),
                     onChanged: (_) {
@@ -105,42 +108,44 @@ class _BranchScreenState extends State<BranchScreen> {
             ),
             const SizedBox(height: 10),
             Expanded(
-              child: _isLoading
-                  ? ListView.builder(
-                itemCount: 10,
-                itemBuilder: (_, index) {
-                  return Shimmer.fromColors(
-                    baseColor: Colors.grey[300]!,
-                    highlightColor: Colors.grey[100]!,
-                    child: Padding(
-                      padding:
-                      const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Container(
-                        height: 80.0,
-                        color: Colors.white,
-                      ),
-                    ),
-                  );
-                },
-              )
-                  : (filteredBranches.isEmpty
-                  ? const Center(
-                child: Text(
-                  "No hay sucursales",
-                  style: TextStyle(fontSize: 16),
-                ),
-              )
-                  : ListView.builder(
-                itemCount: filteredBranches.length,
-                itemBuilder: (_, index) {
-                  final branch = filteredBranches[index];
-                  return BranchRow(
-                    branch: branch,
-                    onEdit: () =>
-                        _navigateToBranchForm(branch: branch)
-                  );
-                },
-              )),
+              child:
+                  _isLoading
+                      ? ListView.builder(
+                        itemCount: 10,
+                        itemBuilder: (_, index) {
+                          return Shimmer.fromColors(
+                            baseColor: Colors.grey[300]!,
+                            highlightColor: Colors.grey[100]!,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 8.0,
+                              ),
+                              child: Container(
+                                height: 80.0,
+                                color: Colors.white,
+                              ),
+                            ),
+                          );
+                        },
+                      )
+                      : (filteredBranches.isEmpty
+                          ? const Center(
+                            child: Text(
+                              "No hay sucursales",
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          )
+                          : ListView.builder(
+                            itemCount: filteredBranches.length,
+                            itemBuilder: (_, index) {
+                              final branch = filteredBranches[index];
+                              return BranchRow(
+                                branch: branch,
+                                onEdit:
+                                    () => _navigateToBranchForm(branch: branch),
+                              );
+                            },
+                          )),
             ),
           ],
         ),

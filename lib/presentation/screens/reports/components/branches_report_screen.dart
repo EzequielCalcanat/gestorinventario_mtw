@@ -57,8 +57,14 @@ class _BranchesReportScreenState extends State<BranchesReportScreen> {
       isLoading = true;
     });
 
-    branches = await BranchRepository.getBranchesBetweenDates(startDate!, endDate!);
-    salesByBranch = await BranchRepository.getSalesByBranchBetweenDates(startDate!, endDate!);
+    branches = await BranchRepository.getBranchesBetweenDates(
+      startDate!,
+      endDate!,
+    );
+    salesByBranch = await BranchRepository.getSalesByBranchBetweenDates(
+      startDate!,
+      endDate!,
+    );
 
     branches.sort((a, b) {
       final aSales = salesByBranch[a.name] ?? 0.0;
@@ -75,7 +81,7 @@ class _BranchesReportScreenState extends State<BranchesReportScreen> {
     if (startDate == null || endDate == null) return;
 
     List<List<dynamic>> rows = [
-      ["Nombre de Sucursal", "Ubicación", "Total Vendido", "Periodo"]
+      ["Nombre de Sucursal", "Ubicación", "Total Vendido", "Periodo"],
     ];
 
     for (var branch in branches) {
@@ -124,64 +130,77 @@ class _BranchesReportScreenState extends State<BranchesReportScreen> {
           const SizedBox(height: 16),
           Expanded(
             child: Scrollbar(
-              child: branches.isEmpty
-                  ? const Center(child: Text("No hay sucursales en este rango."))
-                  : ListView.builder(
-                itemCount: branches.length,
-                itemBuilder: (context, index) {
-                  final branch = branches[index];
-                  final totalSales = salesByBranch[branch.name] ?? 0.0;
+              child:
+                  branches.isEmpty
+                      ? const Center(
+                        child: Text("No hay sucursales en este rango."),
+                      )
+                      : ListView.builder(
+                        itemCount: branches.length,
+                        itemBuilder: (context, index) {
+                          final branch = branches[index];
+                          final totalSales = salesByBranch[branch.name] ?? 0.0;
 
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 6.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                branch.name,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 6.0),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        branch.name,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        branch.location ??
+                                            "Ubicación no disponible",
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: Colors.grey[600],
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                branch.location ?? "Ubicación no disponible",
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: Colors.grey[600],
+                                const SizedBox(width: 8),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        totalSales > 0
+                                            ? const Color(0xFFD0F0C0)
+                                            : Colors.grey[300],
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Text(
+                                    totalSales > 0
+                                        ? "\$${totalSales.toStringAsFixed(2)}"
+                                        : "Sin ventas",
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
                                 ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: totalSales > 0 ? const Color(0xFFD0F0C0) : Colors.grey[300],
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            totalSales > 0 ? "\$${totalSales.toStringAsFixed(2)}" : "Sin ventas",
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
+                              ],
                             ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-            ),
+                          );
+                        },
+                      ),
             ),
           ),
           const SizedBox(height: 16),
@@ -206,7 +225,11 @@ class _BranchesReportScreenState extends State<BranchesReportScreen> {
       ),
       child: Text(
         branchName,
-        style: TextStyle(fontSize: 10, color: color, fontWeight: FontWeight.bold),
+        style: TextStyle(
+          fontSize: 10,
+          color: color,
+          fontWeight: FontWeight.bold,
+        ),
         overflow: TextOverflow.ellipsis,
       ),
     );
@@ -216,9 +239,7 @@ class _BranchesReportScreenState extends State<BranchesReportScreen> {
     return ElevatedButton.styleFrom(
       backgroundColor: const Color(0xFF3491B3),
       foregroundColor: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(5),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
     );
   }

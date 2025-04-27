@@ -39,7 +39,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
     await _loadLogs();
 
-    // Cargar datos de ventas, productos, clientes y sucursales
     salesData = await SaleRepository.getSalesOfLast7Days();
     final clients = await ClientRepository.getAllClients();
     final products = await ProductRepository.getAllProductsByBranch();
@@ -47,12 +46,11 @@ class _HomeScreenState extends State<HomeScreen> {
     totalClients = clients.length;
     totalProducts = products.length;
 
-    // Calcular total de ventas de hoy
     DateTime today = DateTime.now();
-    String todayKey = "${today.year}-${_twoDigits(today.month)}-${_twoDigits(today.day)}";
+    String todayKey =
+        "${today.year}-${_twoDigits(today.month)}-${_twoDigits(today.day)}";
     totalSalesToday = salesData[todayKey] ?? 0.0;
 
-    // Productos con stock bajo (< 5 por ejemplo)
     lowStockProducts = products.where((p) => p.stock <= 5).length;
 
     setState(() {
@@ -82,35 +80,40 @@ class _HomeScreenState extends State<HomeScreen> {
     return BaseScaffold(
       title: "Inicio",
       currentNavIndex: 0,
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildStatsCards(),
-                const SizedBox(height: 24),
-                _buildSalesChart(),
-                const SizedBox(height: 24),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  child: Text(
-                    "Actividad reciente",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      body:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildStatsCards(),
+                        const SizedBox(height: 24),
+                        _buildSalesChart(),
+                        const SizedBox(height: 24),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          child: Text(
+                            "Actividad reciente",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: _buildRecentActivityList(),
-          ),
-        ],
-      ),
+                  Expanded(child: _buildRecentActivityList()),
+                ],
+              ),
     );
   }
 
@@ -184,10 +187,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 2),
           Text(
             title,
-            style: TextStyle(
-              fontSize: 11,
-              color: textColor.withOpacity(0.8),
-            ),
+            style: TextStyle(fontSize: 11, color: textColor.withOpacity(0.8)),
             textAlign: TextAlign.center,
           ),
         ],
@@ -199,14 +199,18 @@ class _HomeScreenState extends State<HomeScreen> {
     final today = DateTime.now();
     final startDate = today.subtract(Duration(days: 6));
 
-    // Generar lista de los últimos 7 días
-    List<DateTime> last7Days = List.generate(7, (index) => startDate.add(Duration(days: index)));
+    List<DateTime> last7Days = List.generate(
+      7,
+      (index) => startDate.add(Duration(days: index)),
+    );
 
-    final spots = last7Days.map((date) {
-      final dateKey = "${date.year}-${_twoDigits(date.month)}-${_twoDigits(date.day)}";
-      final salesAmount = salesData[dateKey] ?? 0.0;
-      return FlSpot(last7Days.indexOf(date).toDouble(), salesAmount);
-    }).toList();
+    final spots =
+        last7Days.map((date) {
+          final dateKey =
+              "${date.year}-${_twoDigits(date.month)}-${_twoDigits(date.day)}";
+          final salesAmount = salesData[dateKey] ?? 0.0;
+          return FlSpot(last7Days.indexOf(date).toDouble(), salesAmount);
+        }).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -233,8 +237,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       showTitles: true,
                       reservedSize: 40,
                       getTitlesWidget: (value, meta) {
-                        return Text("\$${value.toInt()}",
-                            style: const TextStyle(fontSize: 10));
+                        return Text(
+                          "\$${value.toInt()}",
+                          style: const TextStyle(fontSize: 10),
+                        );
                       },
                     ),
                   ),
@@ -252,7 +258,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         int index = value.toInt();
                         if (index >= 0 && index < last7Days.length) {
                           final date = last7Days[index];
-                          final dayNames = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+                          final dayNames = [
+                            "Dom",
+                            "Lun",
+                            "Mar",
+                            "Mié",
+                            "Jue",
+                            "Vie",
+                            "Sáb",
+                          ];
                           return Padding(
                             padding: const EdgeInsets.only(top: 8.0),
                             child: Text(
@@ -275,7 +289,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     barWidth: 3,
                     dotData: FlDotData(show: true),
                     belowBarData: BarAreaData(
-                        show: true, color: Colors.teal.withOpacity(0.15)),
+                      show: true,
+                      color: Colors.teal.withOpacity(0.15),
+                    ),
                     spots: spots,
                   ),
                 ],
@@ -326,29 +342,30 @@ class _HomeScreenState extends State<HomeScreen> {
 
         return Container(
           decoration: BoxDecoration(
-            border: Border(
-              left: BorderSide(
-                color: borderColor,
-                width: 4,
-              ),
-            ),
+            border: Border(left: BorderSide(color: borderColor, width: 4)),
           ),
           child: Padding(
             padding: const EdgeInsets.only(left: 10.0),
             child: Stack(
               children: [
                 _LogItem(
-                    user: log.userName,
-                    description: _shortenText(log.description ?? "Descripción no disponible", 30),
-                    module: log.module ?? "Módulo no disponible",
-                    createdAt: log.createdAt
+                  user: log.userName,
+                  description: _shortenText(
+                    log.description ?? "Descripción no disponible",
+                    30,
+                  ),
+                  module: log.module ?? "Módulo no disponible",
+                  createdAt: log.createdAt,
                 ),
                 Positioned(
                   right: 0,
                   top: 0,
                   child: Container(
                     margin: const EdgeInsets.only(top: 4, right: 8),
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: borderColor.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),

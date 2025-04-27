@@ -11,13 +11,9 @@ import 'package:flutterinventory/presentation/screens/branch/branch_screen.dart'
 import 'package:flutterinventory/presentation/screens/payment/payment_screen.dart';
 import 'package:flutterinventory/data/models/cart.dart';
 import 'package:provider/provider.dart';
+
 void main() {
-  runApp(
-    ChangeNotifierProvider(
-      create: (_) => Cart(),
-      child: const MyApp(),
-    ),
-  );
+  runApp(ChangeNotifierProvider(create: (_) => Cart(), child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {

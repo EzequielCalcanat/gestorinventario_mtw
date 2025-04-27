@@ -6,11 +6,7 @@ class CommonPieChart extends StatelessWidget {
   final Map<String, double> data;
   final int maxItems;
 
-  const CommonPieChart({
-    super.key,
-    required this.data,
-    this.maxItems = 10,
-  });
+  const CommonPieChart({super.key, required this.data, this.maxItems = 10});
 
   @override
   Widget build(BuildContext context) {
@@ -21,8 +17,8 @@ class CommonPieChart extends StatelessWidget {
       );
     }
 
-    final entries = data.entries.toList()
-      ..sort((a, b) => b.value.compareTo(a.value));
+    final entries =
+        data.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
     final topEntries = entries.take(maxItems).toList();
     double total = topEntries.fold(0, (sum, item) => sum + item.value);
 
@@ -41,7 +37,10 @@ class CommonPieChart extends StatelessWidget {
     );
   }
 
-  List<PieChartSectionData> _buildSections(List<MapEntry<String, double>> entries, double total) {
+  List<PieChartSectionData> _buildSections(
+    List<MapEntry<String, double>> entries,
+    double total,
+  ) {
     final random = Random();
     List<Color> generatedColors = [];
 

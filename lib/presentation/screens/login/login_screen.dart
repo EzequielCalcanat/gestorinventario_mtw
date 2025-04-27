@@ -34,7 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
     User? matchingUser;
     try {
       matchingUser = users.firstWhere(
-            (u) => u.email?.toLowerCase() == email.toLowerCase(),
+        (u) => u.email?.toLowerCase() == email.toLowerCase(),
       );
     } catch (e) {
       matchingUser = null;
@@ -49,7 +49,9 @@ class _LoginScreenState extends State<LoginScreen> {
     } else {
       final prefs = await SharedPreferences.getInstance();
 
-      String branchName = await BranchRepository.getBranchName(matchingUser.branchId ?? "all");
+      String branchName = await BranchRepository.getBranchName(
+        matchingUser.branchId ?? "all",
+      );
 
       await prefs.setString('logged_user_id', matchingUser.id);
       await prefs.setString('user_name', matchingUser.name);
@@ -73,10 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.redAccent,
-      ),
+      SnackBar(content: Text(message), backgroundColor: Colors.redAccent),
     );
   }
 
@@ -100,7 +99,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 250,
                     color: colorPrimary,
                     child: const Center(
-                      child: Icon(Icons.auto_graph_outlined, size: 60, color: Colors.white),
+                      child: Icon(
+                        Icons.auto_graph_outlined,
+                        size: 60,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
@@ -108,9 +111,18 @@ class _LoginScreenState extends State<LoginScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 30),
                   child: Column(
                     children: [
-                      const Text('¡Hola!', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
+                      const Text(
+                        '¡Hola!',
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       const SizedBox(height: 8),
-                      const Text('Inicia sesión en tu cuenta', style: TextStyle(color: Colors.grey)),
+                      const Text(
+                        'Inicia sesión en tu cuenta',
+                        style: TextStyle(color: Colors.grey),
+                      ),
                       const SizedBox(height: 30),
                       TextField(
                         controller: _usernameController,
@@ -152,11 +164,20 @@ class _LoginScreenState extends State<LoginScreen> {
                               borderRadius: BorderRadius.circular(30),
                             ),
                           ),
-                          child: _isLoading
-                              ? const CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                          )
-                              : const Text('Iniciar Sesión', style: TextStyle(color: Colors.white, fontSize: 16)),
+                          child:
+                              _isLoading
+                                  ? const CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white,
+                                    ),
+                                  )
+                                  : const Text(
+                                    'Iniciar Sesión',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                    ),
+                                  ),
                         ),
                       ),
                       const SizedBox(height: 20),

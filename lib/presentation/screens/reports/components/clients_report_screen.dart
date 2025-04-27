@@ -57,8 +57,14 @@ class _ClientsReportScreenState extends State<ClientsReportScreen> {
       isLoading = true;
     });
 
-    clients = await ClientRepository.getClientsBetweenDates(startDate!, endDate!);
-    salesByClient = await ClientRepository.getSalesByClientBetweenDates(startDate!, endDate!);
+    clients = await ClientRepository.getClientsBetweenDates(
+      startDate!,
+      endDate!,
+    );
+    salesByClient = await ClientRepository.getSalesByClientBetweenDates(
+      startDate!,
+      endDate!,
+    );
 
     clients.sort((a, b) {
       final aSales = salesByClient[a.name] ?? 0.0;
@@ -73,7 +79,7 @@ class _ClientsReportScreenState extends State<ClientsReportScreen> {
 
   Future<void> _exportCSV() async {
     List<List<dynamic>> rows = [
-      ["Nombre", "Email", "Teléfono", "Total Vendido", "Periodo"]
+      ["Nombre", "Email", "Teléfono", "Total Vendido", "Periodo"],
     ];
 
     for (var client in clients) {
@@ -119,67 +125,83 @@ class _ClientsReportScreenState extends State<ClientsReportScreen> {
           isLoading
               ? const CircularProgressIndicator()
               : Expanded(
-            child: Scrollbar(
-              child: clients.isEmpty
-                  ? const Center(child: Text("No hay clientes en este rango."))
-                  : ListView.builder(
-                itemCount: clients.length,
-                itemBuilder: (context, index) {
-                  final client = clients[index];
-                  final totalSales = salesByClient[client.name] ?? 0.0;
+                child: Scrollbar(
+                  child:
+                      clients.isEmpty
+                          ? const Center(
+                            child: Text("No hay clientes en este rango."),
+                          )
+                          : ListView.builder(
+                            itemCount: clients.length,
+                            itemBuilder: (context, index) {
+                              final client = clients[index];
+                              final totalSales =
+                                  salesByClient[client.name] ?? 0.0;
 
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 6.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                client.name,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 6.0,
                                 ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                client.phone ?? "Teléfono no disponible",
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: Colors.grey[600],
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            client.name,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            client.phone ??
+                                                "Teléfono no disponible",
+                                            style: TextStyle(
+                                              fontSize: 13,
+                                              color: Colors.grey[600],
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 6,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color:
+                                            totalSales > 0
+                                                ? const Color(0xFFD0F0C0)
+                                                : Colors.grey[300],
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: Text(
+                                        totalSales > 0
+                                            ? "\$${totalSales.toStringAsFixed(2)}"
+                                            : "Sin ventas",
+                                        style: const TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black87,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
+                              );
+                            },
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: totalSales > 0 ? const Color(0xFFD0F0C0) : Colors.grey[300],
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            totalSales > 0 ? "\$${totalSales.toStringAsFixed(2)}" : "Sin ventas",
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
+                ),
               ),
-            ),
-          ),
           const SizedBox(height: 16),
           ElevatedButton.icon(
             onPressed: clients.isEmpty ? null : _exportCSV,
@@ -201,9 +223,7 @@ class _ClientsReportScreenState extends State<ClientsReportScreen> {
     return ElevatedButton.styleFrom(
       backgroundColor: const Color(0xFF3491B3),
       foregroundColor: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(5),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
     );
   }
