@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutterinventory/presentation/widgets/base_scaffold.dart';
-import 'components/sales_report_screen.dart';
 import 'components/clients_report_screen.dart';
 import 'components/branches_report_screen.dart';
 import 'components/products_report_screen.dart';
@@ -17,7 +16,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
   int currentIndex = 0;
 
   final List<Widget> reportScreens = const [
-    SalesReportScreen(),
     ClientsReportScreen(),
     BranchesReportScreen(),
     ProductsReportScreen(),

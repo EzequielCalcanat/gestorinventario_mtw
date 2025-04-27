@@ -91,9 +91,9 @@ class ReportDateFilter extends StatelessWidget {
         borderRadius: BorderRadius.circular(5),
         side: const BorderSide(color: Color(0xFFBDBDBD)),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6), // Menos vertical
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       elevation: 0,
-      minimumSize: const Size(0, 44), // Forzar altura mínima
+      minimumSize: const Size(0, 44),
     );
   }
 
