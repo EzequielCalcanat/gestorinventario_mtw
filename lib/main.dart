@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutterinventory/presentation/screens/login/login_screen.dart';
 import 'package:flutterinventory/presentation/screens/home/home_screen.dart';
 import 'package:flutterinventory/presentation/screens/products/products_screen.dart';
+import 'package:flutterinventory/presentation/screens/sales/history_sales.dart';
 import 'package:flutterinventory/presentation/screens/sales/sales_screen.dart';
 import 'package:flutterinventory/presentation/screens/clients/clients_screen.dart';
 import 'package:flutterinventory/presentation/screens/reports/reports_screen.dart';
@@ -46,6 +47,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const HomeScreen(),
         '/products': (context) => const ProductsScreen(),
         '/sales': (context) => const SalesScreen(),
+        '/sales_history': (context) => const SalesHistoryScreen(),
         '/payment': (context) => const PaymentScreen(),
         '/clients': (context) => const ClientsScreen(),
         '/branch': (context) => const BranchScreen(),

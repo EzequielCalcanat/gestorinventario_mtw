@@ -51,7 +51,8 @@ class SideBar extends StatelessWidget {
                     _buildListTile(context, Icons.shopping_bag, 'Productos', 'products'),
                   if (role != 'sales')
                     _buildListTile(context, Icons.people, 'Clientes', 'clients'),
-                  _buildListTile(context, Icons.store, 'Ventas', 'sales'),
+                  _buildListTile(context, Icons.store, 'Nueva Venta', 'sales'),
+                  _buildListTile(context, Icons.store, 'Historial de Ventas', 'sales_history'),
                   if (role != 'sales')
                     _buildListTile(context, Icons.bar_chart, 'Reportes', 'reports'),
                   if (role != 'sales')

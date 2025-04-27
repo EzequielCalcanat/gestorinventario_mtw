@@ -48,7 +48,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
   Widget build(BuildContext context) {
     return BaseScaffold(
       title: reportTitles[currentIndex],
-      currentNavIndex: 2,
       body: Column(
         children: [
           Padding(

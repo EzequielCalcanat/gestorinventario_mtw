@@ -27,7 +27,7 @@ class NavBar extends StatelessWidget {
           onTap: onTap,
           items: [
             const BottomNavigationBarItem(icon: Icon(Icons.home), label: "Inicio"),
-            const BottomNavigationBarItem(icon: Icon(Icons.store), label: "Ventas"),
+            const BottomNavigationBarItem(icon: Icon(Icons.store), label: "Venta"),
             if (role != 'sales')
               const BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: "Reportes"),
           ],
