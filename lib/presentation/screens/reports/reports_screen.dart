@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutterinventory/presentation/screens/reports/components/inventory_report_screen.dart';
 import 'package:flutterinventory/presentation/widgets/base_scaffold.dart';
-import 'components/clients_report_screen.dart';
+
 import 'components/branches_report_screen.dart';
+import 'components/clients_report_screen.dart';
 import 'components/products_report_screen.dart';
 import 'components/users_report_screen.dart';
 
@@ -20,6 +22,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
     BranchesReportScreen(),
     ProductsReportScreen(),
     UsersReportScreen(),
+    InventoryReportScreen(),
   ];
 
   final List<String> reportTitles = [
@@ -27,6 +30,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
     "Ingresos por Sucursal",
     "Productos más vendidos",
     "Mejores Vendedores",
+    "Productos por Sucursal",
   ];
 
   void _previousReport() {

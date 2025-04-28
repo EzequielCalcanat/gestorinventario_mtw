@@ -33,6 +33,18 @@ class ProductRepository {
     return filteredProducts;
   }
 
+  static Future<List<Product>> getAllProductsBySpecificBranch({
+    bool isActive = true,
+    required String branchId,
+  }) async {
+    List<Map<String, dynamic>> filters = [
+      {'name': 'branch_id', 'operator': '==', 'value': branchId},
+      {'name': 'is_active', 'operator': '==', 'value': isActive},
+    ];
+    List<Product> filteredProducts = await _repository.getFiltered(filters);
+    return filteredProducts;
+  }
+
   static Future<List<Product>> getAllProductsByBranchWithStock({
     bool isActive = true,
   }) async {
