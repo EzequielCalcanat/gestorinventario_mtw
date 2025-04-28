@@ -2,6 +2,7 @@ import 'package:flutterinventory/data/database/database_helper.dart';
 import 'package:flutterinventory/data/models/branch.dart';
 import 'package:flutterinventory/data/models/client.dart';
 import 'package:flutterinventory/data/models/log.dart';
+import 'package:flutterinventory/data/models/payment_method.dart';
 import 'package:flutterinventory/data/models/product.dart';
 import 'package:flutterinventory/data/models/sale.dart';
 import 'package:flutterinventory/data/models/sale_detail.dart';
@@ -83,7 +84,7 @@ class Repository<T> {
     final db = await DatabaseHelper.instance.database;
     final result = await db.insert(table, map);
 
-    if (item is! SaleDetail) {
+    if (item is! SaleDetail || item is! PaymentMethod) {
       final logDescription = _getLogDescription(item, "save");
       await _createLog("save", logDescription);
     }
