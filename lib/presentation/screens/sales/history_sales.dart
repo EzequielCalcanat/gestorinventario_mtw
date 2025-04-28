@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutterinventory/data/models/sale_item.dart';
+import 'package:flutterinventory/data/repositories/branch_repository.dart';
 import 'package:flutterinventory/data/repositories/sale_repository.dart';
+import 'package:flutterinventory/data/services/pdf_generator_service.dart';
 import 'package:flutterinventory/presentation/widgets/base_scaffold.dart';
 import 'package:flutterinventory/presentation/widgets/tables/item_row.dart';
+import 'package:printing/printing.dart';
 import 'package:shimmer/shimmer.dart';
 
 class HistorySalesScreen extends StatelessWidget {
@@ -108,7 +111,49 @@ class _SalesBodyState extends State<SalesBody> {
                           itemCount: _filteredSales.length,
                           itemBuilder: (_, index) {
                             final sale = _filteredSales[index];
-                            return SaleRow(sale: sale);
+                            return GestureDetector(
+                              onTap: () async {
+                                try {
+                                  final saleDetails =
+                                      await SaleRepository.getSaleDetailsBySaleId(
+                                        sale.id,
+                                      );
+                                  final branch =
+                                      await BranchRepository.getBranchById(
+                                        sale.branchId,
+                                      );
+                                  if (branch == null) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Sucursal no encontrada'),
+                                      ),
+                                    );
+                                    return;
+                                  }
+                                  final pdfData =
+                                      await PdfGeneratorService.generateReceipt(
+                                        sale: sale,
+                                        products: saleDetails,
+                                        branchName: branch.name,
+                                        branchLocation:
+                                            branch.location ??
+                                            "Dirección Desconocida",
+                                      );
+                                  await Printing.layoutPdf(
+                                    onLayout: (format) async => pdfData,
+                                  );
+                                } catch (e) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Error generando recibo: $e',
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                              child: SaleRow(sale: sale),
+                            );
                           },
                         )),
           ),

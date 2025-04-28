@@ -1,7 +1,8 @@
+import 'package:flutterinventory/data/database/database_helper.dart';
 import 'package:flutterinventory/data/models/sale.dart';
+import 'package:flutterinventory/data/models/sale_detail_extended.dart';
 import 'package:flutterinventory/data/models/sale_item.dart';
 import 'package:flutterinventory/data/repositories/repository.dart';
-import 'package:flutterinventory/data/database/database_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SaleRepository extends Repository<Sale> {
@@ -102,6 +103,8 @@ class SaleRepository extends Repository<Sale> {
       '''
     SELECT 
       s.id,
+      s.branch_id,
+      s.sale_number,
       c.name as client_name,
       pm.name as payment_method_name,
       s.total,
@@ -120,6 +123,8 @@ class SaleRepository extends Repository<Sale> {
     return result.map((map) {
       return SaleItem(
         id: map['id'] as String,
+        saleNumber: map['sale_number'] as int,
+        branchId: map['branch_id'] as String,
         clientName: map['client_name'] as String,
         paymentMethodName: map['payment_method_name'] as String,
         total: (map['total'] as num).toDouble(),
@@ -127,6 +132,23 @@ class SaleRepository extends Repository<Sale> {
         date: map['date'] as String,
       );
     }).toList();
+  }
+
+  static Future<List<SaleDetailExtended>> getSaleDetailsBySaleId(
+    String saleId,
+  ) async {
+    final db = await DatabaseHelper.instance.database;
+    final result = await db.rawQuery(
+      '''
+    SELECT sd.id, sd.price, sd.quantity, sd.product_id, sd.sale_id, p.name AS product_name
+      FROM sale_details sd
+      JOIN products p ON sd.product_id = p.id
+      WHERE sd.sale_id = ?
+  ''',
+      [saleId],
+    );
+
+    return result.map((json) => SaleDetailExtended.fromMap(json)).toList();
   }
 
   static String _twoDigits(int n) => n.toString().padLeft(2, '0');

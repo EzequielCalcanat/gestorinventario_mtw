@@ -1,6 +1,6 @@
+import 'package:flutterinventory/data/database/database_helper.dart';
 import 'package:flutterinventory/data/models/branch.dart';
 import 'package:flutterinventory/data/repositories/repository.dart';
-import 'package:flutterinventory/data/database/database_helper.dart';
 
 class BranchRepository {
   static final Repository<Branch> _repository = Repository<Branch>(
@@ -26,6 +26,20 @@ class BranchRepository {
       return filteredBranches.first.name ?? 'Sucursal desconocida';
     } else {
       return 'Sucursal no encontrada';
+    }
+  }
+
+  static Future<Branch?> getBranchById(String branchId) async {
+    List<Map<String, dynamic>> filters = [
+      {'name': 'id', 'operator': '==', 'value': branchId},
+    ];
+
+    List<Branch> filteredBranches = await _repository.getFiltered(filters);
+
+    if (filteredBranches.isNotEmpty) {
+      return filteredBranches.first;
+    } else {
+      return null;
     }
   }
 
