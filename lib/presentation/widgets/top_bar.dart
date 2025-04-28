@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutterinventory/presentation/widgets/right_cart_side_bar.dart';
-import 'package:flutterinventory/data/models/cart.dart';
 import 'package:flutterinventory/data/models/branch.dart';
+import 'package:flutterinventory/data/models/cart.dart';
 import 'package:flutterinventory/data/repositories/branch_repository.dart';
 import 'package:flutterinventory/data/repositories/login_repository.dart';
+import 'package:flutterinventory/presentation/widgets/right_cart_side_bar.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TopBar extends StatefulWidget implements PreferredSizeWidget {
   final String title;
@@ -128,20 +128,6 @@ class _TopBarState extends State<TopBar> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              ListTile(
-                leading: const Icon(Icons.person),
-                title: const Text('Ver Perfil'),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.settings),
-                title: const Text('Configuraciones'),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
               ListTile(
                 leading: const Icon(Icons.logout),
                 title: const Text('Cerrar Sesión'),

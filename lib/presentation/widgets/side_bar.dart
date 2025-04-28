@@ -86,12 +86,6 @@ class SideBar extends StatelessWidget {
                       'Usuarios',
                       'users',
                     ),
-                  _buildListTile(
-                    context,
-                    Icons.settings,
-                    'Configuraciones',
-                    'settings',
-                  ),
                 ],
               ),
             ],
