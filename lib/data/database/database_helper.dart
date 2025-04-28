@@ -1,5 +1,3 @@
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
 import 'package:flutterinventory/data/models/branch.dart';
 import 'package:flutterinventory/data/models/client.dart';
 import 'package:flutterinventory/data/models/log.dart';
@@ -7,6 +5,8 @@ import 'package:flutterinventory/data/models/product.dart';
 import 'package:flutterinventory/data/models/sale.dart';
 import 'package:flutterinventory/data/models/sale_detail.dart';
 import 'package:flutterinventory/data/models/user.dart';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:uuid/uuid.dart';
 
 class DatabaseHelper {
@@ -181,8 +181,8 @@ class DatabaseHelper {
     String adminId = uuid.v4();
     await db.insert('users', {
       'id': adminId,
-      'name': 'Ezequiel Calcanat',
-      'email': 'antoniocalcanat@gmail.com',
+      'name': 'Administrador',
+      'email': 'admin@gmail.com',
       'password': 'hola123',
       'role': 'admin',
       'branch_id': branchId,
