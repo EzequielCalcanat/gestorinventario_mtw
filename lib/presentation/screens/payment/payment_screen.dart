@@ -1,15 +1,15 @@
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 import 'package:flutterinventory/data/models/cart.dart';
 import 'package:flutterinventory/data/models/client.dart';
 import 'package:flutterinventory/data/models/product.dart';
 import 'package:flutterinventory/data/repositories/client_repository.dart';
-import 'package:flutterinventory/presentation/widgets/base_scaffold.dart';
 import 'package:flutterinventory/data/services/sale_service.dart';
-import 'package:flutterinventory/presentation/screens/payment/payment_status.dart';
 import 'package:flutterinventory/presentation/screens/clients/client_form_screen.dart';
+import 'package:flutterinventory/presentation/screens/payment/payment_status.dart';
+import 'package:flutterinventory/presentation/widgets/base_scaffold.dart';
 
 class PaymentScreen extends StatefulWidget {
   const PaymentScreen({super.key});
@@ -240,13 +240,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                               ),
                             )
                             : const Icon(Icons.check),
-                    label: Text(
-                      _isProcessing
-                          ? "Procesando..."
-                          : (_paymentMethod == 'Efectivo'
-                              ? "Confirmar Compra"
-                              : "Pago con Tarjeta"),
-                    ),
+                    label: Text(_isProcessing ? "Procesando..." : "Confirmar"),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF3491B3),
                       foregroundColor: Colors.white,

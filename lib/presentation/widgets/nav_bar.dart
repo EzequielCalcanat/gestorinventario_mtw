@@ -35,7 +35,7 @@ class NavBar extends StatelessWidget {
               icon: Icon(Icons.store),
               label: "Venta",
             ),
-            if (role != 'sales')
+            if (role == 'admin')
               const BottomNavigationBarItem(
                 icon: Icon(Icons.bar_chart),
                 label: "Reportes",
